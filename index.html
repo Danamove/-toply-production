@@ -3,1096 +3,1330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toply - AI Recruitment Intelligence Platform</title>
+    <title>Toply - AI Recruitment Intelligence</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .similarity-bar {
-            height: 6px;
             background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 4px;
         }
-        .match-high { background: linear-gradient(90deg, #10b981, #059669); }
-        .match-medium { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .match-low { background: linear-gradient(90deg, #ef4444, #dc2626); }
-        .animated-pulse { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .drag-zone {
-            border: 2px dashed #cbd5e1;
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
             transition: all 0.3s ease;
         }
-        .drag-zone.dragover {
-            border-color: #3b82f6;
-            background-color: #eff6ff;
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .user-access-modal {
+            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-lg mr-3">
-                        <i class="fas fa-brain text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Toply Intelligence Hub</h1>
-                        <p class="text-sm text-gray-600">Advanced Recruitment Intelligence Platform</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <select id="userSelect" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
-                        <option value="">Select User</option>
-                        <option value="user1">Dana (Recruiter)</option>
-                        <option value="user2">Chen (Lead)</option>
-                        <option value="user3">Alexey (Manager)</option>
+<body class="bg-gray-50 min-h-screen">
+    <!-- User Access Modal -->
+    <div id="userAccessModal" class="fixed inset-0 z-50 user-access-modal flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 slide-up">
+            <div class="text-center mb-6">
+                <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome to Toply</h2>
+                <p class="text-gray-600">Choose how you'd like to access the platform</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Team Member Access</h3>
+                    <p class="text-sm text-gray-600 mb-3">Full features including candidate tracking, saved lists, and personalized analytics</p>
+                    <select id="teamMemberSelect" class="w-full p-2 border rounded-md">
+                        <option value="">Select your name</option>
+                        <option value="Dana">Dana</option>
+                        <option value="Alexey">Alexey</option>
+                        <option value="Katinka">Katinka</option>
+                        <option value="Shiri">Shiri</option>
+                        <option value="Mika">Mika</option>
+                        <option value="Chen">Chen</option>
+                        <option value="Andrea">Andrea</option>
+                        <option value="Eszter">Eszter</option>
+                        <option value="Danana">Danana</option>
                     </select>
-                    <button id="selectedCandidatesBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                        <i class="fas fa-list mr-2"></i>Selected (<span id="selectedCount">0</span>)
+                    <button id="teamMemberLogin" class="w-full mt-2 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Continue as Team Member
+                    </button>
+                </div>
+                
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Guest Access</h3>
+                    <p class="text-sm text-gray-600 mb-3">Browse and search candidates with read-only access</p>
+                    <button id="guestLogin" class="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>Continue as Guest
                     </button>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <!-- Navigation Tabs -->
-        <div class="mb-6">
-            <nav class="flex space-x-8">
-                <button onclick="showTab('dashboard')" class="tab-button active px-3 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-600">
-                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                </button>
-                <button onclick="showTab('search')" class="tab-button px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-search mr-2"></i>Smart Search
-                </button>
-                <button onclick="showTab('similarity')" class="tab-button px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-brain mr-2"></i>AI Similarity
-                </button>
-                <button onclick="showTab('auto-sourcing')" class="tab-button px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-robot mr-2"></i>Auto-Sourcing
-                </button>
-                <button onclick="showTab('companies')" class="tab-button px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-building mr-2"></i>Companies
-                </button>
-                <button onclick="showTab('settings')" class="tab-button px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-cog mr-2"></i>Settings
-                </button>
-            </nav>
-        </div>
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold">Toply Intelligence Hub</h1>
+                        <p class="text-blue-100">Advanced Recruitment Intelligence Platform</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="glassmorphism px-4 py-2 rounded-lg">
+                            <span class="text-sm">Logged in as: </span>
+                            <span id="currentUser" class="font-semibold"></span>
+                            <button id="switchUser" class="ml-2 text-xs bg-white bg-opacity-20 px-2 py-1 rounded">
+                                Switch
+                            </button>
+                        </div>
+                        <div id="selectedCounter" class="glassmorphism px-4 py-2 rounded-lg cursor-pointer">
+                            <i class="fas fa-list mr-2"></i>
+                            <span>Selected (0)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-white shadow-sm border-b">
+            <div class="container mx-auto px-4">
+                <div class="flex space-x-8">
+                    <button class="nav-tab active py-4 px-2 border-b-2 border-blue-600 text-blue-600" data-tab="dashboard">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                    </button>
+                    <button class="nav-tab py-4 px-2 border-b-2 border-transparent hover:border-gray-300" data-tab="search">
+                        <i class="fas fa-search mr-2"></i>Smart Search
+                    </button>
+                    <button class="nav-tab py-4 px-2 border-b-2 border-transparent hover:border-gray-300" data-tab="similarity">
+                        <i class="fas fa-brain mr-2"></i>AI Similarity
+                    </button>
+                    <button class="nav-tab py-4 px-2 border-b-2 border-transparent hover:border-gray-300" data-tab="sourcing">
+                        <i class="fas fa-magic mr-2"></i>Auto-Sourcing
+                    </button>
+                    <button class="nav-tab py-4 px-2 border-b-2 border-transparent hover:border-gray-300" data-tab="companies">
+                        <i class="fas fa-building mr-2"></i>Companies
+                    </button>
+                    <button class="nav-tab py-4 px-2 border-b-2 border-transparent hover:border-gray-300" data-tab="settings">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                </div>
+            </div>
+        </nav>
 
         <!-- Dashboard Tab -->
-        <div id="dashboard-tab" class="tab-content">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div onclick="showHotCompanies()" class="cursor-pointer bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-red-100 text-sm">Hot Companies</p>
-                            <p class="text-3xl font-bold">28</p>
-                        </div>
-                        <i class="fas fa-fire text-2xl text-red-200"></i>
-                    </div>
-                    <p class="text-red-100 text-xs mt-2">Click to view list</p>
-                </div>
-                
-                <div onclick="showActiveCandidates()" class="cursor-pointer bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-green-100 text-sm">Active Candidates</p>
-                            <p class="text-3xl font-bold">100+</p>
-                        </div>
-                        <i class="fas fa-users text-2xl text-green-200"></i>
-                    </div>
-                    <p class="text-green-100 text-xs mt-2">Ready for immediate contact</p>
-                </div>
-                
-                <div onclick="showTalentDatabase()" class="cursor-pointer bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-purple-100 text-sm">TOP Profiles</p>
-                            <p class="text-3xl font-bold" id="topProfilesCount">0</p>
-                        </div>
-                        <i class="fas fa-star text-2xl text-purple-200"></i>
-                    </div>
-                    <p class="text-purple-100 text-xs mt-2">Upload Scorely results</p>
-                </div>
-                
-                <div onclick="showTalentDatabase()" class="cursor-pointer bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-indigo-100 text-sm">GOOD Profiles</p>
-                            <p class="text-3xl font-bold" id="goodProfilesCount">0</p>
-                        </div>
-                        <i class="fas fa-thumbs-up text-2xl text-indigo-200"></i>
-                    </div>
-                    <p class="text-indigo-100 text-xs mt-2">Quality talent pool</p>
-                </div>
-            </div>
-
-            <!-- Priority Recommendations -->
-            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">
-                    <i class="fas fa-bullseye text-red-500 mr-2"></i>Today's Priority Recommendations
-                </h3>
-                <div class="space-y-4">
-                    <div class="bg-red-50 border-l-4 border-red-400 p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-triangle text-red-400 mr-3"></i>
+        <div id="dashboard" class="tab-content">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="card-hover bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="switchToTab('companies')">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-red-800">Contact candidates from Microsoft immediately</p>
-                                <p class="text-sm text-red-600">3 active candidates + recent layoffs = 85% response rate expected</p>
+                                <p class="text-blue-100">Hot Companies</p>
+                                <p class="text-3xl font-bold">28</p>
                             </div>
+                            <i class="fas fa-fire text-4xl text-blue-200"></i>
                         </div>
                     </div>
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-gamepad text-blue-400 mr-3"></i>
+                    
+                    <div class="card-hover bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="switchToTab('search', 'looking')">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-blue-800">Unity talent surge detected</p>
-                                <p class="text-sm text-blue-600">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
+                                <p class="text-green-100">Active Candidates</p>
+                                <p class="text-3xl font-bold">100+</p>
                             </div>
+                            <i class="fas fa-user-check text-4xl text-green-200"></i>
                         </div>
                     </div>
-                    <div class="bg-green-50 border-l-4 border-green-400 p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-shield-alt text-green-400 mr-3"></i>
+                    
+                    <div class="card-hover bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="switchToTab('similarity')">
+                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-green-800">Security sector opportunity</p>
-                                <p class="text-sm text-green-600">Review 12 new Security professionals this week</p>
+                                <p class="text-purple-100">TOP Profiles</p>
+                                <p class="text-3xl font-bold" id="topProfilesCount">0</p>
                             </div>
+                            <i class="fas fa-star text-4xl text-purple-200"></i>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Market Intelligence -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">
-                    <i class="fas fa-chart-line text-blue-500 mr-2"></i>Market Intelligence
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-3">This Week's Intelligence</h4>
-                        <ul class="space-y-2 text-sm text-gray-600">
-                            <li><i class="fas fa-arrow-up text-green-500 mr-2"></i>Security sector: 23% more active candidates</li>
-                            <li><i class="fas fa-fire text-red-500 mr-2"></i>Backend roles: High demand detected</li>
-                            <li><i class="fas fa-chart-bar text-blue-500 mr-2"></i>Microsoft candidates: 85% response rate</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-gray-900 mb-3">Best Timing Recommendations</h4>
-                        <ul class="space-y-2 text-sm text-gray-600">
-                            <li><i class="fas fa-clock text-orange-500 mr-2"></i>Wiz candidates: Contact now (layoffs detected)</li>
-                            <li><i class="fas fa-calendar text-blue-500 mr-2"></i>Microsoft window: Next 2 weeks optimal</li>
-                            <li><i class="fas fa-trending-up text-green-500 mr-2"></i>Q1 hiring surge: Prepare candidate pipeline</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AI Similarity Tab -->
-        <div id="similarity-tab" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Upload Section -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-upload text-blue-500 mr-2"></i>Upload Scorely Results
-                    </h3>
-                    <div id="uploadZone" class="drag-zone border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                        <p class="text-lg font-medium text-gray-600 mb-2">Drag & drop Scorely JSON file here</p>
-                        <p class="text-sm text-gray-500 mb-4">or click to browse</p>
-                        <p class="text-xs text-gray-400">Supports: .json, .csv files with embeddings</p>
-                        <input type="file" id="scorelyFile" class="hidden" accept=".json,.csv">
-                    </div>
-                    <div id="uploadStatus" class="mt-4 hidden">
-                        <div class="bg-green-50 border border-green-200 rounded-md p-3">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-400 mr-2"></i>
-                                <span class="text-sm text-green-800">File uploaded successfully!</span>
+                    
+                    <div class="card-hover bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg shadow-lg cursor-pointer" onclick="switchToTab('similarity')">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-orange-100">GOOD Profiles</p>
+                                <p class="text-3xl font-bold" id="goodProfilesCount">0</p>
                             </div>
+                            <i class="fas fa-thumbs-up text-4xl text-orange-200"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Search Section -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-search text-purple-500 mr-2"></i>Find Similar Candidates
-                    </h3>
-                    <div class="space-y-4">
-                        <textarea id="similarityQuery" class="w-full p-3 border border-gray-300 rounded-md" rows="4" placeholder="Enter job description, candidate profile, or requirements...&#10;&#10;Example:&#10;Senior Backend Engineer, Python, AWS, 5+ years experience"></textarea>
-                        <button onclick="findSimilarCandidates()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
-                            <i class="fas fa-magic mr-2"></i>Find Similar Candidates
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Results Section -->
-            <div id="similarityResults" class="mt-8 bg-white rounded-lg shadow-lg p-6 hidden">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">
-                    <i class="fas fa-list-ul text-green-500 mr-2"></i>Similarity Results
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Overall Match</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="similarityResultsBody" class="bg-white divide-y divide-gray-200">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Auto-Sourcing Tab -->
-        <div id="auto-sourcing-tab" class="tab-content hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Success Patterns -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-chart-bar text-green-500 mr-2"></i>Success Patterns Analysis
-                    </h3>
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-3">Top Companies</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Wiz</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">3 TOP</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Cybereason</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">2 TOP</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Astrix</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">2 TOP</span>
-                                </div>
+                <!-- Priority Recommendations -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                            Today's Priority Recommendations
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+                                <h4 class="font-semibold text-red-800">Contact Microsoft candidates immediately</h4>
+                                <p class="text-red-600 text-sm">3 active candidates + recent layoffs = 85% response rate expected</p>
                             </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-3">Top Skills</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Python</span>
-                                    <span class="text-xs text-gray-500">85%</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">AWS</span>
-                                    <span class="text-xs text-gray-500">78%</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Kubernetes</span>
-                                    <span class="text-xs text-gray-500">71%</span>
-                                </div>
+                            <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                <h4 class="font-semibold text-blue-800">Unity talent surge detected</h4>
+                                <p class="text-blue-600 text-sm">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                <h4 class="font-semibold text-green-800">Security sector opportunity</h4>
+                                <p class="text-green-600 text-sm">Review 12 new Security professionals this week</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Boolean Generator -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">
-                        <i class="fas fa-code text-blue-500 mr-2"></i>Generated Boolean Queries
-                    </h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">LinkedIn Boolean Query</label>
-                            <div class="relative">
-                                <textarea readonly class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md text-sm" rows="3">(&quot;Backend Engineer&quot; OR &quot;Senior Developer&quot;) AND (&quot;Python&quot; OR &quot;AWS&quot; OR &quot;Kubernetes&quot;) AND (&quot;Wiz&quot; OR &quot;Cybereason&quot; OR &quot;Astrix&quot;)</textarea>
-                                <button onclick="copyToClipboard(this.previousElementSibling.value)" class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700">
-                                    <i class="fas fa-copy"></i>
-                                </button>
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-line text-blue-500 mr-2"></i>
+                            Market Intelligence
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">This Week's Intelligence</h4>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li class="flex items-center"><i class="fas fa-arrow-up text-green-500 mr-2"></i>Security sector: 23% more active candidates</li>
+                                    <li class="flex items-center"><i class="fas fa-fire text-red-500 mr-2"></i>Backend roles: High demand detected</li>
+                                    <li class="flex items-center"><i class="fas fa-chart-bar text-blue-500 mr-2"></i>Microsoft candidates: 85% response rate</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Best Timing Recommendations</h4>
+                                <ul class="space-y-2 text-sm text-gray-600">
+                                    <li class="flex items-center"><i class="fas fa-clock text-yellow-500 mr-2"></i>Wiz candidates: Contact now (layoffs detected)</li>
+                                    <li class="flex items-center"><i class="fas fa-calendar text-blue-500 mr-2"></i>Microsoft window: Next 2 weeks optimal</li>
+                                    <li class="flex items-center"><i class="fas fa-rocket text-purple-500 mr-2"></i>Q1 hiring surge: Prepare candidate pipeline</li>
+                                </ul>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Google Boolean Query</label>
-                            <div class="relative">
-                                <textarea readonly class="w-full p-3 bg-gray-50 border border-gray-300 rounded-md text-sm" rows="2">&quot;Backend Engineer&quot; OR &quot;Senior Developer&quot; AND Python AND AWS site:linkedin.com</textarea>
-                                <button onclick="copyToClipboard(this.previousElementSibling.value)" class="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Smart Suggestions -->
-            <div class="mt-8 bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">
-                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Smart Sourcing Suggestions
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-blue-900 mb-2">Try targeting Backend Engineers at Check Point</h4>
-                        <p class="text-sm text-blue-700">Similar security company profile to your successful Wiz hires</p>
-                    </div>
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-green-900 mb-2">Look for Python developers with 5+ years experience</h4>
-                        <p class="text-sm text-green-700">82% success rate in your previous TOP-rated candidates</p>
-                    </div>
-                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <h4 class="font-semibold text-purple-900 mb-2">Consider DevOps from Security companies</h4>
-                        <p class="text-sm text-purple-700">80% skill overlap with your successful Backend Engineer hires</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Smart Search Tab -->
-        <div id="search-tab" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-6">
-                    <i class="fas fa-search text-blue-500 mr-2"></i>Smart Candidate Search
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title / Role</label>
-                        <input type="text" id="searchTitle" class="w-full p-3 border border-gray-300 rounded-md" placeholder="e.g. Senior Backend Engineer">
+        <div id="search" class="tab-content hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-semibold mb-6">Smart Candidate Search</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Job Title / Role</label>
+                            <input type="text" id="jobTitle" class="w-full p-3 border border-gray-300 rounded-md" placeholder="e.g., Backend Engineer">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
+                            <input type="text" id="skills" class="w-full p-3 border border-gray-300 rounded-md" placeholder='Use "," for AND, "OR" for either'>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
+                            <select id="experience" class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">Any Experience</option>
+                                <option value="junior">Junior (0-2 years)</option>
+                                <option value="mid">Mid-level (3-5 years)</option>
+                                <option value="senior">Senior (5+ years)</option>
+                                <option value="lead">Lead/Principal (7+ years)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-                        <input type="text" id="searchSkills" class="w-full p-3 border border-gray-300 rounded-md" placeholder='Use "," for AND, "OR" for either'>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
-                        <select id="searchExperience" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="">Any</option>
-                            <option value="junior">Junior (0-2 years)</option>
-                            <option value="mid">Mid-level (3-5 years)</option>
-                            <option value="senior">Senior (5+ years)</option>
-                            <option value="lead">Lead/Principal (8+ years)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                        <input type="text" id="searchLocation" class="w-full p-3 border border-gray-300 rounded-md" placeholder="e.g. Tel Aviv, Remote">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Filter</label>
-                        <input type="text" id="searchCompany" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Company name or type">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
-                        <select id="searchScore" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="">All scores</option>
-                            <option value="top">TOP (80+)</option>
-                            <option value="good">GOOD (60-79)</option>
-                            <option value="potential">Potential (40-59)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-4 mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="filterLooking" class="mr-2">
-                        <span class="text-sm text-gray-700">Show only LOOKING candidates</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="filterHotCompanies" class="mr-2">
-                        <span class="text-sm text-gray-700">Show only from Hot Companies</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="filterUnviewed" class="mr-2">
-                        <span class="text-sm text-gray-700">Show only unviewed (this week)</span>
-                    </label>
-                </div>
-                <button onclick="performSearch()" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
-                    <i class="fas fa-search mr-2"></i>Search Candidates
-                </button>
-            </div>
 
-            <!-- Search Results -->
-            <div id="searchResults" class="mt-8 bg-white rounded-lg shadow-lg p-6 hidden">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-gray-900">Search Results</h3>
-                    <div class="flex gap-2">
-                        <button onclick="exportSelectedCSV()" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700">
-                            <i class="fas fa-download mr-2"></i>Export CSV
-                        </button>
-                        <button onclick="resetViewedStatus()" class="bg-gray-600 text-white px-4 py-2 rounded-md text-sm hover:bg-gray-700">
-                            <i class="fas fa-refresh mr-2"></i>Reset Viewed
-                        </button>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                            <input type="text" id="location" class="w-full p-3 border border-gray-300 rounded-md" placeholder="e.g., Tel Aviv">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Filter</label>
+                            <input type="text" id="companyFilter" class="w-full p-3 border border-gray-300 rounded-md" placeholder="e.g., Wiz, Microsoft">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
+                            <select id="scoreRange" class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">Any Score</option>
+                                <option value="80-100">Excellent (80-100)</option>
+                                <option value="60-79">Good (60-79)</option>
+                                <option value="40-59">Average (40-59)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="lookingOnly" class="mr-2">
+                            <span class="text-sm">Show only LOOKING candidates</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="hotCompaniesOnly" class="mr-2">
+                            <span class="text-sm">Show only from Hot Companies</span>
+                        </label>
+                        <label class="flex items-center" id="unviewedFilter">
+                            <input type="checkbox" id="unviewedOnly" class="mr-2">
+                            <span class="text-sm">Show only unviewed (this week)</span>
+                        </label>
+                    </div>
+
+                    <button id="searchBtn" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-search mr-2"></i>Search Candidates
+                    </button>
+                </div>
+
+                <!-- Search Results -->
+                <div id="searchResults" class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Search Results</h3>
+                        <div class="flex space-x-2">
+                            <button id="selectAllBtn" class="text-sm bg-gray-200 px-3 py-1 rounded">Select All</button>
+                            <button id="exportSelectedBtn" class="text-sm bg-blue-600 text-white px-3 py-1 rounded">Export Selected</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="text-left p-3">Select</th>
+                                    <th class="text-left p-3">Candidate</th>
+                                    <th class="text-left p-3">Status</th>
+                                    <th class="text-left p-3">Company</th>
+                                    <th class="text-left p-3">Title</th>
+                                    <th class="text-left p-3">Experience</th>
+                                    <th class="text-left p-3">Score</th>
+                                    <th class="text-left p-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidateResults">
+                                <tr>
+                                    <td colspan="8" class="text-center p-8 text-gray-500">
+                                        <i class="fas fa-search text-4xl mb-4"></i>
+                                        <p>Enter search criteria and click "Search Candidates" to find matches</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="searchResultsBody" class="bg-white divide-y divide-gray-200">
-                        </tbody>
-                    </table>
+            </div>
+        </div>
+
+        <!-- AI Similarity Tab -->
+        <div id="similarity" class="tab-content hidden">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Upload Section -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-semibold mb-6">AI Similarity Search</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Upload Scorely Results</h3>
+                            <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-lg text-gray-600 mb-2">Drag & drop Scorely JSON file here</p>
+                                <p class="text-sm text-gray-500 mb-4">or click to browse</p>
+                                <p class="text-xs text-gray-400">Supports: .json, .csv files with embeddings</p>
+                                <input type="file" id="fileInput" class="hidden" accept=".json,.csv">
+                            </div>
+                            <div id="uploadStatus" class="mt-4 hidden">
+                                <div class="bg-green-50 border border-green-200 rounded p-3">
+                                    <p class="text-green-800 font-semibold">✓ File uploaded successfully</p>
+                                    <p class="text-green-600 text-sm" id="uploadDetails"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Find Similar Candidates</h3>
+                            <textarea id="similarityQuery" rows="6" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Enter job description, candidate profile, or requirements...
+
+Example:
+- 'Senior Backend Engineer with Python, AWS, 5+ years'
+- 'Looking for profiles similar to our best developer'
+- 'Find candidates from companies like Wiz'"></textarea>
+                            <button id="findSimilarBtn" class="mt-4 w-full bg-purple-600 text-white py-3 rounded-md hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-brain mr-2"></i>Find Similar Candidates
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Similarity Results -->
+                <div id="similarityResults" class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">Similarity Results</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="text-left p-3">Select</th>
+                                    <th class="text-left p-3">Candidate</th>
+                                    <th class="text-left p-3">Overall Match</th>
+                                    <th class="text-left p-3">Skills</th>
+                                    <th class="text-left p-3">Company</th>
+                                    <th class="text-left p-3">Title</th>
+                                    <th class="text-left p-3">Experience</th>
+                                    <th class="text-left p-3">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="similarityResultsBody">
+                                <tr>
+                                    <td colspan="8" class="text-center p-8 text-gray-500">
+                                        <i class="fas fa-brain text-4xl mb-4"></i>
+                                        <p>Upload Scorely results and enter a query to find similar candidates</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Sourcing Tab -->
+        <div id="sourcing" class="tab-content hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Success Patterns -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Success Patterns Analysis</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-3">Top Companies</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                                        <span>Wiz</span>
+                                        <span class="bg-blue-600 text-white px-2 py-1 rounded text-sm">3 TOP</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-green-50 rounded">
+                                        <span>Cybereason</span>
+                                        <span class="bg-green-600 text-white px-2 py-1 rounded text-sm">2 TOP</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 bg-purple-50 rounded">
+                                        <span>Astrix</span>
+                                        <span class="bg-purple-600 text-white px-2 py-1 rounded text-sm">2 TOP</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-3">Top Skills</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span>Python</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 85%"></div>
+                                            </div>
+                                            <span class="text-sm text-gray-600">85%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>AWS</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 78%"></div>
+                                            </div>
+                                            <span class="text-sm text-gray-600">78%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Kubernetes</span>
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-purple-600 h-2 rounded-full" style="width: 71%"></div>
+                                            </div>
+                                            <span class="text-sm text-gray-600">71%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-3">Top Titles</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span>Backend Engineer</span>
+                                        <span class="text-sm text-gray-600">65%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Senior Developer</span>
+                                        <span class="text-sm text-gray-600">58%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>Tech Lead</span>
+                                        <span class="text-sm text-gray-600">42%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-3">Experience</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span>4-6 years</span>
+                                        <span class="text-sm text-gray-600">68%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>7-10 years</span>
+                                        <span class="text-sm text-gray-600">25%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>3-4 years</span>
+                                        <span class="text-sm text-gray-600">15%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Boolean Queries & Suggestions -->
+                    <div class="space-y-6">
+                        <!-- Generated Boolean Queries -->
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h3 class="text-lg font-semibold mb-4">Generated Boolean Queries</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">LinkedIn Boolean Query</h4>
+                                    <div class="bg-gray-50 p-3 rounded border">
+                                        <code class="text-sm">
+                                            ("Backend Engineer" OR "Senior Developer") AND ("Python" OR "AWS" OR "Kubernetes") AND ("Wiz" OR "Cybereason" OR "Astrix")
+                                        </code>
+                                    </div>
+                                    <div class="flex space-x-2 mt-2">
+                                        <button class="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button class="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                                            <i class="fab fa-linkedin mr-1"></i>Open in LinkedIn
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 mb-2">Google Boolean Query</h4>
+                                    <div class="bg-gray-50 p-3 rounded border">
+                                        <code class="text-sm">
+                                            "Backend Engineer" OR "Senior Developer" AND Python AND AWS site:linkedin.com
+                                        </code>
+                                    </div>
+                                    <div class="flex space-x-2 mt-2">
+                                        <button class="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <button class="text-sm bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                                            <i class="fab fa-google mr-1"></i>Search Google
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Smart Sourcing Suggestions -->
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h3 class="text-lg font-semibold mb-4">Smart Sourcing Suggestions</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                    <h4 class="font-semibold text-blue-800">Try targeting Backend Engineers at Check Point</h4>
+                                    <p class="text-blue-600 text-sm">Similar security company profile to your successful Wiz hires</p>
+                                </div>
+                                
+                                <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                                    <h4 class="font-semibold text-green-800">Look for Python developers with 5+ years experience</h4>
+                                    <p class="text-green-600 text-sm">82% success rate in your previous TOP-rated candidates</p>
+                                </div>
+                                
+                                <div class="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                                    <h4 class="font-semibold text-purple-800">Consider DevOps from Security companies</h4>
+                                    <p class="text-purple-600 text-sm">80% skill overlap with your successful Backend Engineer hires</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Companies Tab -->
-        <div id="companies-tab" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-6">
-                    <i class="fas fa-building text-blue-500 mr-2"></i>Companies Intelligence
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
-                        <select id="industryFilter" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="">All Industries</option>
-                            <option value="cybersecurity">Cybersecurity</option>
-                            <option value="fintech">FinTech</option>
-                            <option value="ai">AI/ML</option>
-                            <option value="gaming">Gaming</option>
-                            <option value="cleantech">CleanTech</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
-                        <select id="sizeFilter" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="">All Sizes</option>
-                            <option value="startup">Startup (1-50)</option>
-                            <option value="scaleup">Scale-up (51-200)</option>
-                            <option value="growth">Growth (201-1000)</option>
-                            <option value="enterprise">Enterprise (1000+)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                        <select id="statusFilter" class="w-full p-3 border border-gray-300 rounded-md">
-                            <option value="">All Status</option>
-                            <option value="hot">Hot Companies</option>
-                            <option value="unicorn">Unicorn</option>
-                            <option value="public">Public</option>
-                            <option value="series">Series A-D</option>
-                        </select>
+        <div id="companies" class="tab-content hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-semibold mb-6">Companies Intelligence</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                            <select class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">All Industries</option>
+                                <option value="cybersecurity">Cybersecurity</option>
+                                <option value="fintech">FinTech</option>
+                                <option value="ai">AI/ML</option>
+                                <option value="saas">SaaS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
+                            <select class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">Any Size</option>
+                                <option value="startup">Startup (1-50)</option>
+                                <option value="scale">Scale-up (51-500)</option>
+                                <option value="enterprise">Enterprise (500+)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select class="w-full p-3 border border-gray-300 rounded-md">
+                                <option value="">All Companies</option>
+                                <option value="hot">Hot Companies Only</option>
+                                <option value="unicorn">Unicorns</option>
+                                <option value="public">Public Companies</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Hot Companies Section -->
-                <div class="mb-8">
-                    <h4 class="text-lg font-semibold text-gray-900 mb-4">
-                        <i class="fas fa-fire text-red-500 mr-2"></i>Hot Companies This Week
-                    </h4>
-                    <p class="text-sm text-gray-600 mb-4">Companies with recent activity - higher candidate response rates expected</p>
-                    <div id="hotCompaniesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Hot companies will be populated here -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fas fa-fire text-red-500 mr-2"></i>
+                        Hot Companies This Week
+                    </h3>
+                    <p class="text-gray-600 mb-6">Companies with recent activity - higher candidate response rates expected</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold">Microsoft</h4>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Layoffs</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">Big Tech • 7000+ employees</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600">3 candidates available</span>
+                                <button class="text-xs bg-blue-600 text-white px-2 py-1 rounded">View</button>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold">Unity</h4>
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Layoffs</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">Gaming • 1500+ employees</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600">3 candidates available</span>
+                                <button class="text-xs bg-blue-600 text-white px-2 py-1 rounded">View</button>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold">Cybereason</h4>
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Layoffs</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">Security • 750 employees</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-blue-600">2 candidates available</span>
+                                <button class="text-xs bg-blue-600 text-white px-2 py-1 rounded">View</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Settings Tab -->
-        <div id="settings-tab" class="tab-content hidden">
-            <div class="space-y-8">
-                <!-- API Settings -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">
-                        <i class="fas fa-cog text-blue-500 mr-2"></i>Settings & Integrations
-                    </h3>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-3">Google Sheets Integration</h4>
-                            <div class="flex gap-4">
-                                <input type="password" id="googleApiKey" class="flex-1 p-3 border border-gray-300 rounded-md" placeholder="Google Sheets API Key">
-                                <button onclick="testGoogleConnection()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                                    Test Connection
+        <div id="settings" class="tab-content hidden">
+            <div class="container mx-auto px-4 py-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- API Integration -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Settings & Integrations</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">Google Sheets Integration</h4>
+                                <input type="password" id="googleApiKey" class="w-full p-3 border border-gray-300 rounded-md mb-2" placeholder="Google Sheets API Key">
+                                <button id="testConnection" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                                    <i class="fas fa-check mr-2"></i>Test Connection
                                 </button>
                             </div>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold text-gray-900 mb-3">OpenAI Integration</h4>
-                            <div class="space-y-4">
-                                <input type="password" id="openaiApiKey" class="w-full p-3 border border-gray-300 rounded-md" placeholder="OpenAI API Key">
-                                <select id="openaiModel" class="w-full p-3 border border-gray-300 rounded-md">
-                                    <option value="text-embedding-ada-002">text-embedding-ada-002 (Default)</option>
-                                    <option value="text-embedding-3-small">text-embedding-3-small (New)</option>
-                                    <option value="text-embedding-3-large">text-embedding-3-large (Best)</option>
+
+                            <div>
+                                <h4 class="font-semibold text-gray-800 mb-2">OpenAI Integration</h4>
+                                <input type="password" id="openaiApiKey" class="w-full p-3 border border-gray-300 rounded-md mb-2" placeholder="OpenAI API Key">
+                                <select id="modelSelection" class="w-full p-3 border border-gray-300 rounded-md">
+                                    <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+                                    <option value="text-embedding-3-small">text-embedding-3-small</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Data Sources -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">
-                        <i class="fas fa-database text-purple-500 mr-2"></i>Data Sources
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-900">Active Candidates</h4>
+                    <!-- Data Sources -->
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Data Sources</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                    <h4 class="font-semibold">Active Candidates</h4>
+                                    <p class="text-sm text-gray-600">100+ candidates actively looking for opportunities</p>
+                                </div>
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Connected</span>
                             </div>
-                            <p class="text-sm text-gray-600">100+ candidates actively looking for opportunities</p>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-900">Hot Companies</h4>
+
+                            <div class="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                    <h4 class="font-semibold">Hot Companies</h4>
+                                    <p class="text-sm text-gray-600">28 companies with recent market events</p>
+                                </div>
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Connected</span>
                             </div>
-                            <p class="text-sm text-gray-600">28 companies with recent market events</p>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-900">Companies Database</h4>
+
+                            <div class="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                    <h4 class="font-semibold">Companies Database</h4>
+                                    <p class="text-sm text-gray-600">396 companies with detailed intelligence</p>
+                                </div>
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Connected</span>
                             </div>
-                            <p class="text-sm text-gray-600">396 companies with detailed intelligence</p>
-                        </div>
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-900">Scorely Results</h4>
+
+                            <div class="flex items-center justify-between p-3 border rounded">
+                                <div>
+                                    <h4 class="font-semibold">Scorely Results</h4>
+                                    <p class="text-sm text-gray-600">TOP and GOOD candidate profiles with embeddings</p>
+                                </div>
                                 <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Upload Required</span>
                             </div>
-                            <p class="text-sm text-gray-600">TOP and GOOD candidate profiles with embeddings</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Advanced Settings -->
-                <div class="bg-white rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">
-                        <i class="fas fa-sliders-h text-gray-500 mr-2"></i>Advanced Settings
-                    </h3>
-                    <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow-lg p-6 mt-8">
+                    <h3 class="text-lg font-semibold mb-4">Advanced Settings</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
-                            <input type="range" id="similarityThreshold" min="30" max="90" value="50" class="w-full">
-                            <p class="text-xs text-gray-500 mt-1">Minimum similarity score to show results: <span id="thresholdValue">50</span>%</p>
+                            <input type="range" min="0" max="100" value="50" class="w-full">
+                            <p class="text-xs text-gray-500 mt-1">Minimum similarity score to show results</p>
                         </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="autoSave" class="mr-2" checked>
-                            <label class="text-sm text-gray-700">Auto-Save Settings</label>
-                            <p class="text-xs text-gray-500 ml-2">Save settings automatically</p>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="cacheEmbeddings" class="mr-2" checked>
-                            <label class="text-sm text-gray-700">Cache Embeddings</label>
-                            <p class="text-xs text-gray-500 ml-2">Store embeddings locally to save API costs</p>
+
+                        <div class="space-y-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span class="text-sm">Auto-Save Settings</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span class="text-sm">Save settings automatically</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2" checked>
+                                <span class="text-sm">Cache Embeddings</span>
+                            </label>
+                            <p class="text-xs text-gray-500">Store embeddings locally to save API costs</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Selected Candidates Sidebar -->
-    <div id="selectedSidebar" class="fixed right-0 top-0 h-full w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-900">Selected Candidates</h3>
-                <button onclick="closeSidebar()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-        </div>
-        <div class="p-6">
-            <div id="selectedCandidatesList" class="space-y-4 mb-6">
-                <div class="text-center text-gray-500 py-8">
-                    <i class="fas fa-users text-4xl mb-4"></i>
-                    <p>No candidates selected</p>
+        <!-- Selected Candidates Sidebar -->
+        <div id="selectedSidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-40">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold">Selected Candidates</h3>
+                    <button id="closeSidebar" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
             </div>
-            <div class="space-y-3">
-                <button onclick="exportSelectedCSV()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
-                    <i class="fas fa-download mr-2"></i>Export CSV
-                </button>
-                <button onclick="exportLinkedInURLs()" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-                    <i class="fab fa-linkedin mr-2"></i>Export LinkedIn URLs
-                </button>
-                <button onclick="clearAllSelected()" class="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
-                    <i class="fas fa-trash mr-2"></i>Clear All
-                </button>
+            
+            <div class="p-6">
+                <div id="selectedList" class="space-y-3 mb-6">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-4xl mb-4"></i>
+                        <p>No candidates selected</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <button id="exportCSV" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export CSV
+                    </button>
+                    <button id="exportLinkedIn" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors">
+                        <i class="fab fa-linkedin mr-2"></i>Export LinkedIn URLs
+                    </button>
+                    <button id="clearAll" class="w-full bg-gray-600 text-white py-2 rounded hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Clear All
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guest Access Warning -->
+        <div id="guestWarning" class="hidden fixed bottom-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg shadow-lg max-w-sm">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
+                <div>
+                    <p class="font-semibold text-sm">Guest Mode Active</p>
+                    <p class="text-xs">Some features are limited. Select your name for full access.</p>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // Global variables
+        let currentUser = null;
+        let isGuest = false;
         let selectedCandidates = [];
-        let scorelyData = [];
-        let activeCandidates = [];
-        let hotCompanies = [];
-        let companies = [];
-        let viewedCandidates = new Set();
+        let uploadedCandidates = [];
+        let viewedCandidates = {};
 
-        // Initialize app
+        // Sample data
+        const sampleCandidates = [
+            {
+                id: 1,
+                name: "Or Ben Chitrit",
+                company: "Wiz",
+                title: "Backend Engineer",
+                experience: "5 years",
+                status: "LOOKING",
+                score: 87,
+                skills: ["Python", "AWS", "Docker"],
+                linkedin: "https://linkedin.com/in/orbc",
+                isHotCompany: true,
+                embedding: Array(1536).fill(0).map(() => Math.random())
+            },
+            {
+                id: 2,
+                name: "Alon Mizrahi",
+                company: "Microsoft",
+                title: "Senior Backend",
+                experience: "6 years",
+                status: "LOOKING",
+                score: 92,
+                skills: ["C#", "Azure", "Kubernetes"],
+                linkedin: "https://linkedin.com/in/alonmiz",
+                isHotCompany: true,
+                embedding: Array(1536).fill(0).map(() => Math.random())
+            },
+            {
+                id: 3,
+                name: "Yoav Sharon",
+                company: "Unity",
+                title: "Software Engineer",
+                experience: "4 years", 
+                status: "LOOKING",
+                score: 78,
+                skills: ["C++", "Unity3D", "Graphics"],
+                linkedin: "https://linkedin.com/in/yoav-sharon",
+                isHotCompany: true,
+                embedding: Array(1536).fill(0).map(() => Math.random())
+            }
+        ];
+
+        // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
-            loadSampleData();
         });
 
         function initializeApp() {
-            // Setup event listeners
-            document.getElementById('uploadZone').addEventListener('click', () => {
-                document.getElementById('scorelyFile').click();
+            setupEventListeners();
+            showUserAccessModal();
+        }
+
+        function setupEventListeners() {
+            // User access modal
+            document.getElementById('teamMemberLogin').addEventListener('click', handleTeamMemberLogin);
+            document.getElementById('guestLogin').addEventListener('click', handleGuestLogin);
+            document.getElementById('switchUser').addEventListener('click', showUserAccessModal);
+
+            // Navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.currentTarget.dataset.tab;
+                    switchToTab(tabName);
+                });
             });
 
-            document.getElementById('scorelyFile').addEventListener('change', handleFileUpload);
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            document.getElementById('findSimilarBtn').addEventListener('click', findSimilarCandidates);
 
-            document.getElementById('selectedCandidatesBtn').addEventListener('click', openSidebar);
+            // File upload
+            document.getElementById('dropZone').addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
 
-            document.getElementById('similarityThreshold').addEventListener('input', function() {
-                document.getElementById('thresholdValue').textContent = this.value;
+            // Selected candidates
+            document.getElementById('selectedCounter').addEventListener('click', toggleSelectedSidebar);
+            document.getElementById('closeSidebar').addEventListener('click', closeSelectedSidebar);
+            document.getElementById('exportCSV').addEventListener('click', exportSelectedCSV);
+            document.getElementById('clearAll').addEventListener('click', clearSelectedCandidates);
+
+            // Drag and drop
+            setupDragAndDrop();
+        }
+
+        function showUserAccessModal() {
+            document.getElementById('userAccessModal').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function handleTeamMemberLogin() {
+            const selectedUser = document.getElementById('teamMemberSelect').value;
+            if (!selectedUser) {
+                alert('Please select your name');
+                return;
+            }
+            
+            currentUser = selectedUser;
+            isGuest = false;
+            
+            document.getElementById('currentUser').textContent = currentUser;
+            document.getElementById('userAccessModal').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('guestWarning').classList.add('hidden');
+            
+            // Show full features
+            document.getElementById('unviewedFilter').style.display = 'block';
+            
+            loadUserData();
+        }
+
+        function handleGuestLogin() {
+            currentUser = 'Guest';
+            isGuest = true;
+            
+            document.getElementById('currentUser').textContent = 'Guest User';
+            document.getElementById('userAccessModal').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('guestWarning').classList.remove('hidden');
+            
+            // Hide user-specific features
+            document.getElementById('unviewedFilter').style.display = 'none';
+        }
+
+        function loadUserData() {
+            if (isGuest) return;
+            
+            // Load user's viewed candidates
+            const stored = localStorage.getItem(`viewedCandidates_${currentUser}`);
+            if (stored) {
+                viewedCandidates[currentUser] = JSON.parse(stored);
+            }
+        }
+
+        function switchToTab(tabName, filter = null) {
+            // Update nav
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-blue-600', 'text-blue-600');
+                tab.classList.add('border-transparent');
+            });
+            
+            const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active', 'border-blue-600', 'text-blue-600');
+                activeTab.classList.remove('border-transparent');
+            }
+
+            // Show content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabName).classList.remove('hidden');
+
+            // Apply filters if specified
+            if (filter === 'looking' && tabName === 'search') {
+                document.getElementById('lookingOnly').checked = true;
+                performSearch();
+            }
+        }
+
+        function performSearch() {
+            const results = sampleCandidates.filter(candidate => {
+                let matches = true;
+
+                // Apply filters
+                if (document.getElementById('lookingOnly').checked && candidate.status !== 'LOOKING') {
+                    matches = false;
+                }
+
+                if (document.getElementById('hotCompaniesOnly').checked && !candidate.isHotCompany) {
+                    matches = false;
+                }
+
+                if (document.getElementById('unviewedOnly').checked && !isGuest) {
+                    const userViewed = viewedCandidates[currentUser] || [];
+                    if (userViewed.includes(candidate.id)) {
+                        matches = false;
+                    }
+                }
+
+                return matches;
             });
 
-            // Setup drag and drop
-            const uploadZone = document.getElementById('uploadZone');
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('dragover');
-            });
+            displaySearchResults(results);
+        }
 
-            uploadZone.addEventListener('dragleave', () => {
-                uploadZone.classList.remove('dragover');
-            });
+        function displaySearchResults(candidates) {
+            const tbody = document.getElementById('candidateResults');
+            
+            if (candidates.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center p-8 text-gray-500">
+                            <i class="fas fa-search text-4xl mb-4"></i>
+                            <p>No candidates found matching your criteria</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFile(files[0]);
+            tbody.innerHTML = candidates.map(candidate => {
+                const isViewed = !isGuest && (viewedCandidates[currentUser] || []).includes(candidate.id);
+                const isSelected = selectedCandidates.some(c => c.id === candidate.id);
+                
+                return `
+                    <tr class="${isViewed ? 'bg-gray-50' : ''} hover:bg-gray-100">
+                        <td class="p-3">
+                            <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleCandidateSelection(${candidate.id})">
+                        </td>
+                        <td class="p-3">
+                            <div class="flex items-center">
+                                ${!isViewed && !isGuest ? '<span class="bg-green-500 text-white px-2 py-1 rounded text-xs mr-2">NEW</span>' : ''}
+                                <span class="font-medium">${candidate.name}</span>
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${candidate.status}</span>
+                        </td>
+                        <td class="p-3">
+                            <div class="flex items-center">
+                                ${candidate.isHotCompany ? '<i class="fas fa-fire text-red-500 mr-1"></i>' : ''}
+                                ${candidate.company}
+                            </div>
+                        </td>
+                        <td class="p-3">${candidate.title}</td>
+                        <td class="p-3">${candidate.experience}</td>
+                        <td class="p-3">
+                            <span class="font-semibold ${candidate.score >= 80 ? 'text-green-600' : candidate.score >= 60 ? 'text-yellow-600' : 'text-red-600'}">
+                                ${candidate.score}
+                            </span>
+                        </td>
+                        <td class="p-3">
+                            <button onclick="viewCandidate(${candidate.id})" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function viewCandidate(candidateId) {
+            if (!isGuest) {
+                // Mark as viewed
+                if (!viewedCandidates[currentUser]) {
+                    viewedCandidates[currentUser] = [];
+                }
+                if (!viewedCandidates[currentUser].includes(candidateId)) {
+                    viewedCandidates[currentUser].push(candidateId);
+                    localStorage.setItem(`viewedCandidates_${currentUser}`, JSON.stringify(viewedCandidates[currentUser]));
+                }
+            }
+            
+            // Show candidate details (implementation depends on requirements)
+            alert('Candidate profile opened');
+            
+            // Refresh search results to update NEW badges
+            performSearch();
+        }
+
+        function toggleCandidateSelection(candidateId) {
+            const candidate = sampleCandidates.find(c => c.id === candidateId);
+            const existingIndex = selectedCandidates.findIndex(c => c.id === candidateId);
+            
+            if (existingIndex === -1) {
+                selectedCandidates.push(candidate);
+            } else {
+                selectedCandidates.splice(existingIndex, 1);
+            }
+            
+            updateSelectedCounter();
+            updateSelectedSidebar();
+        }
+
+        function updateSelectedCounter() {
+            document.getElementById('selectedCounter').innerHTML = `
+                <i class="fas fa-list mr-2"></i>
+                <span>Selected (${selectedCandidates.length})</span>
+            `;
+        }
+
+        function updateSelectedSidebar() {
+            const listContainer = document.getElementById('selectedList');
+            
+            if (selectedCandidates.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-4xl mb-4"></i>
+                        <p>No candidates selected</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listContainer.innerHTML = selectedCandidates.map(candidate => `
+                <div class="flex items-center justify-between p-3 border rounded">
+                    <div>
+                        <div class="font-medium">${candidate.name}</div>
+                        <div class="text-sm text-gray-500">${candidate.company} • ${candidate.title}</div>
+                    </div>
+                    <button onclick="toggleCandidateSelection(${candidate.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleSelectedSidebar() {
+            const sidebar = document.getElementById('selectedSidebar');
+            sidebar.classList.toggle('translate-x-full');
+            updateSelectedSidebar();
+        }
+
+        function closeSelectedSidebar() {
+            document.getElementById('selectedSidebar').classList.add('translate-x-full');
+        }
+
+        function exportSelectedCSV() {
+            if (selectedCandidates.length === 0) {
+                alert('No candidates selected for export');
+                return;
+            }
+
+            const csvContent = [
+                ['Name', 'Company', 'Title', 'Experience', 'Score', 'LinkedIn'],
+                ...selectedCandidates.map(c => [c.name, c.company, c.title, c.experience, c.score, c.linkedin])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'selected_candidates.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function clearSelectedCandidates() {
+            selectedCandidates = [];
+            updateSelectedCounter();
+            updateSelectedSidebar();
+            // Uncheck all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                if (cb.onchange && cb.onchange.toString().includes('toggleCandidateSelection')) {
+                    cb.checked = false;
                 }
             });
         }
 
-        function loadSampleData() {
-            // Load hot companies
-            hotCompanies = [
-                { name: "Microsoft", event: "Layoffs", industry: "Big Tech", candidates: 3 },
-                { name: "Wiz", event: "Silent Exodus", industry: "Security", candidates: 1 },
-                { name: "Unity", event: "Layoffs", industry: "Gaming", candidates: 3 },
-                { name: "Cybereason", event: "Layoffs", industry: "Security", candidates: 2 },
-                { name: "Meta", event: "Layoffs", industry: "Big Tech", candidates: 0 },
-                { name: "AppsFlyer", event: "Layoffs", industry: "AdTech", candidates: 0 }
-            ];
-
-            // Load active candidates
-            activeCandidates = [
-                { name: "Or Ben Chitrit", company: "Wiz", title: "Backend Engineer", experience: "5 years", linkedin: "https://linkedin.com/in/orbc", status: "LOOKING", score: 87 },
-                { name: "Alon Mizrahi", company: "Microsoft", title: "Senior Backend", experience: "6 years", linkedin: "https://linkedin.com/in/alonmiz", status: "LOOKING", score: 92 },
-                { name: "Roey Weizman", company: "Microsoft", title: "Full Stack", experience: "4 years", linkedin: "https://linkedin.com/in/roey-weizman", status: "LOOKING", score: 85 },
-                { name: "yoav sharon", company: "Unity", title: "Developer", experience: "3 years", linkedin: "https://linkedin.com/in/yoav-sharon", status: "LOOKING", score: 78 },
-                { name: "Michael Khanimov", company: "Cybereason", title: "C++ Developer", experience: "7 years", linkedin: "https://linkedin.com/in/michael-khanimov-595481bb", status: "LOOKING", score: 89 }
-            ];
-
-            updateDashboardStats();
-            populateHotCompanies();
-        }
-
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-
-            // Remove active class from all buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active', 'text-blue-600', 'border-blue-600');
-                button.classList.add('text-gray-500');
-            });
-
-            // Show selected tab
-            document.getElementById(tabName + '-tab').classList.remove('hidden');
-
-            // Add active class to clicked button
-            event.target.classList.add('active', 'text-blue-600', 'border-blue-600');
-            event.target.classList.remove('text-gray-500');
-        }
-
         function handleFileUpload(event) {
             const file = event.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        }
+            if (!file) return;
 
-        function handleFile(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const content = e.target.result;
-                    let data;
-
-                    if (file.name.endsWith('.json')) {
-                        data = JSON.parse(content);
-                    } else if (file.name.endsWith('.csv')) {
-                        data = parseCSV(content);
-                    }
-
-                    scorelyData = data;
-                    updateDashboardStats();
-                    showUploadSuccess();
+                    const data = JSON.parse(e.target.result);
+                    uploadedCandidates = data;
+                    
+                    document.getElementById('uploadStatus').classList.remove('hidden');
+                    document.getElementById('uploadDetails').textContent = `${data.length} candidates loaded with embeddings`;
+                    
+                    // Update profile counts
+                    const topCount = data.filter(c => c.category === 'TOP').length;
+                    const goodCount = data.filter(c => c.category === 'GOOD').length;
+                    
+                    document.getElementById('topProfilesCount').textContent = topCount;
+                    document.getElementById('goodProfilesCount').textContent = goodCount;
+                    
                 } catch (error) {
-                    showError('Error parsing file: ' + error.message);
+                    alert('Error parsing file. Please ensure it\'s a valid JSON file.');
                 }
             };
             reader.readAsText(file);
         }
 
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n');
-            const headers = lines[0].split(',');
-            const data = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i].trim()) {
-                    const values = lines[i].split(',');
-                    const row = {};
-                    headers.forEach((header, index) => {
-                        row[header.trim()] = values[index] ? values[index].trim() : '';
-                    });
-                    data.push(row);
-                }
-            }
-
-            return data;
-        }
-
-        function showUploadSuccess() {
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.classList.remove('hidden');
-            setTimeout(() => {
-                statusDiv.classList.add('hidden');
-            }, 3000);
-        }
-
-        function showError(message) {
-            alert(message);
-        }
-
-        function updateDashboardStats() {
-            const topCount = scorelyData.filter(c => c.category === 'TOP').length;
-            const goodCount = scorelyData.filter(c => c.category === 'GOOD').length;
-
-            document.getElementById('topProfilesCount').textContent = topCount;
-            document.getElementById('goodProfilesCount').textContent = goodCount;
-        }
-
-        function populateHotCompanies() {
-            const container = document.getElementById('hotCompaniesList');
-            if (!container) return;
-
-            container.innerHTML = hotCompanies.map(company => `
-                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div class="flex items-center justify-between mb-2">
-                        <h5 class="font-semibold text-red-900">${company.name}</h5>
-                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${company.event}</span>
-                    </div>
-                    <p class="text-sm text-red-700 mb-2">${company.industry}</p>
-                    <p class="text-xs text-red-600">${company.candidates} candidates available</p>
-                </div>
-            `).join('');
-        }
-
         function findSimilarCandidates() {
-            const query = document.getElementById('similarityQuery').value;
-            if (!query.trim()) {
-                alert('Please enter a job description or candidate profile');
-                return;
-            }
-
-            if (scorelyData.length === 0) {
+            if (uploadedCandidates.length === 0) {
                 alert('Please upload Scorely results first');
                 return;
             }
 
+            const query = document.getElementById('similarityQuery').value.trim();
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+
             // Simulate similarity calculation
-            const results = scorelyData.map(candidate => {
-                const similarity = Math.random() * 0.4 + 0.6; // 60-100% similarity
-                return {
-                    ...candidate,
-                    similarity: similarity,
-                    skillsMatch: Math.random() * 0.3 + 0.7,
-                    companyMatch: Math.random() * 0.3 + 0.7,
-                    titleMatch: Math.random() * 0.3 + 0.7,
-                    experienceMatch: Math.random() * 0.3 + 0.7
-                };
-            }).sort((a, b) => b.similarity - a.similarity);
+            const results = uploadedCandidates.map(candidate => ({
+                ...candidate,
+                similarity: Math.random() * 0.5 + 0.5, // Random similarity between 0.5-1.0
+                skillsMatch: Math.random() * 0.4 + 0.6,
+                companyMatch: Math.random() * 0.4 + 0.6,
+                titleMatch: Math.random() * 0.4 + 0.6,
+                experienceMatch: Math.random() * 0.4 + 0.6
+            })).sort((a, b) => b.similarity - a.similarity).slice(0, 10);
 
             displaySimilarityResults(results);
         }
 
         function displaySimilarityResults(results) {
             const tbody = document.getElementById('similarityResultsBody');
-            const resultsDiv = document.getElementById('similarityResults');
-
+            
             tbody.innerHTML = results.map(candidate => {
                 const similarityPercent = Math.round(candidate.similarity * 100);
-                const matchLevel = similarityPercent >= 85 ? 'HIGH' : similarityPercent >= 70 ? 'MEDIUM' : 'LOW';
-                const matchClass = similarityPercent >= 85 ? 'match-high' : similarityPercent >= 70 ? 'match-medium' : 'match-low';
-
+                const confidence = similarityPercent >= 85 ? 'HIGH' : similarityPercent >= 70 ? 'MEDIUM' : 'LOW';
+                const confidenceColor = similarityPercent >= 85 ? 'text-green-600' : similarityPercent >= 70 ? 'text-yellow-600' : 'text-red-600';
+                
                 return `
                     <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <input type="checkbox" class="candidate-select" data-candidate='${JSON.stringify(candidate)}'>
+                        <td class="p-3">
+                            <input type="checkbox" onchange="toggleCandidateSelection('sim_${candidate.name}')">
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${candidate.name || 'N/A'}</div>
-                            <div class="text-sm text-gray-500">${candidate.company || 'N/A'}</div>
+                        <td class="p-3">
+                            <div class="font-medium">${candidate.name}</div>
+                            <div class="text-sm text-gray-500">${candidate.category}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="p-3">
                             <div class="flex items-center">
-                                <div class="flex-1 mr-3">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="h-2 rounded-full ${matchClass}" style="width: ${similarityPercent}%"></div>
-                                    </div>
+                                <div class="similarity-bar w-20 mr-2">
+                                    <div class="progress-fill bg-gradient-to-r from-red-500 to-green-500" style="width: ${similarityPercent}%"></div>
                                 </div>
-                                <span class="text-sm font-medium">${similarityPercent}%</span>
+                                <span class="font-semibold ${confidenceColor}">${similarityPercent}% ${confidence}</span>
                             </div>
-                            <div class="text-xs text-gray-500 mt-1">${matchLevel} MATCH</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm">${Math.round(candidate.skillsMatch * 100)}%</div>
+                        <td class="p-3">
+                            <div class="text-sm">
+                                <div class="w-16 bg-gray-200 rounded h-1 mb-1">
+                                    <div class="bg-blue-500 h-1 rounded" style="width: ${Math.round(candidate.skillsMatch * 100)}%"></div>
+                                </div>
+                                <span class="text-xs text-gray-600">${Math.round(candidate.skillsMatch * 100)}%</span>
+                            </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm">${Math.round(candidate.companyMatch * 100)}%</div>
+                        <td class="p-3">
+                            <div class="text-sm">
+                                <div class="w-16 bg-gray-200 rounded h-1 mb-1">
+                                    <div class="bg-green-500 h-1 rounded" style="width: ${Math.round(candidate.companyMatch * 100)}%"></div>
+                                </div>
+                                <span class="text-xs text-gray-600">${Math.round(candidate.companyMatch * 100)}%</span>
+                            </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm">${Math.round(candidate.titleMatch * 100)}%</div>
+                        <td class="p-3">
+                            <div class="text-sm">
+                                <div class="w-16 bg-gray-200 rounded h-1 mb-1">
+                                    <div class="bg-purple-500 h-1 rounded" style="width: ${Math.round(candidate.titleMatch * 100)}%"></div>
+                                </div>
+                                <span class="text-xs text-gray-600">${Math.round(candidate.titleMatch * 100)}%</span>
+                            </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm">${Math.round(candidate.experienceMatch * 100)}%</div>
+                        <td class="p-3">
+                            <div class="text-sm">
+                                <div class="w-16 bg-gray-200 rounded h-1 mb-1">
+                                    <div class="bg-orange-500 h-1 rounded" style="width: ${Math.round(candidate.experienceMatch * 100)}%"></div>
+                                </div>
+                                <span class="text-xs text-gray-600">${Math.round(candidate.experienceMatch * 100)}%</span>
+                            </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <button onclick="showSimilarityDetails('${candidate.name}')" class="text-blue-600 hover:text-blue-900 text-sm">
-                                View Details
+                        <td class="p-3">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">
+                                <i class="fas fa-info-circle"></i>
                             </button>
                         </td>
                     </tr>
                 `;
             }).join('');
-
-            resultsDiv.classList.remove('hidden');
         }
 
-        function showHotCompanies() {
-            showTab('companies');
-        }
-
-        function showActiveCandidates() {
-            showTab('search');
-            document.getElementById('filterLooking').checked = true;
-            performSearch();
-        }
-
-        function showTalentDatabase() {
-            showTab('similarity');
-        }
-
-        function performSearch() {
-            const results = activeCandidates.map(candidate => ({
-                ...candidate,
-                isNew: !viewedCandidates.has(candidate.name)
-            }));
-
-            displaySearchResults(results);
-        }
-
-        function displaySearchResults(results) {
-            const tbody = document.getElementById('searchResultsBody');
-            const resultsDiv = document.getElementById('searchResults');
-
-            tbody.innerHTML = results.map(candidate => `
-                <tr class="hover:bg-gray-50 ${candidate.isNew ? 'bg-green-50' : ''}">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="checkbox" class="candidate-select" data-candidate='${JSON.stringify(candidate)}'>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">${candidate.name}</div>
-                                ${candidate.isNew ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">NEW</span>' : ''}
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <i class="fas fa-eye mr-1"></i>LOOKING
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${candidate.company}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${candidate.title}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${candidate.experience}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ${candidate.score}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="${candidate.linkedin}" target="_blank" class="text-blue-600 hover:text-blue-900 mr-3">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <button onclick="markAsViewed('${candidate.name}')" class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-
-            resultsDiv.classList.remove('hidden');
-        }
-
-        function markAsViewed(candidateName) {
-            viewedCandidates.add(candidateName);
-            performSearch(); // Refresh results
-        }
-
-        function resetViewedStatus() {
-            viewedCandidates.clear();
-            performSearch();
-        }
-
-        function openSidebar() {
-            document.getElementById('selectedSidebar').classList.remove('translate-x-full');
-            updateSelectedCandidatesList();
-        }
-
-        function closeSidebar() {
-            document.getElementById('selectedSidebar').classList.add('translate-x-full');
-        }
-
-        function updateSelectedCandidatesList() {
-            const list = document.getElementById('selectedCandidatesList');
-            document.getElementById('selectedCount').textContent = selectedCandidates.length;
-
-            if (selectedCandidates.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-users text-4xl mb-4"></i>
-                        <p>No candidates selected</p>
-                    </div>
-                `;
-            } else {
-                list.innerHTML = selectedCandidates.map(candidate => `
-                    <div class="border border-gray-200 rounded-lg p-3">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <div class="font-medium text-sm">${candidate.name}</div>
-                                <div class="text-xs text-gray-500">${candidate.company} - ${candidate.title}</div>
-                            </div>
-                            <button onclick="removeFromSelected('${candidate.name}')" class="text-red-500 hover:text-red-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function removeFromSelected(candidateName) {
-            selectedCandidates = selectedCandidates.filter(c => c.name !== candidateName);
-            updateSelectedCandidatesList();
-        }
-
-        function clearAllSelected() {
-            selectedCandidates = [];
-            updateSelectedCandidatesList();
-            // Uncheck all checkboxes
-            document.querySelectorAll('.candidate-select').forEach(cb => cb.checked = false);
-        }
-
-        function exportSelectedCSV() {
-            if (selectedCandidates.length === 0) {
-                alert('No candidates selected');
-                return;
-            }
-
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "Name,Company,Title,Experience,LinkedIn,Score\n"
-                + selectedCandidates.map(c => 
-                    `"${c.name}","${c.company}","${c.title}","${c.experience}","${c.linkedin}","${c.score}"`
-                ).join("\n");
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "selected_candidates.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportLinkedInURLs() {
-            if (selectedCandidates.length === 0) {
-                alert('No candidates selected');
-                return;
-            }
-
-            const urls = selectedCandidates.map(c => c.linkedin).filter(url => url).join('\n');
-            navigator.clipboard.writeText(urls).then(() => {
-                alert('LinkedIn URLs copied to clipboard');
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-blue-400', 'bg-blue-50');
             });
-        }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard');
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-400', 'bg-blue-50');
             });
-        }
 
-        function testGoogleConnection() {
-            const apiKey = document.getElementById('googleApiKey').value;
-            if (!apiKey) {
-                alert('Please enter your Google Sheets API key');
-                return;
-            }
-            alert('Connection test functionality - implement with actual API');
-        }
-
-        function showSimilarityDetails(candidateName) {
-            alert(`Detailed similarity analysis for ${candidateName} would be shown here`);
-        }
-
-        // Event delegation for candidate selection
-        document.addEventListener('change', function(e) {
-            if (e.target.classList.contains('candidate-select')) {
-                const candidateData = JSON.parse(e.target.dataset.candidate);
-                if (e.target.checked) {
-                    if (!selectedCandidates.find(c => c.name === candidateData.name)) {
-                        selectedCandidates.push(candidateData);
-                    }
-                } else {
-                    selectedCandidates = selectedCandidates.filter(c => c.name !== candidateData.name);
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('fileInput').files = files;
+                    handleFileUpload({ target: { files } });
                 }
-                updateSelectedCandidatesList();
-            }
+            });
+        }
+
+        // Initialize with dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data for initial load
+            performSearch();
         });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhmAseN4QNrtyGAIgQXufHfNYSo5YaKh3SsfUfwqnlGaiSUXLEuX9lsmi8s%2BqMgFsmm43%2B2TaEiVsJwQHH12vHe1%2F4gXvX2D%2B15BulDqsCGr4oCnlGM2G9IDBbwE%2BMCEAW4RgRCFRiO1Tr7tAQoh7c2%2BhdBsAkTaPdNYsvX6mSj45Y0f6mWPCZAsfN4nWxfN0BE5P3QOGN8GGFFxqnbboXjocHYS%2Byju7CHHaywWje%2BUSi9s8dWlUkRyU5PsHDXjt7wF59HqWSo5rj%2F7xPTiFDneaZDa1ZelMxNBiDQE%2FLooTzfVaLcIvD7KwsD0aOmvemoaxvim9lb9198mbBKUi3nDPAnjNTWetLJupSSsfwDTrxSWytNahwCgJlgyMmfL9Fr6Kahv%2Bl7EpWMNhmkx3VF24hEWUotDQ5cwM4cRjRIYW0uo0djVYdwFZqnbQYmud6E2fYMzHfTpfrnP35ryKlKOEjyGsWLWvly%2BuD6mLvGlaD6pGaM3jUD5rB34Ga6f4w%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDsudxQuZH1DcZzM1jLLJfimjeQpPCPnpniZIN2hR6Gg1YUL4PIyDRFHzxGTppltNxLipVaw6e4y%2ByTcvQBpjGMeHf%2B1nDUL6z5LrrT7xbFKtLT6yPqBYLXSGzEH5t%2F5j2658%2FiUmlz5gz5h1T8RY3FLC5XDdo4hnMhZnU0iHV5ikDdbt%2F3hMayIsGYitQxY2tSzu2j6vgV9MzmXcouC%2BrlugH3vOGgtkE3GoeS4YbewEcPBXYyoTSaosTeHbIDd1Mx48oI2R%2Bnl%2BZrK1WF9DKFl6ZmX1sPNHkgORcAaln8UjrnfVF7j3jC0ogrdhn07Se78Fjiqdjch27tJilcxkUoCY59mb1oL6yqOfzT6nvE2PDOTLonLFyFChNCzaL2dRmJdB1row5dytnXhnFdqJjqKFsPGYX1dlNg6uQiT7nKhyqxBDKi3BckJkkkKn3HBzeZh5L6%2FyYCDojtsGgu0civfm4U95M2l6VTofUzEZOHlLPBntX3EaxBRYjS%2BC1n2DMg%3D%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhmAseN4QNrtyGAIgQXufHfNYSo5YaKh3SsfUfwqnlGaiSUXLEuX9lsmi8s+qMgFsmm43+2TaEiVsJwQHH12vHe1/4gXvX2D+15BulDqsCGr4oCnlGM2G9IDBbwE+MCEAW4RgRCFRiO1Tr7tAQoh7c2+hdBsAkTaPdNYsvX6mSj45Y0f6mWPCZAsfN4nWxfN0BE5P3QOGN8GGFFxqnbboXjocHYS+yju7CHHaywWje+USi9s8dWlUkRyU5PsHDXjt7wF59HqWSo5rj/7xPTiFDneaZDa1ZelMxNBiDQE/LooTzfVaLcIvD7KwsD0aOmvemoaxvim9lb9198mbBKUi3nDPAnjNTWetLJupSSsfwDTrxSWytNahwCgJlgyMmfL9Fr6Kahv+l7EpWMNhmkx3VF24hEWUotDQ5cwM4cRjRIYW0uo0djVYdwFZqnbQYmud6E2fYMzHfTpfrnP35ryKlKOEjyGsWLWvly+uD6mLvGlaD6pGaM3jUD5rB34Ga6f4w==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDsudxQuZH1DcZzM1jLLJfimjeQpPCPnpniZIN2hR6Gg1YUL4PIyDRFHzxGTppltNxLipVaw6e4y+yTcvQBpjGMeHf+1nDUL6z5LrrT7xbFKtLT6yPqBYLXSGzEH5t/5j2658/iUmlz5gz5h1T8RY3FLC5XDdo4hnMhZnU0iHV5ikDdbt/3hMayIsGYitQxY2tSzu2j6vgV9MzmXcouC+rlugH3vOGgtkE3GoeS4YbewEcPBXYyoTSaosTeHbIDd1Mx48oI2R+nl+ZrK1WF9DKFl6ZmX1sPNHkgORcAaln8UjrnfVF7j3jC0ogrdhn07Se78Fjiqdjch27tJilcxkUoCY59mb1oL6yqOfzT6nvE2PDOTLonLFyFChNCzaL2dRmJdB1row5dytnXhnFdqJjqKFsPGYX1dlNg6uQiT7nKhyqxBDKi3BckJkkkKn3HBzeZh5L6/yYCDojtsGgu0civfm4U95M2l6VTofUzEZOHlLPBntX3EaxBRYjS+C1n2DMg==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
