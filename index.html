@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toply AI - Smart Recruitment Intelligence Platform</title>
+    <title>Toply - Smart Sourcing Intelligence Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
@@ -15,6 +15,19 @@
         .tab-active { background-color: #4f46e5; color: white; }
         .tab-inactive { background-color: #e5e7eb; color: #6b7280; }
         .smart-insights-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .search-form { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .similarity-bg { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .sourcing-bg { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .companies-bg { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .analytics-bg { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .upload-category { 
+            background: linear-gradient(45deg, #667eea, #764ba2); 
+            transition: all 0.3s ease;
+        }
+        .upload-category:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -26,8 +39,8 @@
                     <i class="fas fa-brain text-blue-600"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold">Toply AI</h1>
-                    <p class="text-sm opacity-90">Smart Recruitment Intelligence Platform</p>
+                    <h1 class="text-xl font-bold">Toply</h1>
+                    <p class="text-sm opacity-90">Smart Sourcing Intelligence Platform</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -48,8 +61,13 @@
                     <button id="adminButton" class="admin-badge text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
                         <i class="fas fa-user-shield mr-2"></i>Admin
                     </button>
-                    <select class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg">
-                        <option>Continue as Guest</option>
+                    <select id="userSelect" class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg">
+                        <option value="guest">Continue as Guest</option>
+                        <option value="dana">Dana</option>
+                        <option value="alexey">Alexey</option>
+                        <option value="sarah">Sarah</option>
+                        <option value="mike">Mike</option>
+                        <option value="jessica">Jessica</option>
                     </select>
                 </div>
                 
@@ -256,82 +274,618 @@
             </div>
         </div>
 
+        <!-- Smart Search Tab -->
+        <div id="search" class="tab-content hidden">
+            <div class="search-form rounded-lg p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-search mr-3"></i>Smart Candidate Search
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Job Title / Role</label>
+                        <input type="text" class="w-full px-3 py-2 rounded-lg text-gray-800" placeholder="e.g. Senior Backend Engineer">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Skills</label>
+                        <input type="text" class="w-full px-3 py-2 rounded-lg text-gray-800" placeholder="e.g. Python, AWS, Kubernetes">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Experience Level</label>
+                        <select class="w-full px-3 py-2 rounded-lg text-gray-800">
+                            <option>Any Experience</option>
+                            <option>Junior (1-3 years)</option>
+                            <option>Mid-Level (3-7 years)</option>
+                            <option>Senior (7+ years)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Location</label>
+                        <input type="text" class="w-full px-3 py-2 rounded-lg text-gray-800" placeholder="e.g. Tel Aviv, Remote">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Filter</label>
+                        <input type="text" class="w-full px-3 py-2 rounded-lg text-gray-800" placeholder="e.g. Google, Startup">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Score Range</label>
+                        <select class="w-full px-3 py-2 rounded-lg text-gray-800">
+                            <option>Any Score</option>
+                            <option>90-100 (TOP)</option>
+                            <option>80-89 (GOOD)</option>
+                            <option>70-79 (FAIR)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-4 mb-4">
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" class="rounded">
+                        <span class="text-sm">Show only LOOKING candidates</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" class="rounded">
+                        <span class="text-sm">Show only from Hot Companies</span>
+                    </label>
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" class="rounded">
+                        <span class="text-sm">Show only unviewed (this week)</span>
+                    </label>
+                </div>
+                <button class="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-search mr-2"></i>Search Candidates
+                </button>
+            </div>
+
+            <!-- Search Results -->
+            <div class="bg-white rounded-lg p-6">
+                <h3 class="text-lg font-bold mb-4">Search Results</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-2 text-left">Select</th>
+                                <th class="px-4 py-2 text-left">Candidate</th>
+                                <th class="px-4 py-2 text-left">Status</th>
+                                <th class="px-4 py-2 text-left">Company</th>
+                                <th class="px-4 py-2 text-left">Title</th>
+                                <th class="px-4 py-2 text-left">Experience</th>
+                                <th class="px-4 py-2 text-left">Score</th>
+                                <th class="px-4 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="px-4 py-2" colspan="8" class="text-center text-gray-500">
+                                    Use search filters above to find candidates
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Similarity Tab -->
+        <div id="similarity" class="tab-content hidden">
+            <div class="similarity-bg rounded-lg p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-brain mr-3"></i>Find Similar Candidates
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Job Description or Candidate Profile</label>
+                        <textarea class="w-full px-3 py-2 rounded-lg text-gray-800 h-32" placeholder="Paste job description, LinkedIn profile, or describe ideal candidate..."></textarea>
+                        <button class="mt-4 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-upload mr-2"></i>Upload Resume/Profile
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Similarity Results</h3>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                            <p class="text-sm">Upload Scorely data and enter search criteria to find similar candidates</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similarity Results Table -->
+            <div class="bg-white rounded-lg p-6">
+                <h3 class="text-lg font-bold mb-4">Similarity Results</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-2 text-left">Select</th>
+                                <th class="px-4 py-2 text-left">Candidate</th>
+                                <th class="px-4 py-2 text-left">Overall Match</th>
+                                <th class="px-4 py-2 text-left">Skills</th>
+                                <th class="px-4 py-2 text-left">Company</th>
+                                <th class="px-4 py-2 text-left">Title</th>
+                                <th class="px-4 py-2 text-left">Experience</th>
+                                <th class="px-4 py-2 text-left">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="px-4 py-2" colspan="8" class="text-center text-gray-500">
+                                    Upload Scorely data and enter search criteria to find similar candidates
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Sourcing Tab -->
+        <div id="sourcing" class="tab-content hidden">
+            <div class="sourcing-bg rounded-lg p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-magic mr-3"></i>Upload Scorely Results
+                </h2>
+                <div class="text-center">
+                    <div class="border-2 border-dashed border-white border-opacity-50 rounded-lg p-8 mb-4">
+                        <i class="fas fa-cloud-upload-alt text-4xl mb-4"></i>
+                        <p class="text-lg mb-2">Drag & drop Scorely JSON file here</p>
+                        <p class="text-sm opacity-75">or click to browse</p>
+                        <button class="mt-4 bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            Choose File
+                        </button>
+                    </div>
+                    <p class="text-sm opacity-75">Supports: .json, .csv files with embeddings</p>
+                </div>
+            </div>
+
+            <!-- Success Patterns Analysis -->
+            <div class="bg-white rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-3 text-green-500"></i>
+                    Success Patterns Analysis
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3">Top Companies</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Wiz</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">3 TOP</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Cybereason</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">2 TOP</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Astrix</span>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">2 TOP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Top Skills</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Python</span>
+                                <span class="text-blue-600 font-semibold">85%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>AWS</span>
+                                <span class="text-blue-600 font-semibold">78%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Kubernetes</span>
+                                <span class="text-blue-600 font-semibold">71%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Top Titles</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>Backend Engineer</span>
+                                <span class="text-purple-600 font-semibold">65%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Senior Developer</span>
+                                <span class="text-purple-600 font-semibold">58%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Tech Lead</span>
+                                <span class="text-purple-600 font-semibold">42%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3">Experience</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>4-6 years</span>
+                                <span class="text-orange-600 font-semibold">68%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>7-10 years</span>
+                                <span class="text-orange-600 font-semibold">25%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>3-4 years</span>
+                                <span class="text-orange-600 font-semibold">15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generated Boolean Queries -->
+            <div class="bg-white rounded-lg p-6">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-code mr-3 text-blue-500"></i>
+                    Generated Boolean Queries
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-2">LinkedIn Boolean Query</h4>
+                        <div class="bg-gray-100 p-3 rounded-lg font-mono text-sm">
+                            ("Backend Engineer" OR "Senior Developer") ("Python" OR "AWS" OR "Kubernetes") ("Wiz" OR "Cybereason" OR "Astrix")
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-2">Google Boolean Query</h4>
+                        <div class="bg-gray-100 p-3 rounded-lg font-mono text-sm">
+                            ("Backend Engineer" OR "Senior Developer") Python AWS site:linkedin.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Companies Tab -->
+        <div id="companies" class="tab-content hidden">
+            <div class="companies-bg rounded-lg p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-building mr-3"></i>Companies Intelligence
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Industry</label>
+                        <select class="w-full px-3 py-2 rounded-lg text-gray-800">
+                            <option>All Industries</option>
+                            <option>Technology</option>
+                            <option>Cybersecurity</option>
+                            <option>Fintech</option>
+                            <option>Gaming</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Size</label>
+                        <select class="w-full px-3 py-2 rounded-lg text-gray-800">
+                            <option>All Sizes</option>
+                            <option>Startup (1-50)</option>
+                            <option>Mid-size (51-500)</option>
+                            <option>Large (500+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Status</label>
+                        <select class="w-full px-3 py-2 rounded-lg text-gray-800">
+                            <option>All Status</option>
+                            <option>Hot Companies</option>
+                            <option>Recently Funded</option>
+                            <option>Layoffs Detected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hot Companies This Week -->
+            <div class="bg-white rounded-lg p-6">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <i class="fas fa-fire mr-3 text-red-500"></i>
+                    Hot Companies This Week
+                </h3>
+                <p class="text-gray-600 mb-4">Companies with recent activity - higher candidate response rates expected</p>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-2 text-left">Company</th>
+                                <th class="px-4 py-2 text-left">Event Type</th>
+                                <th class="px-4 py-2 text-left">Industry</th>
+                                <th class="px-4 py-2 text-left">Source</th>
+                                <th class="px-4 py-2 text-left">Date</th>
+                                <th class="px-4 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 font-medium">Wiz</td>
+                                <td class="px-4 py-2">
+                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">⚠️ EXODUS</span>
+                                </td>
+                                <td class="px-4 py-2">Cybersecurity</td>
+                                <td class="px-4 py-2">Auto-detected</td>
+                                <td class="px-4 py-2">2024-01-15</td>
+                                <td class="px-4 py-2">
+                                    <button class="text-blue-600 hover:text-blue-800">View Candidates</button>
+                                </td>
+                            </tr>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 font-medium">Cybereason</td>
+                                <td class="px-4 py-2">
+                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">🔥 LAYOFFS</span>
+                                </td>
+                                <td class="px-4 py-2">Security</td>
+                                <td class="px-4 py-2">News</td>
+                                <td class="px-4 py-2">2024-01-12</td>
+                                <td class="px-4 py-2">
+                                    <button class="text-blue-600 hover:text-blue-800">View Candidates</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content hidden">
+            <div class="analytics-bg rounded-lg p-6 mb-6 text-white">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-3"></i>Smart Sourcing Suggestions
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h3 class="font-semibold mb-2">Try targeting Backend Engineers at Check Point</h3>
+                        <p class="text-sm opacity-90">Similar security company profile to your successful Wiz hires</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h3 class="font-semibold mb-2">Look for Python developers with 5+ years experience</h3>
+                        <p class="text-sm opacity-90">82% success rate in your previous TOP-rated candidates</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h3 class="font-semibold mb-2">Consider DevOps from Security companies</h3>
+                        <p class="text-sm opacity-90">80% skill overlap with your successful Backend Engineer hires</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Analytics Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg p-6">
+                    <h3 class="text-lg font-bold mb-4">Search Performance</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span>Total Searches:</span>
+                            <span class="font-semibold">1,247</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Avg. Results per Search:</span>
+                            <span class="font-semibold">23.4</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Success Rate:</span>
+                            <span class="font-semibold text-green-600">87%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg p-6">
+                    <h3 class="text-lg font-bold mb-4">Top Search Terms</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Python Developer</span>
+                            <span class="text-blue-600">342 searches</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Backend Engineer</span>
+                            <span class="text-blue-600">298 searches</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>DevOps Engineer</span>
+                            <span class="text-blue-600">187 searches</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Tab -->
         <div id="settings" class="tab-content hidden">
             <div class="bg-white rounded-lg p-6">
                 <h2 class="text-xl font-bold mb-6">Settings</h2>
                 
+                <!-- Regular User Settings -->
+                <div id="userSettings" class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">User Preferences</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+                                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter your display name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Notifications</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded" checked>
+                                        <span class="text-sm">Hot companies alerts</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded" checked>
+                                        <span class="text-sm">Weekly summary reports</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded">
+                                        <span class="text-sm">New candidate matches</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Default Search Filters</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Preferred Location</label>
+                                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="e.g. Tel Aviv, Remote">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-500 mb-1">Experience Level</label>
+                                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            <option>Any Experience</option>
+                                            <option>Junior (1-3 years)</option>
+                                            <option>Mid-Level (3-7 years)</option>
+                                            <option>Senior (7+ years)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Display Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded" checked>
+                                <label class="text-sm">Show company logos</label>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded" checked>
+                                <label class="text-sm">Auto-save search filters</label>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded">
+                                <label class="text-sm">Enable dark mode</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        Save Preferences
+                    </button>
+                </div>
+
                 <!-- Admin Panel (shown only when admin is logged in) -->
                 <div id="adminPanel" class="hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg p-6 mb-6">
-                        <h3 class="text-lg font-bold mb-4">Admin Panel</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
-                                <i class="fas fa-upload text-2xl mb-2"></i>
-                                <div class="font-semibold">Bulk Upload</div>
-                                <div class="text-sm opacity-75">CSV/Excel import</div>
-                            </button>
-                            <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
-                                <i class="fas fa-chart-bar text-2xl mb-2"></i>
-                                <div class="font-semibold">Analytics</div>
-                                <div class="text-sm opacity-75">Advanced reports</div>
-                            </button>
-                            <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
-                                <i class="fas fa-database text-2xl mb-2"></i>
-                                <div class="font-semibold">Data Management</div>
-                                <div class="text-sm opacity-75">Lifecycle control</div>
+                    <div class="border-t border-gray-200 pt-6 mt-6">
+                        <div class="bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg p-6 mb-6">
+                            <h3 class="text-lg font-bold mb-4 flex items-center">
+                                <i class="fas fa-user-shield mr-3"></i>Admin Panel
+                            </h3>
+                            
+                            <!-- Data Upload Categories -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <button class="upload-category bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-all text-left">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-users text-2xl mr-3"></i>
+                                        <div class="font-semibold">Upload Open Candidates</div>
+                                    </div>
+                                    <div class="text-sm opacity-75">Candidates looking for opportunities</div>
+                                    <div class="text-xs opacity-60 mt-1">CSV/Excel with candidate profiles</div>
+                                </button>
+                                
+                                <button class="upload-category bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-all text-left">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-fire text-2xl mr-3"></i>
+                                        <div class="font-semibold">Upload Hot Signals</div>
+                                    </div>
+                                    <div class="text-sm opacity-75">Companies with layoffs/changes</div>
+                                    <div class="text-xs opacity-60 mt-1">CSV/Excel with company events</div>
+                                </button>
+                            </div>
+
+                            <!-- Admin Tools -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
+                                    <i class="fas fa-chart-bar text-2xl mb-2"></i>
+                                    <div class="font-semibold">Advanced Analytics</div>
+                                    <div class="text-sm opacity-75">Detailed reports & insights</div>
+                                </button>
+                                <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
+                                    <i class="fas fa-database text-2xl mb-2"></i>
+                                    <div class="font-semibold">Data Management</div>
+                                    <div class="text-sm opacity-75">Lifecycle & storage control</div>
+                                </button>
+                                <button class="bg-white bg-opacity-20 hover:bg-opacity-30 p-4 rounded-lg transition-colors">
+                                    <i class="fas fa-users-cog text-2xl mb-2"></i>
+                                    <div class="font-semibold">User Management</div>
+                                    <div class="text-sm opacity-75">Permissions & access control</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- API Configuration (Admin Only) -->
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">API Configuration</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
+                                        <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter your OpenAI API key">
+                                        <p class="text-xs text-gray-500 mt-1">Required for AI similarity matching and smart insights</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
+                                        <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter your Google Sheets API key">
+                                        <p class="text-xs text-gray-500 mt-1">Required for data synchronization</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Sources -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">Data Sources Status</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium mb-2">Active Candidates</h4>
+                                        <p class="text-sm text-gray-600 mb-2">100+ candidates actively looking for opportunities</p>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Connected</span>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium mb-2">Hot Companies</h4>
+                                        <p class="text-sm text-gray-600 mb-2">Loading... companies with recent market events</p>
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">Loading</span>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium mb-2">Companies Database</h4>
+                                        <p class="text-sm text-gray-600 mb-2">396 companies with detailed intelligence</p>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">Connected</span>
+                                    </div>
+                                    <div class="border rounded-lg p-4">
+                                        <h4 class="font-medium mb-2">Scorely Results</h4>
+                                        <p class="text-sm text-gray-600 mb-2">TOP and GOOD candidate profiles with embeddings</p>
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-sm">Upload Required</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Settings (Admin Only) -->
+                            <div>
+                                <h3 class="text-lg font-semibold mb-4">Advanced Settings</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
+                                        <input type="range" min="0" max="100" value="50" class="w-full">
+                                        <p class="text-xs text-gray-500 mt-1">Minimum similarity score to show results (currently: 50%)</p>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded" checked>
+                                        <label class="text-sm">Cache Embeddings</label>
+                                        <span class="text-xs text-gray-500">Store embeddings locally to save API costs</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded" checked>
+                                        <label class="text-sm">Auto-Archive Old Data</label>
+                                        <span class="text-xs text-gray-500">Move candidates older than 12 months to archive</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                Save Admin Settings
                             </button>
                         </div>
                     </div>
                 </div>
-
-                <!-- Regular Settings -->
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
-                        <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter your OpenAI API key">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
-                        <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Enter your Google Sheets API key">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Other tabs content placeholders -->
-        <div id="search" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Smart Search</h2>
-                <p class="text-gray-600">Advanced search functionality coming soon...</p>
-            </div>
-        </div>
-
-        <div id="similarity" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">AI Similarity</h2>
-                <p class="text-gray-600">AI-powered similarity matching coming soon...</p>
-            </div>
-        </div>
-
-        <div id="sourcing" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Auto-Sourcing</h2>
-                <p class="text-gray-600">Automated sourcing features coming soon...</p>
-            </div>
-        </div>
-
-        <div id="companies" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Companies</h2>
-                <p class="text-gray-600">Company intelligence dashboard coming soon...</p>
-            </div>
-        </div>
-
-        <div id="analytics" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Analytics</h2>
-                <p class="text-gray-600">Advanced analytics dashboard coming soon...</p>
             </div>
         </div>
     </main>
@@ -391,10 +945,12 @@
         const adminCodeInput = document.getElementById('adminCodeInput');
         const costMonitor = document.getElementById('costMonitor');
         const userStatus = document.getElementById('userStatus');
+        const userSelect = document.getElementById('userSelect');
         const guestNotice = document.getElementById('guestNotice');
         const adminNotice = document.getElementById('adminNotice');
         const adminUserName = document.getElementById('adminUserName');
         const adminPanel = document.getElementById('adminPanel');
+        const userSettings = document.getElementById('userSettings');
 
         // Tab functionality
         function initTabs() {
@@ -426,46 +982,72 @@
 
         // Admin login functionality
         function initAdminLogin() {
-            adminButton.addEventListener('click', () => {
-                if (appState.isAdmin) {
-                    logout();
-                } else {
-                    showAdminModal();
-                }
-            });
+            if (adminButton) {
+                adminButton.addEventListener('click', () => {
+                    if (appState.isAdmin) {
+                        logout();
+                    } else {
+                        showAdminModal();
+                    }
+                });
+            }
 
-            adminLoginBtn.addEventListener('click', () => {
-                const selectedUser = adminUserSelect.value;
-                const enteredCode = adminCodeInput.value;
-                
-                if (selectedUser && enteredCode === 'toply2025') {
-                    login(selectedUser);
-                    hideAdminModal();
-                } else {
-                    alert('Invalid credentials. Please check your admin code.');
-                }
-            });
+            if (adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', () => {
+                    const selectedUser = adminUserSelect.value;
+                    const enteredCode = adminCodeInput.value;
+                    
+                    if (selectedUser && enteredCode === 'toply2025') {
+                        login(selectedUser);
+                        hideAdminModal();
+                    } else {
+                        alert('Invalid credentials. Please check your admin code.');
+                    }
+                });
+            }
 
-            adminCancelBtn.addEventListener('click', hideAdminModal);
+            if (adminCancelBtn) {
+                adminCancelBtn.addEventListener('click', hideAdminModal);
+            }
 
             // Close modal when clicking outside
-            adminModal.addEventListener('click', (e) => {
-                if (e.target === adminModal) {
-                    hideAdminModal();
-                }
-            });
+            if (adminModal) {
+                adminModal.addEventListener('click', (e) => {
+                    if (e.target === adminModal) {
+                        hideAdminModal();
+                    }
+                });
+            }
+
+            // User select dropdown
+            if (userSelect) {
+                userSelect.addEventListener('change', (e) => {
+                    const value = e.target.value;
+                    if (value === 'dana' || value === 'alexey') {
+                        showAdminModal();
+                        adminUserSelect.value = value.charAt(0).toUpperCase() + value.slice(1);
+                    } else if (value !== 'guest') {
+                        // Regular user selection - just update the display
+                        // No special action needed for regular users
+                    }
+                });
+            }
         }
 
         function showAdminModal() {
-            adminModal.classList.remove('hidden');
-            adminModal.classList.add('flex');
-            adminUserSelect.value = '';
-            adminCodeInput.value = '';
+            if (adminModal) {
+                adminModal.classList.remove('hidden');
+                adminModal.classList.add('flex');
+                if (adminUserSelect) adminUserSelect.value = '';
+                if (adminCodeInput) adminCodeInput.value = '';
+            }
         }
 
         function hideAdminModal() {
-            adminModal.classList.add('hidden');
-            adminModal.classList.remove('flex');
+            if (adminModal) {
+                adminModal.classList.add('hidden');
+                adminModal.classList.remove('flex');
+            }
         }
 
         function login(adminUser) {
@@ -483,59 +1065,127 @@
         function updateUI() {
             if (appState.isAdmin) {
                 // Admin mode
-                adminButton.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i>Logout';
-                adminButton.classList.remove('admin-badge');
-                adminButton.classList.add('bg-red-500', 'hover:bg-red-600');
+                if (costMonitor) costMonitor.classList.remove('hidden');
+                if (guestNotice) guestNotice.classList.add('hidden');
+                if (adminNotice) adminNotice.classList.remove('hidden');
+                if (adminUserName) adminUserName.textContent = `Welcome ${appState.adminUser}`;
+                if (adminPanel) adminPanel.classList.remove('hidden');
+                if (userSettings) userSettings.classList.add('hidden');
                 
-                costMonitor.classList.remove('hidden');
-                guestNotice.classList.add('hidden');
-                adminNotice.classList.remove('hidden');
-                adminUserName.textContent = `Welcome ${appState.adminUser}`;
-                adminPanel.classList.remove('hidden');
-                
-                // Update user status area to show only admin info
-                userStatus.innerHTML = `
-                    <div class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg">
-                        <i class="fas fa-user-shield mr-2"></i>${appState.adminUser} (Admin)
-                    </div>
-                    <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                    </button>
-                `;
-                
-                // Re-attach logout event
-                document.getElementById('logoutBtn').addEventListener('click', logout);
+                // Update user status area
+                if (userStatus) {
+                    userStatus.innerHTML = `
+                        <div class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-user-shield mr-2"></i>${appState.adminUser} (Admin)
+                        </div>
+                        <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    `;
+                    
+                    // Re-attach logout event
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', logout);
+                    }
+                }
                 
             } else {
                 // Guest mode
-                adminButton.innerHTML = '<i class="fas fa-user-shield mr-2"></i>Admin';
-                adminButton.classList.add('admin-badge');
-                adminButton.classList.remove('bg-red-500', 'hover:bg-red-600');
-                
-                costMonitor.classList.add('hidden');
-                guestNotice.classList.remove('hidden');
-                adminNotice.classList.add('hidden');
-                adminPanel.classList.add('hidden');
+                if (costMonitor) costMonitor.classList.add('hidden');
+                if (guestNotice) guestNotice.classList.remove('hidden');
+                if (adminNotice) adminNotice.classList.add('hidden');
+                if (adminPanel) adminPanel.classList.add('hidden');
+                if (userSettings) userSettings.classList.remove('hidden');
                 
                 // Reset user status area
-                userStatus.innerHTML = `
-                    <button id="adminButton" class="admin-badge text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
-                        <i class="fas fa-user-shield mr-2"></i>Admin
-                    </button>
-                    <select class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg">
-                        <option>Continue as Guest</option>
-                    </select>
-                `;
-                
-                // Re-attach admin button event
-                document.getElementById('adminButton').addEventListener('click', showAdminModal);
+                if (userStatus) {
+                    userStatus.innerHTML = `
+                        <button id="adminButton" class="admin-badge text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+                            <i class="fas fa-user-shield mr-2"></i>Admin
+                        </button>
+                        <select id="userSelect" class="bg-white bg-opacity-20 text-white px-3 py-2 rounded-lg">
+                            <option value="guest">Continue as Guest</option>
+                            <option value="dana">Dana</option>
+                            <option value="alexey">Alexey</option>
+                            <option value="sarah">Sarah</option>
+                            <option value="mike">Mike</option>
+                            <option value="jessica">Jessica</option>
+                        </select>
+                    `;
+                    
+                    // Re-attach events
+                    const newAdminButton = document.getElementById('adminButton');
+                    const newUserSelect = document.getElementById('userSelect');
+                    
+                    if (newAdminButton) {
+                        newAdminButton.addEventListener('click', showAdminModal);
+                    }
+                    
+                    if (newUserSelect) {
+                        newUserSelect.addEventListener('change', (e) => {
+                            const value = e.target.value;
+                            if (value === 'dana' || value === 'alexey') {
+                                showAdminModal();
+                                if (adminUserSelect) {
+                                    adminUserSelect.value = value.charAt(0).toUpperCase() + value.slice(1);
+                                }
+                            }
+                        });
+                    }
+                }
             }
+        }
+
+        // Upload category handlers
+        function initUploadHandlers() {
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.upload-category')) {
+                    const button = e.target.closest('.upload-category');
+                    const isOpenCandidates = button.textContent.includes('Open Candidates');
+                    
+                    if (isOpenCandidates) {
+                        handleOpenCandidatesUpload();
+                    } else {
+                        handleHotSignalsUpload();
+                    }
+                }
+            });
+        }
+
+        function handleOpenCandidatesUpload() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.xlsx,.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    alert(`Uploading ${file.name} as Open Candidates data...`);
+                    // Here you would implement the actual upload logic
+                }
+            };
+            input.click();
+        }
+
+        function handleHotSignalsUpload() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.xlsx,.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    alert(`Uploading ${file.name} as Hot Signals (Companies) data...`);
+                    // Here you would implement the actual upload logic
+                }
+            };
+            input.click();
         }
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             initTabs();
             initAdminLogin();
+            initUploadHandlers();
             updateUI(); // Set initial state
         });
     </script>
@@ -543,9 +1193,9 @@
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDvSEJdknhwKhkWQVURdzCTKrcy6oW9wvwbMkqt5IH28IosWBULEARIvWqHdSQpO%2Fq0JeW8Otw4rySCX7%2Fvk1JOt1qsrlAjal0X2WNxfVTl6Qbw6aZ52uSd5S6lNgib2ktXdLDOEALOwiKehzMLNCBSoxQpdeRf2G3f2TOuecnMhLnvKtzuBh4rgjHLbcP1CfFP4xjiAQfjfzEJyJTMzSuOV0eVlCsEOSVERjAIwHh5wsWcUM8yqrD7vt98EJDT7ruc6OD4oQmWwGge1KQ2Wd7ekVePUc%2FXDNdLof%2FBaYG%2FnmQhIOEt8i4ZGXlLn5W9WeMO7cfMmtE1cfjddgN8qAV35VvINXuISKo6y1vaQi4Vvqx0kLFJIml45lnvsD8LByKTmFuj5DuiE060HUckaAB2fJpHdRWnhRg1PlXs%2FX26DaEBTcsKKD8OibopyHi2UJyOp32saPUqfmxkWI4JCrwjVzPgZ0p2DIfb8aeV%2FsxivKdka6mR7LLUQheQjQeGGGkQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDvkzuAIIinj073n3eqVfkQjoDmnf2S1moaCjqeY%2FVczwj8hWXwnwWNaHvjK3AIU6nBua6vyh0DlhKhfzTMs3K6WVfWH8K1o7kbId1SFMvPzTFUv6biutbkYsJVDoszIi%2FPB4f3iTH2LQEmPPARIowxcSgchGs2FeEapXlFp9VYiYVuhzWBX8Mm8tn79G4f7Pq43puNvuzwr7EXJuHnsBfEUjQczPWfLDFjCKMVI7fnxzI%2BLCulr%2BxUcODmgPLGrukzvZKDtSQDcPKr4PLHwGL2x3w7DNX7RjoVQaTz9VlT2vjdFJJRrwCae0T7xfoVXmdiB4aOqL7B5VSFtzuhDo%2Bvz8sIZsZru%2FMf1QgVusunu%2Bf4GcLb1mKfx9A7rqanpYb9TZk0hLRWt88op2Gl3N0%2F%2BEdcEKTsDHEHpdNNQq0DX9Grqz4AK4sGaQUMWDPt1INouv0LH4%2FKGSYhVIYNNIPAjYRu7gvHpjIEtvBLNpcf5hfn9tdCq5wsgtKu1LKkVrcg%3D%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDvSEJdknhwKhkWQVURdzCTKrcy6oW9wvwbMkqt5IH28IosWBULEARIvWqHdSQpO/q0JeW8Otw4rySCX7/vk1JOt1qsrlAjal0X2WNxfVTl6Qbw6aZ52uSd5S6lNgib2ktXdLDOEALOwiKehzMLNCBSoxQpdeRf2G3f2TOuecnMhLnvKtzuBh4rgjHLbcP1CfFP4xjiAQfjfzEJyJTMzSuOV0eVlCsEOSVERjAIwHh5wsWcUM8yqrD7vt98EJDT7ruc6OD4oQmWwGge1KQ2Wd7ekVePUc/XDNdLof/BaYG/nmQhIOEt8i4ZGXlLn5W9WeMO7cfMmtE1cfjddgN8qAV35VvINXuISKo6y1vaQi4Vvqx0kLFJIml45lnvsD8LByKTmFuj5DuiE060HUckaAB2fJpHdRWnhRg1PlXs/X26DaEBTcsKKD8OibopyHi2UJyOp32saPUqfmxkWI4JCrwjVzPgZ0p2DIfb8aeV/sxivKdka6mR7LLUQheQjQeGGGkQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDvkzuAIIinj073n3eqVfkQjoDmnf2S1moaCjqeY/Vczwj8hWXwnwWNaHvjK3AIU6nBua6vyh0DlhKhfzTMs3K6WVfWH8K1o7kbId1SFMvPzTFUv6biutbkYsJVDoszIi/PB4f3iTH2LQEmPPARIowxcSgchGs2FeEapXlFp9VYiYVuhzWBX8Mm8tn79G4f7Pq43puNvuzwr7EXJuHnsBfEUjQczPWfLDFjCKMVI7fnxzI+LCulr+xUcODmgPLGrukzvZKDtSQDcPKr4PLHwGL2x3w7DNX7RjoVQaTz9VlT2vjdFJJRrwCae0T7xfoVXmdiB4aOqL7B5VSFtzuhDo+vz8sIZsZru/Mf1QgVusunu+f4GcLb1mKfx9A7rqanpYb9TZk0hLRWt88op2Gl3N0/+EdcEKTsDHEHpdNNQq0DX9Grqz4AK4sGaQUMWDPt1INouv0LH4/KGSYhVIYNNIPAjYRu7gvHpjIEtvBLNpcf5hfn9tdCq5wsgtKu1LKkVrcg==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
