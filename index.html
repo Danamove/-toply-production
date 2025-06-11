@@ -3,340 +3,1843 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toply AI - Smart Recruitment Intelligence Platform</title>
+    <title>Toply AI - Advanced Data Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
         }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+
         .card-shadow {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
         }
+
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+
+        .similarity-bar {
+            background: linear-gradient(90deg, var(--success-color), var(--info-color), #8b5cf6);
+        }
+
+        .loading-spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--info-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sync-btn {
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sync-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .sync-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Smart Insights Panel */
+        .insights-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insights-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+        }
+
+        .insights-panel > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .insight-metric {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .insight-metric:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .insight-metric .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .insight-metric .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* Enhanced cards */
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        /* Tags and badges */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-fast-climber { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+        .tag-startup-native { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .tag-natural-leader { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+        .tag-high-performer { background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; }
+        .tag-stable-professional { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+        .tag-open-opportunities { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .admin-badge {
+            background: #dc2626;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
         .admin-hidden {
             display: none;
         }
+
         .admin-visible {
             display: block;
         }
+
+        .admin-login {
+            background: rgba(0, 0, 0, 0.9);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cost-monitor {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .cost-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .cost-indicator.low { color: var(--success-color); }
+        .cost-indicator.medium { color: var(--warning-color); }
+        .cost-indicator.high { color: var(--error-color); }
+
+        /* Enhanced button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--info-color), #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--info-color);
+            border: 2px solid var(--info-color);
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--info-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Progress bars */
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-color), var(--info-color));
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        /* Data Tier Indicators */
+        .tier-hot { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .tier-warm { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .tier-cold { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tier-archive { background: linear-gradient(135deg, #6b7280, #4b5563); }
+
+        .tier-badge {
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Storage Usage Visualization */
+        .storage-tier {
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .storage-tier::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .storage-tier > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Search and filter enhancements */
+        .search-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            border-color: var(--info-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+
+        .filter-chip {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        .filter-chip.active {
+            background: var(--info-color);
+            color: white;
+            border-color: var(--info-color);
+        }
+
+        /* Enhanced table styles */
+        .data-table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 16px;
+            font-weight: 600;
+            color: #374151;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Backup Status Indicators */
+        .backup-status {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .backup-status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .backup-status.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .backup-status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .backup-status.pending {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Data Quality Indicators */
+        .quality-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .quality-excellent {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .quality-good {
+            background: #ecfccb;
+            color: #365314;
+        }
+
+        .quality-fair {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .quality-poor {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            color: white;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--error-color), #dc2626);
+            color: white;
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, var(--warning-color), #d97706);
+            color: white;
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, var(--info-color), #2563eb);
+            color: white;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--info-color);
+            background: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--success-color);
+            background: #f0fdf4;
+        }
+
+        /* Responsive design improvements */
+        @media (max-width: 768px) {
+            .insights-panel {
+                padding: 16px;
+            }
+            
+            .metric-card {
+                padding: 16px;
+            }
+            
+            .insight-metric {
+                padding: 16px;
+            }
+            
+            .notification {
+                left: 16px;
+                right: 16px;
+                max-width: none;
+            }
+
+            .storage-tier {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="gradient-bg text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-brain text-2xl"></i>
+<body class="bg-gray-50 font-sans">
+    <!-- Admin Login Modal -->
+    <div id="adminLogin" class="admin-login hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="text-center mb-6">
+                <i class="fas fa-shield-alt text-4xl text-red-600 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-900">Admin Access</h2>
+                <p class="text-gray-600">Enter admin credentials to access advanced data management features</p>
+            </div>
+            <div class="space-y-4">
                 <div>
-                    <h1 class="text-2xl font-bold">Toply AI</h1>
-                    <p class="text-sm opacity-90">Smart Recruitment Intelligence Platform</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin User</label>
+                    <select id="adminUser" class="search-input w-full">
+                        <option value="">Select Admin User</option>
+                        <option value="Dana">Dana</option>
+                        <option value="Alexey">Alexey</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Code</label>
+                    <input type="password" id="adminCode" class="search-input w-full" placeholder="Enter admin code">
+                </div>
+                <div class="flex gap-3">
+                    <button id="adminLoginBtn" class="btn-primary flex-1">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                    <button id="adminCancelBtn" class="btn-secondary">Cancel</button>
                 </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <!-- Cost Monitor (Admin Only) -->
-                <div id="costMonitor" class="admin-hidden bg-white bg-opacity-20 px-3 py-2 rounded-lg">
-                    <div class="text-sm">
-                        <i class="fas fa-dollar-sign"></i> $8.75 this month
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            <i class="fas fa-brain mr-2"></i>Toply AI
+                        </h1>
+                        <p class="text-sm text-gray-500">Smart Recruitment Intelligence Platform</p>
                     </div>
-                    <div class="text-xs opacity-75">Budget: $30.00</div>
                 </div>
-                
-                <button onclick="openAdminLogin()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all">
-                    <i class="fas fa-sync-alt mr-2"></i>Sync Now
-                </button>
-                
-                <div class="bg-white bg-opacity-20 px-4 py-2 rounded-lg">
-                    <i class="fas fa-user mr-2"></i>Continue as Guest
-                </div>
-                
-                <div class="bg-blue-600 px-4 py-2 rounded-lg">
-                    <i class="fas fa-check mr-2"></i>Selected (0)
+                <div class="flex items-center space-x-4">
+                    <!-- Storage Usage (Admin Only) -->
+                    <div id="storageMonitor" class="admin-hidden text-sm">
+                        <div class="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-lg">
+                            <i class="fas fa-database text-blue-600"></i>
+                            <span class="text-blue-800">Storage: <span id="storageUsed">2.3 GB</span> / <span id="storageLimit">10 GB</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Cost Monitor (Admin Only) -->
+                    <div id="costMonitor" class="admin-hidden cost-indicator low">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span id="currentCost">$8.75</span>
+                        <span class="text-xs">this month</span>
+                    </div>
+                    
+                    <!-- Admin Badge (Hidden by default) -->
+                    <div id="adminBadge" class="admin-hidden">
+                        <span class="admin-badge">
+                            <i class="fas fa-crown mr-1"></i>ADMIN
+                        </span>
+                    </div>
+                    
+                    <!-- Admin User Display -->
+                    <div id="adminUserDisplay" class="admin-hidden text-sm text-gray-600">
+                        <span id="currentAdminUser"></span>
+                    </div>
+                    
+                    <!-- Sync Button -->
+                    <button id="syncButton" class="sync-btn">
+                        <i class="fas fa-sync-alt mr-2"></i>Sync Now
+                    </button>
+                    
+                    <select id="userSelect" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">👤 Continue as Guest</option>
+                        <option value="Dana">Dana</option>
+                        <option value="Alexey">Alexey</option>
+                        <option value="Katinka">Katinka</option>
+                        <option value="Shiri">Shiri</option>
+                        <option value="Mika">Mika</option>
+                        <option value="Chen">Chen</option>
+                        <option value="Andrea">Andrea</option>
+                        <option value="Eszter">Eszter</option>
+                        <option value="Danana">Danana</option>
+                    </select>
+                    
+                    <button id="selectedCandidatesBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fas fa-list mr-2"></i>Selected (<span id="selectedCount">0</span>)
+                    </button>
+
+                    <!-- Admin Access Button -->
+                    <button id="adminAccessBtn" class="text-gray-500 hover:text-red-600 transition-colors">
+                        <i class="fas fa-shield-alt text-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm p-4">
-        <div class="container mx-auto">
-            <div class="flex space-x-6">
-                <a href="#" onclick="showTab('dashboard')" class="nav-tab active px-4 py-2 bg-blue-100 text-blue-600 rounded-lg">
-                    <i class="fas fa-chart-line mr-2"></i>Dashboard
-                </a>
-                <a href="#" onclick="showTab('search')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
+    <nav class="bg-white shadow-sm sticky top-16 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-8 overflow-x-auto">
+                <button class="tab-btn tab-active px-4 py-3 text-sm font-medium rounded-t-lg whitespace-nowrap" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="search">
                     <i class="fas fa-search mr-2"></i>Smart Search
-                </a>
-                <a href="#" onclick="showTab('similarity')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="similarity">
                     <i class="fas fa-brain mr-2"></i>AI Similarity
-                </a>
-                <a href="#" onclick="showTab('sourcing')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
-                    <i class="fas fa-robot mr-2"></i>Auto-Sourcing
-                </a>
-                <a href="#" onclick="showTab('companies')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="sourcing">
+                    <i class="fas fa-magic mr-2"></i>Auto-Sourcing
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="companies">
                     <i class="fas fa-building mr-2"></i>Companies
-                </a>
-                <a href="#" onclick="showTab('analytics')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
-                    <i class="fas fa-chart-bar mr-2"></i>Analytics
-                </a>
-                <a href="#" onclick="showTab('settings')" class="nav-tab px-4 py-2 hover:bg-gray-100 rounded-lg">
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="analytics">
+                    <i class="fas fa-chart-line mr-2"></i>Analytics
+                </button>
+                <button class="tab-btn admin-hidden px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="datamanagement">
+                    <i class="fas fa-database mr-2"></i>Data Management
+                </button>
+                <button class="tab-btn px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="settings">
                     <i class="fas fa-cog mr-2"></i>Settings
-                </a>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto p-6">
-        <!-- Guest Notice -->
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-            <span class="text-blue-700">You're browsing as Guest</span>
-            <span class="text-blue-500 ml-2">Select your name above for personal tracking</span>
-        </div>
-
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
         <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content">
-            <!-- Smart Insights Panel -->
-            <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg p-6 mb-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xl font-bold">
-                        <i class="fas fa-lightbulb mr-2"></i>Smart Insights
-                    </h2>
-                    <span id="adminViewBadge" class="admin-hidden bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">ADMIN VIEW</span>
-                </div>
-                <div class="grid grid-cols-4 gap-4">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold" id="profilesAnalyzed">847</div>
-                        <div class="text-sm opacity-90">Profiles Analyzed</div>
-                        <div class="text-xs opacity-75">+23 today</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-green-300" id="similarProfilesFound">1,467</div>
-                        <div class="text-sm opacity-90">Similar Profiles Found</div>
-                        <div class="text-xs opacity-75">89% accuracy</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-yellow-300" id="companyInsights">35</div>
-                        <div class="text-sm opacity-90">Company Insights</div>
-                        <div class="text-xs opacity-75">12 new patterns</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-red-300" id="hotCompaniesDetected">15</div>
-                        <div class="text-sm opacity-90">Hot Companies Detected</div>
-                        <div class="text-xs opacity-75">5 new this week</div>
+            <!-- Status Banner -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+                    <div>
+                        <p class="text-blue-800 font-medium">You're browsing as Guest</p>
+                        <p class="text-blue-600 text-sm">Select your name above for personal tracking and analytics</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Dashboard Cards -->
-            <div class="grid grid-cols-4 gap-6 mb-6">
-                <div class="bg-red-500 text-white rounded-lg p-6 card-shadow">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">Hot Companies</h3>
-                        <i class="fas fa-fire text-2xl"></i>
+            <!-- Smart Insights Panel -->
+            <div class="insights-panel mb-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-lightbulb mr-2"></i>Smart Insights
+                </h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="insight-metric text-center">
+                        <div class="metric-value" id="profilesAnalyzed">847</div>
+                        <div class="metric-label">Profiles Analyzed</div>
+                        <div class="text-xs opacity-75 mt-1">+23 today</div>
                     </div>
-                    <div class="text-3xl font-bold mb-2">23</div>
-                    <div class="text-sm opacity-90">Companies with recent activity</div>
-                    <div class="text-xs opacity-75 mt-2">Higher response rates expected</div>
+                    <div class="insight-metric text-center">
+                        <div class="metric-value text-green-300" id="similarProfilesFound">1,467</div>
+                        <div class="metric-label">Similar Profiles Found</div>
+                        <div class="text-xs opacity-75 mt-1">94% accuracy</div>
+                    </div>
+                    <div class="insight-metric text-center">
+                        <div class="metric-value text-yellow-300" id="companyInsights">35</div>
+                        <div class="metric-label">Company Insights</div>
+                        <div class="text-xs opacity-75 mt-1">12 new patterns</div>
+                    </div>
+                    <div class="insight-metric text-center">
+                        <div class="metric-value text-red-300" id="hotCompaniesDetected">15</div>
+                        <div class="metric-label">Hot Companies Detected</div>
+                        <div class="text-xs opacity-75 mt-1">5 new this week</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Health Status (Admin Only) -->
+            <div id="dataHealthStatus" class="admin-hidden grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="metric-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-gray-800">Data Quality</h3>
+                        <div class="quality-indicator quality-excellent">
+                            <i class="fas fa-check-circle"></i>
+                            <span>95%</span>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div>Complete profiles: 847</div>
+                        <div>Missing data: 43</div>
+                        <div>Duplicates: 2</div>
+                    </div>
                 </div>
 
-                <div class="bg-green-500 text-white rounded-lg p-6 card-shadow">
+                <div class="metric-card">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">Active Candidates</h3>
-                        <i class="fas fa-users text-2xl"></i>
+                        <h3 class="font-semibold text-gray-800">Backup Status</h3>
+                        <div class="backup-status success">
+                            <i class="fas fa-shield-alt"></i>
+                            Current
+                        </div>
                     </div>
-                    <div class="text-3xl font-bold mb-2">1,247</div>
-                    <div class="text-sm opacity-90">Ready for immediate contact</div>
+                    <div class="text-sm text-gray-600">
+                        <div>Last backup: 2 hours ago</div>
+                        <div>Next backup: 22 hours</div>
+                        <div>Retention: 30 days</div>
+                    </div>
                 </div>
 
-                <div class="bg-purple-500 text-white rounded-lg p-6 card-shadow">
+                <div class="metric-card">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">TOP Profiles</h3>
-                        <i class="fas fa-star text-2xl"></i>
+                        <h3 class="font-semibold text-gray-800">Storage Usage</h3>
+                        <div class="text-blue-600 font-bold">23%</div>
                     </div>
-                    <div class="text-3xl font-bold mb-2">89</div>
-                    <div class="text-sm opacity-90">High-quality talent pool</div>
+                    <div class="progress-bar mb-2">
+                        <div class="progress-fill" style="width: 23%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500">2.3 GB of 10 GB used</div>
                 </div>
 
-                <div class="bg-blue-500 text-white rounded-lg p-6 card-shadow">
+                <div class="metric-card">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">GOOD Profiles</h3>
-                        <i class="fas fa-thumbs-up text-2xl"></i>
+                        <h3 class="font-semibold text-gray-800">Performance</h3>
+                        <div class="text-green-600 font-bold">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Fast
+                        </div>
                     </div>
-                    <div class="text-3xl font-bold mb-2">312</div>
-                    <div class="text-sm opacity-90">Quality talent pool</div>
+                    <div class="text-sm text-gray-600">
+                        <div>Avg search: 0.3s</div>
+                        <div>Sync time: 1.2s</div>
+                        <div>Uptime: 99.9%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="metric-card cursor-pointer hover:shadow-lg transition-shadow" id="hotCompaniesCard">
+                    <div class="icon-wrapper bg-red-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-fire text-red-600 text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-red-600 mb-2" id="hotCompaniesCount">23</div>
+                    <div class="text-sm font-medium text-gray-900 mb-1">Hot Companies</div>
+                    <div class="text-xs text-gray-500">Companies with recent activity</div>
+                </div>
+
+                <div class="metric-card cursor-pointer hover:shadow-lg transition-shadow" id="activeCandidatesCard">
+                    <div class="icon-wrapper bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-green-600 text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-green-600 mb-2">1,247</div>
+                    <div class="text-sm font-medium text-gray-900 mb-1">Active Candidates</div>
+                    <div class="text-xs text-gray-500">Ready for immediate contact</div>
+                </div>
+
+                <div class="metric-card cursor-pointer hover:shadow-lg transition-shadow" id="topProfilesCard">
+                    <div class="icon-wrapper bg-purple-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-star text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-purple-600 mb-2" id="topProfilesCount">89</div>
+                    <div class="text-sm font-medium text-gray-900 mb-1">TOP Profiles</div>
+                    <div class="text-xs text-gray-500">High-quality talent pool</div>
+                </div>
+
+                <div class="metric-card cursor-pointer hover:shadow-lg transition-shadow" id="goodProfilesCard">
+                    <div class="icon-wrapper bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-thumbs-up text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-blue-600 mb-2" id="goodProfilesCount">312</div>
+                    <div class="text-sm font-medium text-gray-900 mb-1">GOOD Profiles</div>
+                    <div class="text-xs text-gray-500">Quality talent pool</div>
                 </div>
             </div>
 
             <!-- Priority Recommendations -->
-            <div class="bg-white rounded-lg p-6 card-shadow mb-6">
-                <h2 class="text-xl font-bold mb-4">
-                    <i class="fas fa-clock text-blue-500 mr-2"></i>Today's Priority Recommendations
+            <div class="metric-card mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-bullseye text-blue-600 mr-2"></i>Today's Priority Recommendations
                 </h2>
                 <div class="space-y-4">
-                    <div class="border-l-4 border-red-500 pl-4">
-                        <h3 class="font-semibold text-red-600">Contact candidates from Microsoft immediately</h3>
-                        <p class="text-sm text-gray-600">3 active candidates + recent layoffs = 85% response rate expected</p>
+                    <div class="flex items-start p-4 bg-red-50 rounded-lg border-l-4 border-red-400">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-red-800">Contact candidates from Microsoft immediately</p>
+                            <p class="text-red-600 text-sm">3 active candidates + recent layoffs = 85% response rate expected</p>
+                        </div>
                     </div>
-                    <div class="border-l-4 border-orange-500 pl-4">
-                        <h3 class="font-semibold text-orange-600">Unity talent surge detected</h3>
-                        <p class="text-sm text-gray-600">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
+                    <div class="flex items-start p-4 bg-orange-50 rounded-lg border-l-4 border-orange-400">
+                        <i class="fas fa-trending-up text-orange-500 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-orange-800">Unity talent surge detected</p>
+                            <p class="text-orange-600 text-sm">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
+                        </div>
                     </div>
-                    <div class="border-l-4 border-blue-500 pl-4">
-                        <h3 class="font-semibold text-blue-600">Security sector opportunity</h3>
-                        <p class="text-sm text-gray-600">Review 12 new Security professionals this week</p>
+                    <div class="flex items-start p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                        <i class="fas fa-shield-alt text-blue-500 mt-1 mr-3"></i>
+                        <div>
+                            <p class="font-semibold text-blue-800">Security sector opportunity</p>
+                            <p class="text-blue-600 text-sm">Review 12 new Security professionals this week</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Market Intelligence -->
-            <div class="grid grid-cols-2 gap-6">
-                <div class="bg-white rounded-lg p-6 card-shadow">
-                    <h3 class="text-lg font-bold mb-4">
-                        <i class="fas fa-chart-line text-green-500 mr-2"></i>This Week's Intelligence
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">
+                        <i class="fas fa-chart-line text-green-600 mr-2"></i>This Week's Intelligence
                     </h3>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Security sector:</span>
-                            <span class="text-green-600 font-semibold">23% more active candidates</span>
+                            <span class="font-semibold text-green-600">23% more active candidates</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Backend roles:</span>
-                            <span class="text-blue-600 font-semibold">High demand detected</span>
+                            <span class="font-semibold text-blue-600">High demand detected</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Microsoft candidates:</span>
-                            <span class="text-red-600 font-semibold">85% response rate</span>
+                            <span class="font-semibold text-red-600">85% response rate</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg p-6 card-shadow">
-                    <h3 class="text-lg font-bold mb-4">
-                        <i class="fas fa-clock text-purple-500 mr-2"></i>Best Timing Recommendations
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">
+                        <i class="fas fa-clock text-purple-600 mr-2"></i>Best Timing Recommendations
                     </h3>
                     <div class="space-y-3">
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Wiz candidates:</span>
-                            <span class="text-green-600 font-semibold">Contact now (layoffs detected)</span>
+                            <span class="font-semibold text-green-600">Contact now (layoffs detected)</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Microsoft window:</span>
-                            <span class="text-gray-800 font-semibold">Next 2 weeks optimal</span>
+                            <span class="font-semibold text-orange-600">Next 2 weeks optimal</span>
                         </div>
-                        <div class="flex justify-between">
+                        <div class="flex justify-between items-center">
                             <span class="text-gray-600">Q1 hiring surge:</span>
-                            <span class="text-blue-600 font-semibold">Prepare candidate pipeline</span>
+                            <span class="font-semibold text-blue-600">Prepare candidate pipeline</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Search Tab -->
+        <!-- Smart Search Tab -->
         <div id="search" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6 card-shadow">
-                <h2 class="text-xl font-bold mb-4">
-                    <i class="fas fa-search mr-2"></i>Smart Candidate Search
+            <div class="metric-card mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-search text-blue-600 mr-2"></i>Smart Candidate Search
                 </h2>
-                <div class="grid grid-cols-3 gap-4 mb-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Job Title / Role</label>
-                        <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="e.g., Backend Engineer">
+                        <input type="text" id="jobTitle" class="search-input w-full" placeholder="e.g., Backend Engineer, Python Developer">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-                        <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="e.g., Python, AWS">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills (AI Enhanced)</label>
+                        <input type="text" id="skills" class="search-input w-full" placeholder='Use "," for AND, "OR" for either'>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                            <option>Any</option>
-                            <option>Junior (1-3 years)</option>
-                            <option>Mid-Level (3-7 years)</option>
-                            <option>Senior (7+ years)</option>
+                        <select id="experience" class="search-input w-full">
+                            <option value="">Any Experience</option>
+                            <option value="junior">🌱 Junior (1-3 years)</option>
+                            <option value="mid">🔥 Mid-level (3-7 years)</option>
+                            <option value="senior">🚀 Senior (8+ years)</option>
+                            <option value="expert">⭐ Expert (10+ years)</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" id="location" class="search-input w-full" placeholder="e.g., Tel Aviv, Remote, Global">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Filter</label>
+                        <input type="text" id="companyFilter" class="search-input w-full" placeholder="Company name or type">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
+                        <input type="range" id="scoreRange" min="0" max="100" value="50" class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Minimum: <span id="scoreValue" class="font-medium">50</span></span>
+                            <span>Maximum: 100</span>
+                        </div>
+                    </div>
                 </div>
-                <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
-                    <i class="fas fa-search mr-2"></i>Search Candidates
-                </button>
+
+                <!-- Smart Filters -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Smart Filters</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-chip" data-filter="looking">
+                            <i class="fas fa-search mr-1"></i>Open to Opportunities
+                        </button>
+                        <button class="filter-chip" data-filter="hot-companies">
+                            <i class="fas fa-fire mr-1"></i>Hot Companies
+                        </button>
+                        <button class="filter-chip" data-filter="fast-climber">
+                            <i class="fas fa-rocket mr-1"></i>Fast Climber
+                        </button>
+                        <button class="filter-chip" data-filter="startup-native">
+                            <i class="fas fa-lightbulb mr-1"></i>Startup Native
+                        </button>
+                        <button class="filter-chip" data-filter="natural-leader">
+                            <i class="fas fa-users mr-1"></i>Natural Leader
+                        </button>
+                        <button class="filter-chip" data-filter="high-performer">
+                            <i class="fas fa-star mr-1"></i>High Performer
+                        </button>
+                        <button class="filter-chip" data-filter="unviewed">
+                            <i class="fas fa-eye-slash mr-1"></i>Unviewed This Week
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button id="searchBtn" class="btn-primary">
+                        <i class="fas fa-search mr-2"></i>Search Candidates
+                    </button>
+                    <button id="clearFilters" class="btn-secondary">
+                        <i class="fas fa-times mr-2"></i>Clear Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="metric-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-gray-900">Search Results</h3>
+                    <div class="flex gap-2">
+                        <button id="exportSelected" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-download mr-2"></i>Export CSV
+                        </button>
+                        <button id="exportLinkedIn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fab fa-linkedin mr-2"></i>Export LinkedIn URLs
+                        </button>
+                    </div>
+                </div>
+                <div id="candidatesList">
+                    <div class="text-center text-gray-500 py-12">
+                        <i class="fas fa-search text-5xl mb-4 opacity-50"></i>
+                        <p class="text-lg mb-2">Use the smart search above to find candidates</p>
+                        <p class="text-sm">Try searching for skills, job titles, or use our smart filters</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Similarity Tab -->
+        <!-- AI Similarity Tab -->
         <div id="similarity" class="tab-content hidden">
-            <div class="bg-white rounded-lg p-6 card-shadow">
-                <h2 class="text-xl font-bold mb-4">
-                    <i class="fas fa-brain mr-2"></i>Find Similar Candidates
-                </h2>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Job Description or Candidate Profile</label>
-                    <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 h-32" placeholder="Paste job description or candidate profile here..."></textarea>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Upload Area -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-upload text-purple-600 mr-2"></i>Upload Candidate Data
+                    </h2>
+                    
+                    <div id="uploadArea" class="upload-area">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 mb-2 font-medium">Drag & drop your files here</p>
+                        <p class="text-sm text-gray-500 mb-4">or click to browse</p>
+                        <p class="text-xs text-gray-400">Supports: .json, .csv files with embeddings, PDFs, LinkedIn profiles</p>
+                        <input type="file" id="scorelyFile" accept=".json,.csv,.pdf" class="hidden" multiple>
+                    </div>
+                    
+                    <div id="uploadStatus" class="mt-4 hidden">
+                        <div class="flex items-center text-green-600">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>Files uploaded successfully</span>
+                        </div>
+                    </div>
                 </div>
-                <button class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg">
-                    <i class="fas fa-magic mr-2"></i>Find Similar Profiles
-                </button>
+
+                <!-- Similarity Search -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-brain text-blue-600 mr-2"></i>Find Similar Profiles
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Job Description or Target Profile</label>
+                            <textarea id="similarityInput" rows="4" class="search-input w-full" placeholder="Paste job description, LinkedIn profile, or describe the ideal candidate..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
+                            <input type="range" id="similarityThreshold" min="50" max="95" value="75" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>50% (Broader)</span>
+                                <span>Current: <span id="thresholdValue" class="font-medium">75%</span></span>
+                                <span>95% (Precise)</span>
+                            </div>
+                        </div>
+                        
+                        <button id="findSimilarBtn" class="btn-primary w-full">
+                            <i class="fas fa-magic mr-2"></i>Find Similar Candidates
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similarity Results -->
+            <div id="similarityResults" class="metric-card hidden">
+                <h3 class="text-lg font-bold text-gray-900 mb-6">
+                    <i class="fas fa-chart-bar text-green-600 mr-2"></i>Similarity Results
+                </h3>
+                <div id="similarityList" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- Auto-Sourcing Tab -->
+        <div id="sourcing" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Success Patterns Analysis -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-chart-line text-green-600 mr-2"></i>Success Patterns Analysis
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Top Companies</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-gray-700">Wiz</span>
+                                    <span class="tag tag-fast-climber">3 TOP</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-gray-700">Cybereason</span>
+                                    <span class="tag tag-startup-native">2 TOP</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <span class="text-gray-700">Astrix</span>
+                                    <span class="tag tag-natural-leader">2 TOP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Top Skills</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Python</span>
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-20 mr-2">
+                                            <div class="progress-fill" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-blue-600 font-semibold text-sm">85%</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">AWS</span>
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-20 mr-2">
+                                            <div class="progress-fill" style="width: 78%"></div>
+                                        </div>
+                                        <span class="text-blue-600 font-semibold text-sm">78%</span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Kubernetes</span>
+                                    <div class="flex items-center">
+                                        <div class="progress-bar w-20 mr-2">
+                                            <div class="progress-fill" style="width: 71%"></div>
+                                        </div>
+                                        <span class="text-blue-600 font-semibold text-sm">71%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generated Boolean Queries -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-code text-purple-600 mr-2"></i>AI-Generated Boolean Queries
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">LinkedIn Boolean Query</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg text-sm font-mono border border-gray-200">
+                                ("Backend Engineer" OR "Senior Developer" OR "Tech Lead") AND ("Python" OR "AWS" OR "Kubernetes") AND ("Wiz" OR "Cybereason" OR "Astrix" OR "Microsoft")
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <button id="copyLinkedInQuery" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>Copy Query
+                                </button>
+                                <button id="openLinkedIn" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm transition-colors">
+                                    <i class="fab fa-linkedin mr-1"></i>Search on LinkedIn
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-2">Google Boolean Query</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg text-sm font-mono border border-gray-200">
+                                ("Backend Engineer" OR "Senior Developer") Python AWS (Wiz OR Cybereason) site:linkedin.com
+                            </div>
+                            <div class="flex gap-2 mt-3">
+                                <button id="copyGoogleQuery" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>Copy Query
+                                </button>
+                                <button id="openGoogle" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm transition-colors">
+                                    <i class="fab fa-google mr-1"></i>Search on Google
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Sourcing Suggestions -->
+            <div class="metric-card">
+                <h3 class="text-lg font-bold text-gray-900 mb-6">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>AI-Powered Sourcing Suggestions
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-400">
+                        <div class="flex items-start">
+                            <i class="fas fa-target text-blue-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-blue-800 mb-1">Target Check Point Security Engineers</p>
+                                <p class="text-blue-600 text-sm">Similar profile to your successful Wiz hires - 82% match rate</p>
+                                <span class="tag tag-high-performer mt-2">High Success Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-400">
+                        <div class="flex items-start">
+                            <i class="fas fa-search text-green-500 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold text-green-800 mb-1">Python Developers 5+ Years</p>
+                                <p class="text-green-600 text-sm">85% success rate in your previous TOP-rated candidates</p>
+                                <span class="tag tag-fast-climber mt-2">Proven Track Record</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Companies Tab -->
+        <div id="companies" class="tab-content hidden">
+            <div class="metric-card">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">
+                        <i class="fas fa-fire text-red-600 mr-2"></i>Hot Companies Intelligence
+                    </h2>
+                    <div class="flex gap-2">
+                        <select id="industryFilter" class="search-input text-sm">
+                            <option value="">All Industries</option>
+                            <option value="Security">Security</option>
+                            <option value="Fintech">Fintech</option>
+                            <option value="Big Tech">Big Tech</option>
+                            <option value="SAAS">SAAS</option>
+                            <option value="AI/ML">AI/ML</option>
+                        </select>
+                        <select id="eventTypeFilter" class="search-input text-sm">
+                            <option value="">All Events</option>
+                            <option value="EXODUS">Talent Exodus</option>
+                            <option value="LAYOFFS">Layoffs</option>
+                            <option value="HIGH_PERFORMERS">High Performers</option>
+                            <option value="RECENT_ACTIVITY">Recent Activity</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 mb-6">Companies with recent activity - higher candidate response rates expected</p>
+                
+                <div id="hotCompaniesList">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full data-table">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Event Type</th>
+                                    <th>Industry</th>
+                                    <th>Source</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hotCompaniesTableBody">
+                                <tr>
+                                    <td class="font-medium">Wiz</td>
+                                    <td>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                            ⚠️ EXODUS
+                                        </span>
+                                    </td>
+                                    <td>Security</td>
+                                    <td class="text-sm text-gray-600">AI-Detected</td>
+                                    <td class="text-sm text-gray-600">2025-01-15</td>
+                                    <td>
+                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                            View Candidates (8)
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">Cybereason</td>
+                                    <td>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                            ⭐ HIGH_PERFORMERS
+                                        </span>
+                                    </td>
+                                    <td>Security</td>
+                                    <td class="text-sm text-gray-600">AI-Detected</td>
+                                    <td class="text-sm text-gray-600">2025-01-14</td>
+                                    <td>
+                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                            View Candidates (3)
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium">Unity</td>
+                                    <td>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            📊 RECENT_ACTIVITY
+                                        </span>
+                                    </td>
+                                    <td>Gaming</td>
+                                    <td class="text-sm text-gray-600">AI-Detected</td>
+                                    <td class="text-sm text-gray-600">2025-01-13</td>
+                                    <td>
+                                        <button class="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                                            View Candidates (2)
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Performance Analytics -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-chart-area text-blue-600 mr-2"></i>Performance Analytics
+                    </h2>
+                    <canvas id="performanceChart" style="height: 200px;"></canvas>
+                </div>
+
+                <!-- Company Distribution -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-chart-pie text-green-600 mr-2"></i>Company Distribution
+                    </h2>
+                    <canvas id="companyChart" style="height: 200px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Feature Engineering Insights -->
+            <div class="metric-card mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">
+                    <i class="fas fa-brain text-purple-600 mr-2"></i>Advanced Feature Engineering Insights
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">2.3x</div>
+                        <div class="text-sm text-blue-800 font-medium">Avg Promotion Velocity</div>
+                        <div class="text-xs text-blue-600">Fast climbers detected</div>
+                    </div>
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600 mb-2">73%</div>
+                        <div class="text-sm text-green-800 font-medium">Startup Experience</div>
+                        <div class="text-xs text-green-600">High adaptability score</div>
+                    </div>
+                    <div class="text-center p-4 bg-purple-50 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600 mb-2">85%</div>
+                        <div class="text-sm text-purple-800 font-medium">Leadership Signals</div>
+                        <div class="text-xs text-purple-600">Natural leaders identified</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Management Tab (Admin Only) -->
+        <div id="datamanagement" class="tab-content hidden admin-hidden">
+            <!-- Data Storage Tiers Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="storage-tier tier-hot">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold">Hot Data</h3>
+                        <span class="tier-badge tier-hot">Active</span>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">1,247</div>
+                    <div class="text-sm opacity-90 mb-3">Recent profiles (0-6 months)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="text-xs mt-1 opacity-75">LocalStorage + Sheets</div>
+                </div>
+
+                <div class="storage-tier tier-warm">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold">Warm Data</h3>
+                        <span class="tier-badge tier-warm">Stored</span>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">3,451</div>
+                    <div class="text-sm opacity-90 mb-3">Standard profiles (6-12 months)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%"></div>
+                    </div>
+                    <div class="text-xs mt-1 opacity-75">Google Sheets</div>
+                </div>
+
+                <div class="storage-tier tier-cold">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold">Cold Data</h3>
+                        <span class="tier-badge tier-cold">Archive</span>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">8,923</div>
+                    <div class="text-sm opacity-90 mb-3">Older profiles (12+ months)</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%"></div>
+                    </div>
+                    <div class="text-xs mt-1 opacity-75">Google Drive</div>
+                </div>
+
+                <div class="storage-tier tier-archive">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold">Embeddings</h3>
+                        <span class="tier-badge tier-archive">Cached</span>
+                    </div>
+                    <div class="text-2xl font-bold mb-2">2,156</div>
+                    <div class="text-sm opacity-90 mb-3">Vector embeddings</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 55%"></div>
+                    </div>
+                    <div class="text-xs mt-1 opacity-75">Optimized Storage</div>
+                </div>
+            </div>
+
+            <!-- Data Management Dashboard -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <!-- Data Lifecycle Visualization -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-recycle text-blue-600 mr-2"></i>Data Lifecycle Management
+                    </h3>
+                    <canvas id="lifecycleChart" style="height: 250px;"></canvas>
+                    <div class="mt-4 text-sm text-gray-600">
+                        <div class="flex justify-between">
+                            <span>Auto-archive threshold:</span>
+                            <span class="font-medium">12 months</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Next cleanup:</span>
+                            <span class="font-medium">Tonight 2:00 AM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backup Status -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-shield-alt text-green-600 mr-2"></i>Backup & Recovery Status
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-green-800">Daily Backup</div>
+                                <div class="text-sm text-green-600">Last: 2 hours ago</div>
+                            </div>
+                            <div class="backup-status success">Current</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-blue-800">Weekly Full Backup</div>
+                                <div class="text-sm text-blue-600">Last: Sunday 2:00 AM</div>
+                            </div>
+                            <div class="backup-status success">Complete</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-yellow-800">Monthly Archive</div>
+                                <div class="text-sm text-yellow-600">Next: Jan 31, 2025</div>
+                            </div>
+                            <div class="backup-status pending">Scheduled</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 flex gap-2">
+                        <button id="triggerBackup" class="btn-primary text-sm">
+                            <i class="fas fa-save mr-1"></i>Backup Now
+                        </button>
+                        <button id="restoreData" class="btn-secondary text-sm">
+                            <i class="fas fa-undo mr-1"></i>Restore
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Storage Usage Analytics -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Storage Growth Trend -->
+                <div class="metric-card lg:col-span-2">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-chart-line text-purple-600 mr-2"></i>Storage Growth & Performance
+                    </h3>
+                    <canvas id="storageGrowthChart" style="height: 200px;"></canvas>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-tools text-orange-600 mr-2"></i>Data Management Tools
+                    </h3>
+                    <div class="space-y-3">
+                        <button id="runDataCleanup" class="btn-primary w-full text-sm">
+                            <i class="fas fa-broom mr-2"></i>Run Data Cleanup
+                        </button>
+                        <button id="compressOldData" class="btn-secondary w-full text-sm">
+                            <i class="fas fa-compress mr-2"></i>Compress Old Data
+                        </button>
+                        <button id="validateDataQuality" class="btn-secondary w-full text-sm">
+                            <i class="fas fa-check-circle mr-2"></i>Validate Data Quality
+                        </button>
+                        <button id="optimizeEmbeddings" class="btn-secondary w-full text-sm">
+                            <i class="fas fa-magic mr-2"></i>Optimize Embeddings
+                        </button>
+                        <button id="exportFullData" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm w-full transition-colors">
+                            <i class="fas fa-download mr-2"></i>Export All Data
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 p-3 bg-gray-50 rounded-lg">
+                        <h4 class="font-medium text-gray-800 mb-2">System Health</h4>
+                        <div class="text-sm text-gray-600 space-y-1">
+                            <div>CPU Usage: 12%</div>
+                            <div>Memory: 340 MB</div>
+                            <div>Response Time: 0.3s</div>
+                            <div class="text-green-600 font-medium">System: Healthy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Data Operations -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Bulk Operations -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-layer-group text-red-600 mr-2"></i>Bulk Data Operations
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="upload-area" id="bulkUploadArea">
+                            <i class="fas fa-upload text-3xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-2">Upload CSV/Excel Files</p>
+                            <p class="text-xs text-gray-400">Drag & drop or click to browse</p>
+                            <input type="file" id="bulkUploadFile" accept=".csv,.xlsx,.xls,.json" class="hidden" multiple>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <button id="processBulkData" class="btn-primary text-sm">
+                                <i class="fas fa-cogs mr-1"></i>Process Data
+                            </button>
+                            <button id="validateBulkData" class="btn-secondary text-sm">
+                                <i class="fas fa-check mr-1"></i>Validate
+                            </button>
+                        </div>
+                        
+                        <div id="bulkOperationStatus" class="hidden">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div class="flex items-center">
+                                    <div class="loading-spinner mr-3"></div>
+                                    <div>
+                                        <div class="font-medium text-blue-800">Processing bulk operation...</div>
+                                        <div class="text-sm text-blue-600">Estimated time: 2-3 minutes</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Quality Monitor -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">
+                        <i class="fas fa-microscope text-green-600 mr-2"></i>Data Quality Monitor
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-green-800">Complete Profiles</div>
+                                <div class="text-sm text-green-600">All required fields present</div>
+                            </div>
+                            <div class="text-green-600 font-bold">94.3%</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-yellow-800">Missing Data</div>
+                                <div class="text-sm text-yellow-600">Profiles with missing fields</div>
+                            </div>
+                            <div class="text-yellow-600 font-bold">5.2%</div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                            <div>
+                                <div class="font-medium text-red-800">Duplicates</div>
+                                <div class="text-sm text-red-600">Potential duplicate entries</div>
+                            </div>
+                            <div class="text-red-600 font-bold">0.5%</div>
+                        </div>
+                        
+                        <button id="generateQualityReport" class="btn-primary w-full text-sm">
+                            <i class="fas fa-file-alt mr-2"></i>Generate Quality Report
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Settings Tab -->
         <div id="settings" class="tab-content hidden">
-            <div class="space-y-6">
-                <!-- API Keys Section -->
-                <div class="bg-white rounded-lg p-6 card-shadow">
-                    <h3 class="text-lg font-bold mb-4">
-                        <i class="fas fa-key mr-2"></i>API Configuration
-                    </h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
-                            <input type="password" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your Google Sheets API key">
+            <div class="space-y-8">
+                <!-- Admin Panel (Hidden by default) -->
+                <div id="adminPanel" class="admin-panel admin-hidden">
+                    <h2 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-shield-alt mr-2"></i>Admin Panel
+                        <span class="admin-badge ml-2">DANA & ALEXEY ONLY</span>
+                    </h2>
+                    
+                    <!-- Cost Monitor (Admin Only) -->
+                    <div class="cost-monitor mb-6">
+                        <h3 class="font-semibold text-yellow-800 mb-4">
+                            <i class="fas fa-dollar-sign mr-2"></i>Cost Monitoring & Usage Analytics
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-gray-900" id="totalApiCalls">247</div>
+                                <div class="text-sm text-gray-500">API Calls This Month</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="cost-indicator low">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span id="totalCost">$8.75</span>
+                                </div>
+                                <div class="text-sm text-gray-500">Total Cost</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-blue-600" id="avgCostPerSearch">$0.12</div>
+                                <div class="text-sm text-gray-500">Cost Per Search</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-purple-600" id="projectedCost">$25.50</div>
+                                <div class="text-sm text-gray-500">Projected Monthly</div>
+                            </div>
                         </div>
+                        
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
-                            <input type="password" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your OpenAI API key">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm text-yellow-800">Monthly Budget Usage</span>
+                                <span class="text-sm font-medium text-yellow-900">$8.75 / $30.00</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 29.2%"></div>
+                            </div>
+                            <div class="text-xs text-yellow-700 mt-1">Well within budget - excellent cost optimization!</div>
                         </div>
-                        <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-                            <i class="fas fa-save mr-2"></i>Save Configuration
-                        </button>
+                    </div>
+
+                    <!-- Admin Data Management -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Bulk Upload -->
+                        <div class="bg-white p-6 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-upload mr-2"></i>Bulk Data Upload
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload CSV/Excel</label>
+                                    <input type="file" id="adminBulkUpload" accept=".csv,.xlsx,.xls" class="search-input w-full">
+                                </div>
+                                <button id="processBulkUpload" class="btn-primary w-full">
+                                    <i class="fas fa-cogs mr-2"></i>Process Upload
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Manual Entry -->
+                        <div class="bg-white p-6 rounded-lg border border-gray-200">
+                            <h4 class="font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-plus mr-2"></i>Manual Entry
+                            </h4>
+                            <div class="space-y-2">
+                                <button id="addCandidateBtn" class="btn-secondary w-full">
+                                    <i class="fas fa-user-plus mr-2"></i>Add Candidate
+                                </button>
+                                <button id="addHotCompanyBtn" class="btn-secondary w-full">
+                                    <i class="fas fa-fire mr-2"></i>Add Hot Company
+                                </button>
+                                <button id="manageTagsBtn" class="btn-secondary w-full">
+                                    <i class="fas fa-tags mr-2"></i>Manage Tags
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Analytics -->
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 mt-6">
+                        <h4 class="font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-users mr-2"></i>User Analytics & Activity
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600">156</div>
+                                <div class="text-sm text-blue-800">Total Searches</div>
+                            </div>
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600">23</div>
+                                <div class="text-sm text-green-800">Exports Generated</div>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600">8</div>
+                                <div class="text-sm text-purple-800">Active Users</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Admin Panel (Admin Only) -->
-                <div id="adminPanel" class="admin-hidden bg-white rounded-lg p-6 card-shadow">
-                    <h3 class="text-lg font-bold mb-4">
-                        <i class="fas fa-user-shield mr-2"></i>Admin Panel
-                    </h3>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-semibold mb-2">Data Management</h4>
-                            <div class="space-y-2">
-                                <button class="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-upload mr-2"></i>Bulk Upload CSV
-                                </button>
-                                <button class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-download mr-2"></i>Export Data
-                                </button>
-                                <button class="w-full bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-sync mr-2"></i>Sync All Sources
+                <!-- API Configuration -->
+                <div class="metric-card">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">
+                        <i class="fas fa-cog text-gray-600 mr-2"></i>API Configuration
+                    </h2>
+                    
+                    <!-- Google Sheets Integration -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Google Sheets Integration</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
+                                <input type="password" id="googleApiKey" class="search-input w-full" placeholder="Enter your Google Sheets API key">
+                            </div>
+                            <div class="flex items-end">
+                                <button id="testGoogleConnection" class="btn-primary w-full">
+                                    <i class="fas fa-check mr-2"></i>Test Connection
                                 </button>
                             </div>
                         </div>
-                        <div>
-                            <h4 class="font-semibold mb-2">System Management</h4>
-                            <div class="space-y-2">
-                                <button class="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-chart-bar mr-2"></i>Usage Analytics
-                                </button>
-                                <button class="w-full bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-broom mr-2"></i>Clean Cache
-                                </button>
-                                <button class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">
-                                    <i class="fas fa-cog mr-2"></i>System Settings
-                                </button>
+                        <div id="googleConnectionStatus" class="mt-3"></div>
+                        
+                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                            <h4 class="font-medium text-blue-800 mb-2">Sync Status</h4>
+                            <div id="syncStatusDisplay" class="text-sm text-blue-600">
+                                <div>Last sync: <span id="lastSyncDisplay">Never</span></div>
+                                <div>Next auto-sync: <span id="nextSyncDisplay">09:00 tomorrow</span></div>
+                                <div>Sync frequency: Twice daily (09:00, 16:00)</div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- OpenAI Integration -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">OpenAI Integration</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
+                                <input type="password" id="openaiApiKey" class="search-input w-full" placeholder="Enter your OpenAI API key">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Embedding Model</label>
+                                <select id="openaiModel" class="search-input w-full">
+                                    <option value="text-embedding-3-small">text-embedding-3-small (Recommended - Most Cost Effective)</option>
+                                    <option value="text-embedding-3-large">text-embedding-3-large (Higher Accuracy)</option>
+                                    <option value="text-embedding-ada-002">text-embedding-ada-002 (Legacy)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div id="openaiConnectionStatus"></div>
+                            <button id="testOpenAIConnection" class="btn-primary">
+                                <i class="fas fa-check mr-2"></i>Test Connection
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                            <h4 class="font-medium text-green-800 mb-2">Usage Optimization</h4>
+                            <div class="text-sm text-green-600 space-y-1">
+                                <div>✓ Smart caching enabled (reduces costs by ~60%)</div>
+                                <div>✓ Batch processing active</div>
+                                <div>✓ Cost monitoring enabled</div>
+                                <div>✓ Monthly budget limit: $30</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <div class="metric-card">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-6">Advanced Settings</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
+                            <input type="range" id="globalSimilarityThreshold" min="50" max="95" value="75" class="w-full">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>50% (Broader matches)</span>
+                                <span>Current: <span id="globalThresholdValue">75%</span></span>
+                                <span>95% (Precise matches)</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Minimum similarity score to show results (currently: <span id="currentThreshold">75%</span>)</p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Auto-Save Settings</h4>
+                                <p class="text-sm text-gray-500">Save settings automatically when changed</p>
+                            </div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="autoSaveSettings" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">Enabled</span>
+                            </label>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Cache Embeddings</h4>
+                                <p class="text-sm text-gray-500">Store embeddings locally to save API costs</p>
+                            </div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="cacheEmbeddings" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">Enabled</span>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Auto-Archive Old Data</h4>
+                                <p class="text-sm text-gray-500">Automatically move profiles older than 12 months to archive</p>
+                            </div>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="autoArchive" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm">Enabled</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Setup Instructions -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-4">
+                        <i class="fas fa-shield-alt mr-2"></i>Secure Setup Instructions
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">For Production Deployment:</h4>
+                            <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                                <li>Go to your hosting platform (Netlify/Vercel)</li>
+                                <li>Navigate to Environment Variables settings</li>
+                                <li>Add these secure variables:</li>
+                                <li class="ml-4">• <code>GOOGLE_API_KEY</code> → Your Google Sheets API key</li>
+                                <li class="ml-4">• <code>OPENAI_API_KEY</code> → Your OpenAI API key</li>
+                                <li>Deploy - keys will be automatically loaded</li>
+                            </ol>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-2">Security Benefits:</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>🔒 API keys never exposed in code</li>
+                                <li>🛡️ Safe for public repositories</li>
+                                <li>👥 Team access without sharing keys</li>
+                                <li>🔄 Easy key rotation</li>
+                                <li>💰 Cost monitoring and alerts</li>
+                                <li>📊 Usage analytics and optimization</li>
+                                <li>🗄️ Smart data lifecycle management</li>
+                                <li>⚡ Performance optimization</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -344,151 +1847,747 @@
         </div>
     </main>
 
-    <!-- Admin Login Modal -->
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-96 card-shadow">
-            <div class="text-center mb-6">
-                <i class="fas fa-shield-alt text-red-500 text-3xl mb-2"></i>
-                <h2 class="text-xl font-bold">Admin Access</h2>
-                <p class="text-gray-600 text-sm">Enter admin credentials to access advanced features</p>
+    <!-- Enhanced Notification Toast -->
+    <div id="notification" class="notification">
+        <div class="flex items-start">
+            <div id="notificationIcon" class="mr-3 mt-1"></div>
+            <div class="flex-1">
+                <p id="notificationTitle" class="font-semibold"></p>
+                <p id="notificationMessage" class="text-sm opacity-90"></p>
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin User</label>
-                    <select id="adminUser" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                        <option value="">Select Admin User</option>
-                        <option value="dana">Dana</option>
-                        <option value="alexey">Alexey</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Code</label>
-                    <input type="password" id="adminCode" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter admin code">
-                </div>
-                
-                <div class="flex space-x-3">
-                    <button onclick="adminLogin()" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Login
-                    </button>
-                    <button onclick="closeAdminLogin()" class="flex-1 border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg">
-                        Cancel
-                    </button>
-                </div>
-            </div>
+            <button onclick="hideNotification()" class="ml-2 opacity-70 hover:opacity-100">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 
+    <!-- Core JavaScript -->
     <script>
-        // Global variables
-        let isAdminLoggedIn = false;
-        let currentAdmin = null;
+        // Global Variables
+        let selectedCandidates = [];
+        let hotCompaniesData = [];
+        let candidatesData = [];
+        let currentUser = null;
+        let isAdmin = false;
+        let currentAdminUser = null;
+        let costData = {
+            totalCalls: 247,
+            totalCost: 8.75,
+            monthlyBudget: 30.00
+        };
 
-        // Tab functionality
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-tab').forEach(nav => {
-                nav.classList.remove('active', 'bg-blue-100', 'text-blue-600');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.remove('hidden');
-            
-            // Add active class to clicked nav item
-            event.target.classList.add('active', 'bg-blue-100', 'text-blue-600');
-        }
+        let storageData = {
+            hot: { size: 1.2, count: 1247, percentage: 65 },
+            warm: { size: 0.8, count: 3451, percentage: 45 },
+            cold: { size: 0.3, count: 8923, percentage: 25 },
+            embeddings: { size: 0.6, count: 2156, percentage: 55 }
+        };
 
-        // Admin login functions
-        function openAdminLogin() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminModal').classList.add('flex');
-        }
+        let dataQualityMetrics = {
+            complete: 94.3,
+            missing: 5.2,
+            duplicates: 0.5,
+            totalProfiles: 13621
+        };
 
-        function closeAdminLogin() {
-            document.getElementById('adminModal').classList.add('hidden');
-            document.getElementById('adminModal').classList.remove('flex');
-            // Clear inputs
-            document.getElementById('adminUser').value = '';
-            document.getElementById('adminCode').value = '';
-        }
+        // Admin credentials - in production this should be more secure
+        const adminCredentials = {
+            'Dana': 'dana2025',
+            'Alexey': 'alexey2025'
+        };
 
-        function adminLogin() {
-            const adminUser = document.getElementById('adminUser').value;
-            const adminCode = document.getElementById('adminCode').value;
-            
-            // Check credentials
-            if ((adminUser === 'dana' || adminUser === 'alexey') && adminCode === 'toply2025') {
-                isAdminLoggedIn = true;
-                currentAdmin = adminUser;
-                
-                // Show admin features
-                document.querySelectorAll('.admin-hidden').forEach(element => {
-                    element.classList.remove('admin-hidden');
-                    element.classList.add('admin-visible');
-                });
-                
-                // Update Smart Insights with admin data
-                document.getElementById('profilesAnalyzed').textContent = '2,847';
-                document.getElementById('similarProfilesFound').textContent = '4,167';
-                document.getElementById('companyInsights').textContent = '67';
-                document.getElementById('hotCompaniesDetected').textContent = '28';
-                
-                // Close modal
-                closeAdminLogin();
-                
-                // Show success message
-                alert(`Welcome, ${adminUser.charAt(0).toUpperCase() + adminUser.slice(1)}! Admin features are now active.`);
-            } else {
-                alert('Invalid credentials. Please check your admin user and code.');
-            }
-        }
-
-        // Initialize page
+        // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
-            // Set default tab
-            showTab('dashboard');
-            
-            // Add event listeners for modal backdrop click
-            document.getElementById('adminModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeAdminLogin();
-                }
-            });
-            
-            // Add keyboard event for Enter key in admin form
-            document.getElementById('adminCode').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    adminLogin();
-                }
-            });
+            initializeApp();
+            setupEventListeners();
+            loadInitialData();
         });
 
-        // Simulate data updates
-        setInterval(function() {
-            if (isAdminLoggedIn) {
-                // Update cost monitor
-                const costs = ['$8.45', '$8.65', '$8.75', '$8.85', '$9.05'];
-                const randomCost = costs[Math.floor(Math.random() * costs.length)];
-                const costElement = document.querySelector('#costMonitor div');
-                if (costElement) {
-                    costElement.innerHTML = `<i class="fas fa-dollar-sign"></i> ${randomCost} this month`;
+        function initializeApp() {
+            // Load saved settings
+            loadUserSettings();
+            
+            // Update displays
+            updateDashboard();
+            updateStorageDisplay();
+            
+            // Check admin status
+            checkAdminStatus();
+        }
+
+        function loadUserSettings() {
+            // Load saved user
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                document.getElementById('userSelect').value = savedUser;
+                currentUser = savedUser;
+            }
+
+            // Load API keys
+            const savedGoogleKey = localStorage.getItem('googleApiKey');
+            const savedOpenAIKey = localStorage.getItem('openaiApiKey');
+            
+            if (savedGoogleKey) {
+                document.getElementById('googleApiKey').value = savedGoogleKey;
+            }
+            
+            if (savedOpenAIKey) {
+                document.getElementById('openaiApiKey').value = savedOpenAIKey;
+            }
+
+            // Load cost data
+            const savedCostData = localStorage.getItem('costData');
+            if (savedCostData) {
+                costData = JSON.parse(savedCostData);
+            }
+
+            // Update displays
+            updateCostDisplay();
+            updateStorageDisplay();
+        }
+
+        function checkAdminStatus() {
+            const savedAdminStatus = localStorage.getItem('isAdmin');
+            const savedAdminUser = localStorage.getItem('currentAdminUser');
+            
+            if (savedAdminStatus === 'true' && savedAdminUser) {
+                currentAdminUser = savedAdminUser;
+                enableAdminMode();
+            }
+        }
+
+        function updateCostDisplay() {
+            document.getElementById('currentCost').textContent = `$${costData.totalCost.toFixed(2)}`;
+            
+            if (isAdmin) {
+                document.getElementById('totalCost').textContent = `$${costData.totalCost.toFixed(2)}`;
+                document.getElementById('totalApiCalls').textContent = costData.totalCalls;
+                document.getElementById('avgCostPerSearch').textContent = `$${(costData.totalCost / costData.totalCalls * 10).toFixed(2)}`;
+                document.getElementById('projectedCost').textContent = `$${(costData.totalCost * 3.5).toFixed(2)}`;
+            }
+        }
+
+        function updateStorageDisplay() {
+            if (isAdmin) {
+                const totalStorage = storageData.hot.size + storageData.warm.size + storageData.cold.size + storageData.embeddings.size;
+                document.getElementById('storageUsed').textContent = totalStorage.toFixed(1) + ' GB';
+                document.getElementById('storageLimit').textContent = '10 GB';
+            }
+        }
+
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const tabName = e.target.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Admin access
+            document.getElementById('adminAccessBtn').addEventListener('click', showAdminLogin);
+            document.getElementById('adminLoginBtn').addEventListener('click', attemptAdminLogin);
+            document.getElementById('adminCancelBtn').addEventListener('click', hideAdminLogin);
+
+            // Sync button
+            document.getElementById('syncButton').addEventListener('click', performSync);
+
+            // User selection
+            document.getElementById('userSelect').addEventListener('change', (e) => {
+                currentUser = e.target.value || null;
+                localStorage.setItem('currentUser', currentUser || '');
+                updateUserStatus();
+            });
+
+            // Search functionality
+            setupSearchListeners();
+
+            // Settings
+            setupSettingsListeners();
+
+            // Dashboard cards
+            setupDashboardCards();
+
+            // Filter chips
+            setupFilterChips();
+
+            // Admin functions
+            setupAdminListeners();
+
+            // Data management functions
+            setupDataManagementListeners();
+
+            // Upload areas
+            setupUploadAreas();
+        }
+
+        function setupSearchListeners() {
+            document.getElementById('searchBtn').addEventListener('click', performAdvancedSearch);
+            document.getElementById('clearFilters').addEventListener('click', clearAllFilters);
+            
+            document.getElementById('scoreRange').addEventListener('input', (e) => {
+                document.getElementById('scoreValue').textContent = e.target.value;
+            });
+
+            document.getElementById('similarityThreshold').addEventListener('input', (e) => {
+                document.getElementById('thresholdValue').textContent = e.target.value + '%';
+            });
+
+            document.getElementById('findSimilarBtn').addEventListener('click', findSimilarCandidates);
+        }
+
+        function setupSettingsListeners() {
+            // Auto-save API keys
+            document.getElementById('googleApiKey').addEventListener('change', (e) => {
+                localStorage.setItem('googleApiKey', e.target.value);
+            });
+
+            document.getElementById('openaiApiKey').addEventListener('change', (e) => {
+                localStorage.setItem('openaiApiKey', e.target.value);
+            });
+
+            document.getElementById('globalSimilarityThreshold').addEventListener('input', (e) => {
+                document.getElementById('globalThresholdValue').textContent = e.target.value + '%';
+                document.getElementById('currentThreshold').textContent = e.target.value + '%';
+                localStorage.setItem('similarityThreshold', e.target.value);
+            });
+
+            document.getElementById('testGoogleConnection').addEventListener('click', testGoogleConnection);
+            document.getElementById('testOpenAIConnection').addEventListener('click', testOpenAIConnection);
+        }
+
+        function setupDashboardCards() {
+            document.getElementById('hotCompaniesCard').addEventListener('click', () => {
+                switchTab('companies');
+            });
+
+            document.getElementById('activeCandidatesCard').addEventListener('click', () => {
+                switchTab('search');
+            });
+
+            document.getElementById('topProfilesCard').addEventListener('click', () => {
+                switchTab('similarity');
+            });
+
+            document.getElementById('goodProfilesCard').addEventListener('click', () => {
+                switchTab('search');
+            });
+        }
+
+        function setupFilterChips() {
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', (e) => {
+                    e.target.classList.toggle('active');
+                    performAdvancedSearch();
+                });
+            });
+        }
+
+        function setupAdminListeners() {
+            if (document.getElementById('addCandidateBtn')) {
+                document.getElementById('addCandidateBtn').addEventListener('click', showAddCandidateForm);
+            }
+            if (document.getElementById('addHotCompanyBtn')) {
+                document.getElementById('addHotCompanyBtn').addEventListener('click', showAddHotCompanyForm);
+            }
+            if (document.getElementById('processBulkUpload')) {
+                document.getElementById('processBulkUpload').addEventListener('click', processBulkUpload);
+            }
+        }
+
+        function setupDataManagementListeners() {
+            // Data management tools
+            if (document.getElementById('runDataCleanup')) {
+                document.getElementById('runDataCleanup').addEventListener('click', runDataCleanup);
+            }
+            if (document.getElementById('compressOldData')) {
+                document.getElementById('compressOldData').addEventListener('click', compressOldData);
+            }
+            if (document.getElementById('validateDataQuality')) {
+                document.getElementById('validateDataQuality').addEventListener('click', validateDataQuality);
+            }
+            if (document.getElementById('optimizeEmbeddings')) {
+                document.getElementById('optimizeEmbeddings').addEventListener('click', optimizeEmbeddings);
+            }
+            if (document.getElementById('exportFullData')) {
+                document.getElementById('exportFullData').addEventListener('click', exportFullData);
+            }
+            if (document.getElementById('triggerBackup')) {
+                document.getElementById('triggerBackup').addEventListener('click', triggerBackup);
+            }
+            if (document.getElementById('restoreData')) {
+                document.getElementById('restoreData').addEventListener('click', restoreData);
+            }
+            if (document.getElementById('processBulkData')) {
+                document.getElementById('processBulkData').addEventListener('click', processBulkData);
+            }
+            if (document.getElementById('validateBulkData')) {
+                document.getElementById('validateBulkData').addEventListener('click', validateBulkData);
+            }
+            if (document.getElementById('generateQualityReport')) {
+                document.getElementById('generateQualityReport').addEventListener('click', generateQualityReport);
+            }
+        }
+
+        function setupUploadAreas() {
+            // Setup drag and drop for upload areas
+            const uploadAreas = document.querySelectorAll('.upload-area');
+            uploadAreas.forEach(area => {
+                area.addEventListener('click', () => {
+                    const fileInput = area.querySelector('input[type="file"]');
+                    if (fileInput) fileInput.click();
+                });
+
+                area.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    area.classList.add('dragover');
+                });
+
+                area.addEventListener('dragleave', () => {
+                    area.classList.remove('dragover');
+                });
+
+                area.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    area.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileUpload(files, area);
+                    }
+                });
+            });
+        }
+
+        function handleFileUpload(files, uploadArea) {
+            showNotification('info', 'Files Uploaded', `${files.length} file(s) selected for processing`);
+            // Process files here
+            setTimeout(() => {
+                showNotification('success', 'Processing Complete', 'Files have been processed successfully');
+            }, 2000);
+        }
+
+        // Admin Functions
+        function showAdminLogin() {
+            document.getElementById('adminLogin').classList.remove('hidden');
+        }
+
+        function hideAdminLogin() {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('adminCode').value = '';
+            document.getElementById('adminUser').value = '';
+        }
+
+        function attemptAdminLogin() {
+            const selectedUser = document.getElementById('adminUser').value;
+            const code = document.getElementById('adminCode').value;
+            
+            if (!selectedUser) {
+                showNotification('warning', 'Select Admin User', 'Please select an admin user (Dana or Alexey)');
+                return;
+            }
+            
+            if (adminCredentials[selectedUser] && code === adminCredentials[selectedUser]) {
+                currentAdminUser = selectedUser;
+                enableAdminMode();
+                hideAdminLogin();
+                showNotification('success', 'Admin Access Granted', `Welcome ${selectedUser}! You now have access to advanced data management features`);
+            } else {
+                showNotification('error', 'Access Denied', 'Invalid admin credentials');
+                document.getElementById('adminCode').value = '';
+            }
+        }
+
+        function enableAdminMode() {
+            isAdmin = true;
+            localStorage.setItem('isAdmin', 'true');
+            localStorage.setItem('currentAdminUser', currentAdminUser);
+            
+            // Show admin elements
+            document.querySelectorAll('.admin-hidden').forEach(el => {
+                el.classList.remove('admin-hidden');
+                el.classList.add('admin-visible');
+            });
+            
+            // Update admin user display
+            document.getElementById('currentAdminUser').textContent = `Admin: ${currentAdminUser}`;
+            
+            // Update admin button
+            document.getElementById('adminAccessBtn').innerHTML = '<i class="fas fa-crown text-yellow-500"></i>';
+            document.getElementById('adminAccessBtn').title = `Admin Mode Active - ${currentAdminUser}`;
+            
+            // Update displays
+            updateCostDisplay();
+            updateStorageDisplay();
+            
+            // Load admin-specific features
+            setupAdminListeners();
+            setupDataManagementListeners();
+            
+            // Load charts for data management
+            setTimeout(() => {
+                loadDataManagementCharts();
+            }, 100);
+        }
+
+        function loadDataManagementCharts() {
+            // Data Lifecycle Chart
+            const lifecycleCtx = document.getElementById('lifecycleChart');
+            if (lifecycleCtx) {
+                new Chart(lifecycleCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Hot Data (0-6m)', 'Warm Data (6-12m)', 'Cold Data (12m+)', 'Embeddings'],
+                        datasets: [{
+                            data: [storageData.hot.count, storageData.warm.count, storageData.cold.count, storageData.embeddings.count],
+                            backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#6b7280']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Storage Growth Chart
+            const storageGrowthCtx = document.getElementById('storageGrowthChart');
+            if (storageGrowthCtx) {
+                new Chart(storageGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Storage Used (GB)',
+                            data: [1.2, 1.5, 1.8, 2.1, 2.4, 2.9],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Profiles Count',
+                            data: [8500, 9200, 10100, 11300, 12600, 13621],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                    drawOnChartArea: false,
+                                },
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Data Management Functions
+        function runDataCleanup() {
+            showNotification('info', 'Data Cleanup Started', 'Running comprehensive data cleanup process...');
+            
+            setTimeout(() => {
+                dataQualityMetrics.duplicates = Math.max(0, dataQualityMetrics.duplicates - 0.3);
+                dataQualityMetrics.complete += 1.2;
+                showNotification('success', 'Cleanup Complete', 'Data cleanup completed successfully. Quality improved!');
+                updateDataQualityDisplay();
+            }, 3000);
+        }
+
+        function compressOldData() {
+            showNotification('info', 'Compressing Data', 'Compressing old profiles to save storage space...');
+            
+            setTimeout(() => {
+                storageData.cold.size *= 0.7; // Reduce cold storage by 30%
+                updateStorageDisplay();
+                showNotification('success', 'Compression Complete', 'Old data compressed successfully. Storage space optimized!');
+            }, 2500);
+        }
+
+        function validateDataQuality() {
+            showNotification('info', 'Validating Data', 'Running comprehensive data quality checks...');
+            
+            setTimeout(() => {
+                showNotification('success', 'Validation Complete', `Data quality: ${dataQualityMetrics.complete.toFixed(1)}% complete, ${dataQualityMetrics.duplicates.toFixed(1)}% duplicates detected`);
+            }, 2000);
+        }
+
+        function optimizeEmbeddings() {
+            showNotification('info', 'Optimizing Embeddings', 'Optimizing embedding vectors for better performance...');
+            
+            setTimeout(() => {
+                storageData.embeddings.size *= 0.8; // Reduce embeddings storage by 20%
+                updateStorageDisplay();
+                showNotification('success', 'Optimization Complete', 'Embeddings optimized successfully. Performance improved!');
+            }, 4000);
+        }
+
+        function exportFullData() {
+            showNotification('info', 'Preparing Export', 'Generating comprehensive data export...');
+            
+            setTimeout(() => {
+                // Simulate download
+                const blob = new Blob(['Full data export'], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `toply_full_export_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('success', 'Export Complete', 'Full data export downloaded successfully');
+            }, 3000);
+        }
+
+        function triggerBackup() {
+            showNotification('info', 'Backup Started', 'Creating comprehensive backup of all data...');
+            
+            setTimeout(() => {
+                showNotification('success', 'Backup Complete', 'Full system backup completed successfully');
+            }, 5000);
+        }
+
+        function restoreData() {
+            showNotification('warning', 'Restore Data', 'Data restore functionality - please confirm before proceeding');
+        }
+
+        function processBulkData() {
+            const fileInput = document.getElementById('bulkUploadFile');
+            if (!fileInput.files.length) {
+                showNotification('warning', 'No Files Selected', 'Please upload files first');
+                return;
+            }
+            
+            document.getElementById('bulkOperationStatus').classList.remove('hidden');
+            showNotification('info', 'Processing Bulk Data', 'Processing uploaded files...');
+            
+            setTimeout(() => {
+                document.getElementById('bulkOperationStatus').classList.add('hidden');
+                showNotification('success', 'Processing Complete', 'Bulk data processed successfully');
+            }, 4000);
+        }
+
+        function validateBulkData() {
+            showNotification('info', 'Validating Data', 'Running validation checks on bulk data...');
+            
+            setTimeout(() => {
+                showNotification('success', 'Validation Complete', 'Bulk data validation completed successfully');
+            }, 2000);
+        }
+
+        function generateQualityReport() {
+            showNotification('info', 'Generating Report', 'Creating comprehensive data quality report...');
+            
+            setTimeout(() => {
+                // Simulate report download
+                const report = `Data Quality Report
+Generated: ${new Date().toISOString()}
+
+Complete Profiles: ${dataQualityMetrics.complete.toFixed(1)}%
+Missing Data: ${dataQualityMetrics.missing.toFixed(1)}%
+Duplicates: ${dataQualityMetrics.duplicates.toFixed(1)}%
+Total Profiles: ${dataQualityMetrics.totalProfiles}
+
+Storage Distribution:
+- Hot Data: ${storageData.hot.size} GB (${storageData.hot.count} profiles)
+- Warm Data: ${storageData.warm.size} GB (${storageData.warm.count} profiles)
+- Cold Data: ${storageData.cold.size} GB (${storageData.cold.count} profiles)
+- Embeddings: ${storageData.embeddings.size} GB (${storageData.embeddings.count} vectors)
+`;
+                
+                const blob = new Blob([report], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `data_quality_report_${new Date().toISOString().split('T')[0]}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('success', 'Report Generated', 'Data quality report downloaded successfully');
+            }, 2500);
+        }
+
+        function updateDataQualityDisplay() {
+            // Update quality indicators if they exist
+            const qualityElements = document.querySelectorAll('.quality-indicator');
+            qualityElements.forEach(el => {
+                // Update with current metrics
+            });
+        }
+
+        function showAddCandidateForm() {
+            showNotification('info', 'Add Candidate', 'Candidate entry form would open here');
+        }
+
+        function showAddHotCompanyForm() {
+            showNotification('info', 'Add Hot Company', 'Hot company entry form would open here');
+        }
+
+        function processBulkUpload() {
+            const fileInput = document.getElementById('adminBulkUpload');
+            if (fileInput.files.length === 0) {
+                showNotification('warning', 'No File Selected', 'Please select a CSV or Excel file to upload');
+                return;
+            }
+            
+            showNotification('info', 'Processing Upload', 'Bulk upload processing started...');
+            
+            setTimeout(() => {
+                showNotification('success', 'Upload Complete', 'Bulk upload processed successfully');
+            }, 3000);
+        }
+
+        // Core Functions
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-gray-500', 'hover:text-gray-700');
+            });
+
+            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active');
+                activeBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
+            }
+
+            // Show/hide content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            const activeContent = document.getElementById(tabName);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+                
+                // Load tab-specific data
+                if (tabName === 'analytics') {
+                    loadAnalytics();
+                } else if (tabName === 'companies') {
+                    displayHotCompanies();
+                } else if (tabName === 'datamanagement' && isAdmin) {
+                    setTimeout(() => {
+                        loadDataManagementCharts();
+                    }, 100);
                 }
             }
-        }, 30000); // Update every 30 seconds
-    </script>
-</body>
-</html>
+        }
+
+        function performSync() {
+            const button = document.getElementById('syncButton');
+            const originalContent = button.innerHTML;
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Syncing...';
+
+            // Simulate sync process
+            setTimeout(() => {
+                updateDashboard();
+                displayHotCompanies();
+                
+                // Update cost data
+                costData.totalCalls += Math.floor(Math.random() * 5) + 1;
+                costData.totalCost += Math.random() * 0.1;
+                updateCostDisplay();
+                localStorage.setItem('costData', JSON.stringify(costData));
+                
+                // Update storage data
+                storageData.hot.count += Math.floor(Math.random() * 10) + 1;
+                updateStorageDisplay();
+                
+                button.disabled = false;
+                button.innerHTML = originalContent;
+                
+                showNotification('success', 'Sync Complete', 'Data synchronized successfully with smart lifecycle management');
+            }, 2000);
+        }
+
+        function updateDashboard() {
+            // Generate demo data
+            candidatesData = generateDemoCandidates();
+            hotCompaniesData = generateDemoHotCompanies();
+            
+            // Update stats
+            document.getElementById('hotCompaniesCount').textContent = hotCompaniesData.length;
+            document.getElementById('topProfilesCount').textContent = candidatesData.filter(c => c.category === 'TOP').length;
+            document.getElementById('goodProfilesCount').textContent = candidatesData.filter(c => c.category === 'GOOD').length;
+            
+            // Update insights
+            document.getElementById('profilesAnalyzed').textContent = candidatesData.length;
+            document.getElementById('companyInsights').textContent = hotCompaniesData.length;
+            document.getElementById('hotCompaniesDetected').textContent = hotCompaniesData.filter(c => c.eventType === 'EXODUS').length;
+        }
+
+        function generateDemoCandidates() {
+            const companies = ['Microsoft', 'Google', 'Wiz', 'Cybereason', 'Unity', 'Meta', 'Apple', 'Amazon'];
+            const titles = ['Senior Backend Engineer', 'Frontend Developer', 'DevOps Engineer', 'Product Manager', 'Tech Lead'];
+            const skills = ['Python', 'JavaScript', 'React', 'AWS', 'Kubernetes', 'Docker'];
+            
+            const candidates = [];
+            for (let i = 0; i < 100; i++) {
+                const score = Math.floor(Math.random() * 40) + 60;
+                candidates.push({
+                    id: i + 1,
+                    name: `Candidate ${i + 1}`,
+                    company: companies[Math.floor(Math.random() * companies.length)],
+                    title: titles[Math.floor(Math.random() * titles.length)],
+                    skills: skills.slice(0, Math.floor(Math.random() * 3) + 2).join(', '),
+                    experience: `${Math.floor(Math.random() * 10) + 1} years`,
+                    location: 'Tel Aviv',
+                    score: score,
+                    category: score >= 90 ? 'TOP' : score >= 80 ? 'GOOD' : 'AVERAGE',
+                    status: Math.random() > 0.7 ? 'LOOKING' : 'OPEN',
+                    isHotCompany: ['Wiz', 'Cybereason', 'Unity'].includes(companies[Math.floor(Math.random() * companies.length)])
+                });
+            }
+            return candidates;
+        }
+
+        function generateDemoHotCompanies() {
+            return [
+                {
+                    company: 'Wiz',
+                    eventType: 'EXODUS',
+                    industry: 'Security',
+                    source: 'AI-Detected',
+                    date: '2025-01-15',
+                    activeCandidates: 8
+                },
+                {
+                    company: 'Cybereason',
+                    eventType: 'HIGH_PERFORMERS',
+                    industry: 'Security',
+                    source: 'AI-Detected',
+                    date: '2025-01-14',
+                    activeCandidates: 3
+                },
+                {
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDkLk4ij5OxUzWXY2fV1su4liMapuokEzkPxEkZb7MbIXqnvULh75bb2GApqhNXUAXQUiWSEgKhRrDFGNNuZ6gAqxnMo%2Fh9XvEtJzSwSgX7UxDJbulZa%2F27Oklr748dDZEypbGY%2BuHvICc3yIk46JTXr1YJzT4b2adKPRWQwpobSovBdz5KGNL8ZWsJ3nx6ahKBphR1COHCpxqjL9HsH3upsKYHoMmI4baUyDpPtp6kHyuGFmrN6uk5yoGPt2buT4HkhtymV5Ys8NxE%2FMTfI8KkkoKCcn9PGxdFkA%2BlNoSNh4hxyoPYkmBEUGNNGN9Uv2pu9a1xoBMfOx0oxlBdkSU5ecNz%2BXeinBmujP0GwyFUTfKzhG%2B3Vss%2FPsv7ugbNl8KnwJEHo9Cbs9bbO%2BD4iNuqnWTVJQGKGk1tp5leLaNCFTOATYvpK3SSS8QewGB3%2B51WZLyLJMk225eWuUdL7hQVUtZl24DJfZTM46M2Vd4JcIbgjp4NzV0BTxHfQIt7Tt8w%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDu9aEDbFWg2la8Fbyptf2lXqX8%2Fx4yBeoa3j9%2BQBn7Xh%2FGW2bTwrmRPT7hsmfv5kLhPmaWs%2F0yqrgK2u1DiaJ8BbfKXZe5Feb02bqADVQPjwPdKG7fTQ84myXrn8q8AaGSfAo2QikLl45xFQh%2B%2BYi%2FJF%2FTgwoZnR9QlM0Bwu0laCZPRDL3HsnxIsM3V0DG97ofqogqQCSYV854%2BXCnYkqfMGdkL0deCuCvLNoYny6Y0Hqs23k6fBZdHvduAlym296aDU6W1UjbTHvQPhImdQIyRdNBcxXiPG0oaTEsdqbwE1MpoL39oihQ8ocin0SaLHymcq%2FYooNK4sRZqqZ1sAq2dXX5pMoMxlthskk6JllQc%2FF3EShn91RQB%2B%2FPuX8SMu7iPZac2hWlTt7RIoNxZEkQf7sXMbF%2Bk3f%2Bt4kFG5Iwpkdr2KmL%2FRudZgOV7uyebISnrWhLzZfFy%2Bu6X3PKWzj7bbwiUpdb4SiLmdk1O9Sm7etvWQJ9EhYgJkrr4UM8%2Bi5yKn2L8YRUMtGl%2FZdjrrOIU%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDkLk4ij5OxUzWXY2fV1su4liMapuokEzkPxEkZb7MbIXqnvULh75bb2GApqhNXUAXQUiWSEgKhRrDFGNNuZ6gAqxnMo/h9XvEtJzSwSgX7UxDJbulZa/27Oklr748dDZEypbGY+uHvICc3yIk46JTXr1YJzT4b2adKPRWQwpobSovBdz5KGNL8ZWsJ3nx6ahKBphR1COHCpxqjL9HsH3upsKYHoMmI4baUyDpPtp6kHyuGFmrN6uk5yoGPt2buT4HkhtymV5Ys8NxE/MTfI8KkkoKCcn9PGxdFkA+lNoSNh4hxyoPYkmBEUGNNGN9Uv2pu9a1xoBMfOx0oxlBdkSU5ecNz+XeinBmujP0GwyFUTfKzhG+3Vss/Psv7ugbNl8KnwJEHo9Cbs9bbO+D4iNuqnWTVJQGKGk1tp5leLaNCFTOATYvpK3SSS8QewGB3+51WZLyLJMk225eWuUdL7hQVUtZl24DJfZTM46M2Vd4JcIbgjp4NzV0BTxHfQIt7Tt8w==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDu9aEDbFWg2la8Fbyptf2lXqX8/x4yBeoa3j9+QBn7Xh/GW2bTwrmRPT7hsmfv5kLhPmaWs/0yqrgK2u1DiaJ8BbfKXZe5Feb02bqADVQPjwPdKG7fTQ84myXrn8q8AaGSfAo2QikLl45xFQh++Yi/JF/TgwoZnR9QlM0Bwu0laCZPRDL3HsnxIsM3V0DG97ofqogqQCSYV854+XCnYkqfMGdkL0deCuCvLNoYny6Y0Hqs23k6fBZdHvduAlym296aDU6W1UjbTHvQPhImdQIyRdNBcxXiPG0oaTEsdqbwE1MpoL39oihQ8ocin0SaLHymcq/YooNK4sRZqqZ1sAq2dXX5pMoMxlthskk6JllQc/F3EShn91RQB+/PuX8SMu7iPZac2hWlTt7RIoNxZEkQf7sXMbF+k3f+t4kFG5Iwpkdr2KmL/RudZgOV7uyebISnrWhLzZfFy+u6X3PKWzj7bbwiUpdb4SiLmdk1O9Sm7etvWQJ9EhYgJkrr4UM8+i5yKn2L8YRUMtGl/ZdjrrOIU=";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
