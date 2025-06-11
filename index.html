@@ -7,11 +7,18 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
-        .active-tab { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .similarity-bar { background: linear-gradient(90deg, #10b981 0%, #3b82f6 50%, #8b5cf6 100%); }
-        .hot-company { background: linear-gradient(45deg, #ef4444, #f97316); }
-        .looking-tag { background: linear-gradient(45deg, #10b981, #059669); }
-        .toast { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .similarity-bar {
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 30%, #10b981 70%, #059669 100%);
+            height: 8px;
+            border-radius: 4px;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -20,24 +27,25 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
-                    <i class="fas fa-brain text-3xl text-purple-600 mr-3"></i>
+                    <i class="fas fa-brain text-blue-600 text-2xl mr-3"></i>
                     <h1 class="text-2xl font-bold text-gray-900">Toply Intelligence Hub</h1>
-                    <span class="ml-3 text-sm text-gray-500">Advanced Recruitment Intelligence Platform</span>
+                    <span class="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">AI-Powered</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <select id="userSelect" class="bg-white border border-gray-300 rounded-md px-3 py-2 text-sm">
-                        <option value="">👤 Continue as Guest</option>
-                        <option value="Dana">Dana</option>
-                        <option value="Alexey">Alexey</option>
-                        <option value="Katinka">Katinka</option>
-                        <option value="Shiri">Shiri</option>
-                        <option value="Mika">Mika</option>
-                        <option value="Chen">Chen</option>
-                        <option value="Andrea">Andrea</option>
-                        <option value="Eszter">Eszter</option>
-                        <option value="Danana">Danana</option>
+                    <select id="userSelect" class="border rounded-md px-3 py-2 text-sm">
+                        <option value="">Select User</option>
+                        <option value="guest">👤 Continue as Guest</option>
+                        <option value="dana">Dana</option>
+                        <option value="alexey">Alexey</option>
+                        <option value="katinka">Katinka</option>
+                        <option value="shiri">Shiri</option>
+                        <option value="mika">Mika</option>
+                        <option value="chen">Chen</option>
+                        <option value="andrea">Andrea</option>
+                        <option value="eszter">Eszter</option>
+                        <option value="danana">Danana</option>
                     </select>
-                    <button id="selectedCandidatesBtn" class="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                    <button id="selectedCandidatesBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                         <i class="fas fa-list mr-2"></i>Selected (<span id="selectedCount">0</span>)
                     </button>
                 </div>
@@ -45,26 +53,26 @@
         </div>
     </header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation -->
     <nav class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex space-x-8">
-                <button class="tab-btn active-tab text-white px-4 py-3 text-sm font-medium" data-tab="dashboard">
-                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                <button class="nav-tab active border-b-2 border-blue-500 py-4 px-1 text-blue-600 font-medium" data-tab="dashboard">
+                    <i class="fas fa-chart-dashboard mr-2"></i>Dashboard
                 </button>
-                <button class="tab-btn text-gray-500 hover:text-gray-700 px-4 py-3 text-sm font-medium" data-tab="search">
+                <button class="nav-tab border-b-2 border-transparent py-4 px-1 text-gray-500 hover:text-gray-700" data-tab="search">
                     <i class="fas fa-search mr-2"></i>Smart Search
                 </button>
-                <button class="tab-btn text-gray-500 hover:text-gray-700 px-4 py-3 text-sm font-medium" data-tab="similarity">
+                <button class="nav-tab border-b-2 border-transparent py-4 px-1 text-gray-500 hover:text-gray-700" data-tab="similarity">
                     <i class="fas fa-brain mr-2"></i>AI Similarity
                 </button>
-                <button class="tab-btn text-gray-500 hover:text-gray-700 px-4 py-3 text-sm font-medium" data-tab="sourcing">
+                <button class="nav-tab border-b-2 border-transparent py-4 px-1 text-gray-500 hover:text-gray-700" data-tab="sourcing">
                     <i class="fas fa-magic mr-2"></i>Auto-Sourcing
                 </button>
-                <button class="tab-btn text-gray-500 hover:text-gray-700 px-4 py-3 text-sm font-medium" data-tab="companies">
+                <button class="nav-tab border-b-2 border-transparent py-4 px-1 text-gray-500 hover:text-gray-700" data-tab="companies">
                     <i class="fas fa-building mr-2"></i>Companies
                 </button>
-                <button class="tab-btn text-gray-500 hover:text-gray-700 px-4 py-3 text-sm font-medium" data-tab="settings">
+                <button class="nav-tab border-b-2 border-transparent py-4 px-1 text-gray-500 hover:text-gray-700" data-tab="settings">
                     <i class="fas fa-cog mr-2"></i>Settings
                 </button>
             </div>
@@ -72,279 +80,165 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+
         <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content">
-            <!-- Metrics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-blue-500 text-white p-6 rounded-lg shadow cursor-pointer hover:bg-blue-600 transition-colors" onclick="showHotCompanies()">
-                    <div class="flex items-center">
-                        <div class="flex-1">
-                            <p class="text-blue-100">Hot Companies</p>
-                            <p class="text-3xl font-bold">28</p>
-                        </div>
-                        <i class="fas fa-fire text-4xl text-blue-200"></i>
-                    </div>
-                </div>
-                <div class="bg-green-500 text-white p-6 rounded-lg shadow cursor-pointer hover:bg-green-600 transition-colors" onclick="showActiveCandidates()">
-                    <div class="flex items-center">
-                        <div class="flex-1">
-                            <p class="text-green-100">Active Candidates</p>
-                            <p class="text-3xl font-bold">100+</p>
-                        </div>
-                        <i class="fas fa-users text-4xl text-green-200"></i>
-                    </div>
-                </div>
-                <div class="bg-red-500 text-white p-6 rounded-lg shadow cursor-pointer hover:bg-red-600 transition-colors" onclick="showNewAlerts()">
-                    <div class="flex items-center">
-                        <div class="flex-1">
-                            <p class="text-red-100">New Alerts</p>
-                            <p class="text-3xl font-bold">3</p>
-                        </div>
-                        <i class="fas fa-bell text-4xl text-red-200"></i>
-                    </div>
-                </div>
-                <div class="bg-purple-500 text-white p-6 rounded-lg shadow cursor-pointer hover:bg-purple-600 transition-colors" onclick="showTotalProfiles()">
-                    <div class="flex items-center">
-                        <div class="flex-1">
-                            <p class="text-purple-100">Total Profiles</p>
-                            <p class="text-3xl font-bold">396</p>
-                        </div>
-                        <i class="fas fa-database text-4xl text-purple-200"></i>
-                    </div>
+        <div id="dashboard-tab" class="tab-content">
+            <!-- User Status -->
+            <div id="userStatus" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg hidden">
+                <div class="flex items-center">
+                    <i class="fas fa-user-circle text-blue-600 text-xl mr-3"></i>
+                    <span id="userWelcome" class="text-blue-800 font-medium"></span>
                 </div>
             </div>
 
-            <!-- Latest Alert -->
-            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
-                <div class="flex">
-                    <i class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-1"></i>
-                    <div>
-                        <p class="text-yellow-800 font-medium">Latest Alert: 3 active candidates from Microsoft detected - possible exodus pattern identified</p>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="card-hover bg-gradient-to-r from-red-500 to-red-600 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all duration-200" onclick="showHotCompanies()">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-red-100">Hot Companies</p>
+                            <p class="text-3xl font-bold">28</p>
+                        </div>
+                        <i class="fas fa-fire text-red-200 text-2xl"></i>
                     </div>
+                    <p class="text-red-100 text-sm mt-2">Recent layoffs & exits</p>
+                </div>
+
+                <div class="card-hover bg-gradient-to-r from-green-500 to-green-600 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all duration-200" onclick="showActiveCandidates()">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100">Active Candidates</p>
+                            <p class="text-3xl font-bold">100+</p>
+                        </div>
+                        <i class="fas fa-users text-green-200 text-2xl"></i>
+                    </div>
+                    <p class="text-green-100 text-sm mt-2">Ready for contact</p>
+                </div>
+
+                <div class="card-hover bg-gradient-to-r from-purple-500 to-purple-600 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all duration-200" onclick="showTopProfiles()">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100">TOP Profiles</p>
+                            <p class="text-3xl font-bold" id="topProfilesCount">0</p>
+                        </div>
+                        <i class="fas fa-star text-purple-200 text-2xl"></i>
+                    </div>
+                    <p class="text-purple-100 text-sm mt-2">Scorely rated</p>
+                </div>
+
+                <div class="card-hover bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-lg shadow-md text-white cursor-pointer transition-all duration-200" onclick="showGoodProfiles()">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100">GOOD Profiles</p>
+                            <p class="text-3xl font-bold" id="goodProfilesCount">0</p>
+                        </div>
+                        <i class="fas fa-thumbs-up text-blue-200 text-2xl"></i>
+                    </div>
+                    <p class="text-blue-100 text-sm mt-2">Scorely rated</p>
                 </div>
             </div>
 
             <!-- Priority Recommendations -->
-            <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-star text-yellow-500 mr-2"></i>Today's Priority Recommendations
+                    <i class="fas fa-bullseye text-orange-500 mr-2"></i>Today's Priority Recommendations
                 </h3>
                 <div class="space-y-4">
-                    <div class="flex items-start p-4 bg-red-50 rounded-lg">
-                        <i class="fas fa-fire text-red-500 mt-1 mr-3"></i>
-                        <div>
-                            <h4 class="font-medium text-red-900">Contact candidates from Microsoft immediately</h4>
-                            <p class="text-red-700 text-sm">3 active candidates + recent layoffs = 85% response rate expected</p>
-                        </div>
+                    <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                        <h4 class="font-medium text-red-800">Contact candidates from Microsoft immediately</h4>
+                        <p class="text-red-600 text-sm">3 active candidates + recent layoffs = 85% response rate expected</p>
                     </div>
-                    <div class="flex items-start p-4 bg-blue-50 rounded-lg">
-                        <i class="fas fa-chart-line text-blue-500 mt-1 mr-3"></i>
-                        <div>
-                            <h4 class="font-medium text-blue-900">Unity talent surge detected</h4>
-                            <p class="text-blue-700 text-sm">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
-                        </div>
+                    <div class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                        <h4 class="font-medium text-yellow-800">Unity talent surge detected</h4>
+                        <p class="text-yellow-600 text-sm">3 candidates from Unity - consider Gaming/Mobile opportunities</p>
                     </div>
-                    <div class="flex items-start p-4 bg-green-50 rounded-lg">
-                        <i class="fas fa-shield-alt text-green-500 mt-1 mr-3"></i>
-                        <div>
-                            <h4 class="font-medium text-green-900">Security sector opportunity</h4>
-                            <p class="text-green-700 text-sm">Review 12 new Security professionals this week</p>
-                        </div>
+                    <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                        <h4 class="font-medium text-blue-800">Security sector opportunity</h4>
+                        <p class="text-blue-600 text-sm">Review 12 new Security professionals this week</p>
                     </div>
                 </div>
             </div>
 
             <!-- Market Intelligence -->
-            <div class="bg-white rounded-lg shadow p-6">
+            <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-chart-bar text-blue-500 mr-2"></i>Market Intelligence
+                    <i class="fas fa-chart-line text-green-500 mr-2"></i>Market Intelligence
                 </h3>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                        <h4 class="font-medium text-gray-900 mb-3">This Week's Intelligence</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li class="flex items-center">
-                                <i class="fas fa-shield-alt text-blue-500 mr-2"></i>
-                                Security sector: 23% more active candidates
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-code text-green-500 mr-2"></i>
-                                Backend roles: High demand detected
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-building text-purple-500 mr-2"></i>
-                                Microsoft candidates: 85% response rate
-                            </li>
+                        <h4 class="font-medium text-gray-800 mb-3">This Week's Intelligence</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li><i class="fas fa-arrow-up text-green-500 mr-2"></i>Security sector: 23% more active candidates</li>
+                            <li><i class="fas fa-fire text-red-500 mr-2"></i>Backend roles: High demand detected</li>
+                            <li><i class="fas fa-chart-line text-blue-500 mr-2"></i>Microsoft candidates: 85% response rate</li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-medium text-gray-900 mb-3">Best Timing Recommendations</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li class="flex items-center">
-                                <i class="fas fa-clock text-red-500 mr-2"></i>
-                                Wiz candidates: Contact now (layoffs detected)
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
-                                Microsoft window: Next 2 weeks optimal
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-rocket text-green-500 mr-2"></i>
-                                Q1 hiring surge: Prepare candidate pipeline
-                            </li>
+                        <h4 class="font-medium text-gray-800 mb-3">Best Timing Recommendations</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li><i class="fas fa-clock text-orange-500 mr-2"></i>Wiz candidates: Contact now (layoffs detected)</li>
+                            <li><i class="fas fa-calendar text-purple-500 mr-2"></i>Microsoft window: Next 2 weeks optimal</li>
+                            <li><i class="fas fa-trending-up text-green-500 mr-2"></i>Q1 hiring surge: Prepare candidate pipeline</li>
                         </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Smart Search Tab -->
-        <div id="search" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-search text-blue-500 mr-2"></i>Smart Candidate Search
-                </h3>
-                
-                <!-- Search Filters -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title / Role</label>
-                        <input type="text" id="jobTitle" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="e.g., Backend Engineer">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
-                        <input type="text" id="skills" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Use ',' for AND, 'OR' for either">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
-                        <select id="experience" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                            <option value="">Any</option>
-                            <option value="junior">1-3 years</option>
-                            <option value="mid">3-5 years</option>
-                            <option value="senior">5-8 years</option>
-                            <option value="lead">8+ years</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                        <input type="text" id="location" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="e.g., Tel Aviv">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Filter</label>
-                        <input type="text" id="companyFilter" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Company name">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
-                        <select id="scoreRange" class="w-full border border-gray-300 rounded-md px-3 py-2">
-                            <option value="">Any Score</option>
-                            <option value="80-100">80-100 (Excellent)</option>
-                            <option value="60-79">60-79 (Good)</option>
-                            <option value="40-59">40-59 (Average)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Advanced Filters -->
-                <div class="flex flex-wrap gap-4 mb-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="showLooking" class="mr-2">
-                        <span class="text-sm">Show only LOOKING candidates</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="showHotCompanies" class="mr-2">
-                        <span class="text-sm">Show only from Hot Companies</span>
-                    </label>
-                    <label class="flex items-center">
-                        <input type="checkbox" id="showUnviewed" class="mr-2">
-                        <span class="text-sm">Show only unviewed (this week)</span>
-                    </label>
-                </div>
-
-                <button onclick="performSearch()" class="bg-blue-600 text-white px-6 py-2 rounded-md font-medium hover:bg-blue-700">
-                    <i class="fas fa-search mr-2"></i>Search Candidates
-                </button>
-
-                <!-- Search Results -->
-                <div id="searchResults" class="mt-8">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="searchResultsBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Results will be populated here -->
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- AI Similarity Tab -->
-        <div id="similarity" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">
+        <div id="similarity-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
                     <i class="fas fa-brain text-purple-500 mr-2"></i>AI Similarity Search
-                </h3>
+                </h2>
 
                 <!-- Upload Section -->
-                <div class="mb-8">
-                    <h4 class="font-medium text-gray-900 mb-4">Upload Scorely Results</h4>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">Upload Scorely Results</h3>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                         <input type="file" id="scorelyUpload" accept=".json,.csv" class="hidden">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
-                        <p class="text-gray-600 mb-2">Drag & drop Scorely JSON file here</p>
-                        <p class="text-sm text-gray-500 mb-4">or click to browse</p>
-                        <button onclick="document.getElementById('scorelyUpload').click()" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                            Choose File
-                        </button>
-                        <p class="text-xs text-gray-400 mt-2">Supports: .json, .csv files with embeddings</p>
+                        <label for="scorelyUpload" class="cursor-pointer">
+                            <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3"></i>
+                            <p class="text-gray-600">Drag & drop Scorely JSON file here</p>
+                            <p class="text-gray-500 text-sm">or click to browse</p>
+                            <p class="text-gray-400 text-xs mt-2">Supports: .json, .csv files with embeddings</p>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Search Input -->
                 <div class="mb-6">
-                    <h4 class="font-medium text-gray-900 mb-4">Find Similar Candidates</h4>
-                    <textarea id="similarityQuery" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Enter job description, candidate profile, or requirements...
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">Find Similar Candidates</h3>
+                    <textarea id="similarityInput" rows="4" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter job description, candidate profile, or requirements...
 
 Example:
-'Senior Backend Engineer with Python, AWS, 5+ years experience'
-or
-'Looking for profiles similar to our best developer'"></textarea>
-                    <button onclick="findSimilarCandidates()" class="mt-3 bg-purple-600 text-white px-6 py-2 rounded-md font-medium hover:bg-purple-700">
+- Senior Backend Engineer with Python, AWS, 5+ years
+- Looking for profiles similar to our best developer
+- Find candidates from companies like Wiz"></textarea>
+                    <button id="findSimilarBtn" class="mt-3 bg-purple-600 text-white px-6 py-2 rounded-md hover:bg-purple-700 disabled:bg-gray-400">
                         <i class="fas fa-search mr-2"></i>Find Similar Candidates
                     </button>
                 </div>
 
-                <!-- Similarity Results -->
+                <!-- Results -->
                 <div id="similarityResults" class="hidden">
-                    <h4 class="font-medium text-gray-900 mb-4">Similarity Results</h4>
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">Similarity Results</h3>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Overall Match</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Overall Match</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
                                 </tr>
                             </thead>
-                            <tbody id="similarityResultsBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Results will be populated here -->
+                            <tbody id="similarityTableBody" class="bg-white divide-y divide-gray-200">
                             </tbody>
                         </table>
                     </div>
@@ -353,154 +247,145 @@ or
         </div>
 
         <!-- Auto-Sourcing Tab -->
-        <div id="sourcing" class="tab-content hidden">
-            <div class="space-y-6">
-                
-                <!-- Success Patterns Analysis -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-chart-line text-green-500 mr-2"></i>Success Patterns Analysis
-                    </h3>
+        <div id="sourcing-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Success Patterns -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-chart-bar text-green-500 mr-2"></i>Success Patterns Analysis
+                    </h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="space-y-6">
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">Top Companies</h4>
+                            <h3 class="font-medium text-gray-800 mb-3">Top Companies</h3>
                             <div class="space-y-2">
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
                                     <span class="text-sm">Wiz</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">3 TOP</span>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">3 TOP</span>
                                 </div>
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
                                     <span class="text-sm">Cybereason</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">2 TOP</span>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">2 TOP</span>
                                 </div>
-                                <div class="flex justify-between items-center">
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
                                     <span class="text-sm">Astrix</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">2 TOP</span>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">2 TOP</span>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">Top Skills</h4>
+                            <h3 class="font-medium text-gray-800 mb-3">Top Skills</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">Python</span>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">85%</span>
+                                    <span class="text-sm font-medium text-blue-600">85%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">AWS</span>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">78%</span>
+                                    <span class="text-sm font-medium text-blue-600">78%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">Kubernetes</span>
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">71%</span>
+                                    <span class="text-sm font-medium text-blue-600">71%</span>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">Top Titles</h4>
+                            <h3 class="font-medium text-gray-800 mb-3">Top Titles</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">Backend Engineer</span>
-                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">65%</span>
+                                    <span class="text-sm font-medium text-purple-600">65%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">Senior Developer</span>
-                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">58%</span>
+                                    <span class="text-sm font-medium text-purple-600">58%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">Tech Lead</span>
-                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">42%</span>
+                                    <span class="text-sm font-medium text-purple-600">42%</span>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">Experience</h4>
+                            <h3 class="font-medium text-gray-800 mb-3">Experience</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">4-6 years</span>
-                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">68%</span>
+                                    <span class="text-sm font-medium text-orange-600">68%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">7-10 years</span>
-                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">25%</span>
+                                    <span class="text-sm font-medium text-orange-600">25%</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm">3-4 years</span>
-                                    <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">15%</span>
+                                    <span class="text-sm font-medium text-orange-600">15%</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Generated Boolean Queries -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-6">
+                <!-- Boolean Queries -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">
                         <i class="fas fa-code text-blue-500 mr-2"></i>Generated Boolean Queries
-                    </h3>
-                    
+                    </h2>
+
                     <div class="space-y-6">
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">LinkedIn Boolean Query</h4>
-                            <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-medium text-gray-800 mb-3">LinkedIn Boolean Query</h3>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
                                 <code id="linkedinBoolean" class="text-sm text-gray-800">
-                                    ("Backend Engineer" OR "Senior Developer") AND ("Python" OR "AWS" OR "Kubernetes") AND ("Wiz" OR "Cybereason" OR "Astrix")
+                                    ("Backend Engineer" OR "Senior Developer") ("Python" OR "AWS" OR "Kubernetes") ("Wiz" OR "Cybereason" OR "Astrix")
                                 </code>
                             </div>
-                            <div class="flex space-x-3 mt-3">
-                                <button onclick="copyToClipboard('linkedinBoolean')" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                            <div class="flex space-x-2 mt-3">
+                                <button onclick="copyToClipboard('linkedinBoolean')" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
                                     <i class="fas fa-copy mr-2"></i>Copy
                                 </button>
-                                <button onclick="openLinkedInSearch()" class="bg-blue-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-900">
+                                <button onclick="openLinkedInSearch('linkedinBoolean')" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-sm">
                                     <i class="fab fa-linkedin mr-2"></i>Open in LinkedIn
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h4 class="font-medium text-gray-900 mb-3">Google Boolean Query</h4>
-                            <div class="bg-gray-50 p-4 rounded-lg">
+                            <h3 class="font-medium text-gray-800 mb-3">Google Boolean Query</h3>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
                                 <code id="googleBoolean" class="text-sm text-gray-800">
-                                    "Backend Engineer" OR "Senior Developer" AND Python AND AWS site:linkedin.com
+                                    "Backend Engineer" OR "Senior Developer" "Python" "AWS" site:linkedin.com
                                 </code>
                             </div>
-                            <button onclick="copyToClipboard('googleBoolean')" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 mt-3">
-                                <i class="fas fa-copy mr-2"></i>Copy
-                            </button>
+                            <div class="flex space-x-2 mt-3">
+                                <button onclick="copyToClipboard('googleBoolean')" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                                    <i class="fas fa-copy mr-2"></i>Copy
+                                </button>
+                                <button onclick="openGoogleSearch('googleBoolean')" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 text-sm">
+                                    <i class="fab fa-google mr-2"></i>Open in Google
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Smart Sourcing Suggestions -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Smart Sourcing Suggestions
-                    </h3>
-                    
-                    <div class="space-y-4">
-                        <div class="flex items-start p-4 bg-blue-50 rounded-lg">
-                            <i class="fas fa-bullseye text-blue-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium text-blue-900">Try targeting Backend Engineers at Check Point</h4>
-                                <p class="text-blue-700 text-sm">Similar security company profile to your successful Wiz hires</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start p-4 bg-green-50 rounded-lg">
-                            <i class="fas fa-search text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium text-green-900">Look for Python developers with 5+ years experience</h4>
-                                <p class="text-green-700 text-sm">82% success rate in your previous TOP-rated candidates</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start p-4 bg-purple-50 rounded-lg">
-                            <i class="fas fa-users text-purple-500 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-medium text-purple-900">Consider DevOps from Security companies</h4>
-                                <p class="text-purple-700 text-sm">80% skill overlap with your successful Backend Engineer hires</p>
+                        <div>
+                            <h3 class="font-medium text-gray-800 mb-4">Smart Sourcing Suggestions</h3>
+                            <div class="space-y-3">
+                                <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="text-sm text-blue-800 font-medium">Try targeting Backend Engineers at Check Point</p>
+                                    <p class="text-xs text-blue-600">Similar security company profile to your successful Wiz hires</p>
+                                </div>
+                                <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <p class="text-sm text-green-800 font-medium">Look for Python developers with 5+ years experience</p>
+                                    <p class="text-xs text-green-600">82% success rate in your previous TOP-rated candidates</p>
+                                </div>
+                                <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                    <p class="text-sm text-purple-800 font-medium">Consider DevOps from Security companies</p>
+                                    <p class="text-xs text-purple-600">80% skill overlap with your successful Backend Engineer hires</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -508,104 +393,168 @@ or
             </div>
         </div>
 
+        <!-- Smart Search Tab -->
+        <div id="search-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-search text-blue-500 mr-2"></i>Smart Candidate Search
+                </h2>
+
+                <!-- Search Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Job Title / Role</label>
+                        <input type="text" id="jobTitleFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Backend Engineer, DevOps...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Skills</label>
+                        <input type="text" id="skillsFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder='Use "," for AND, "OR" for either'>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Experience Level</label>
+                        <select id="experienceFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Any Experience</option>
+                            <option value="junior">Junior (1-3 years)</option>
+                            <option value="mid">Mid-level (3-5 years)</option>
+                            <option value="senior">Senior (5-8 years)</option>
+                            <option value="lead">Lead (8+ years)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                        <input type="text" id="locationFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tel Aviv, Remote...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Company Filter</label>
+                        <input type="text" id="companyFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Current or previous company">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Score Range</label>
+                        <select id="scoreFilter" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Any Score</option>
+                            <option value="90-100">90-100 (Excellent)</option>
+                            <option value="80-89">80-89 (Very Good)</option>
+                            <option value="70-79">70-79 (Good)</option>
+                            <option value="60-69">60-69 (Fair)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quick Filters -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="lookingFilter" class="mr-2">
+                        <span class="text-sm text-gray-700">Show only LOOKING candidates</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="hotCompanyFilter" class="mr-2">
+                        <span class="text-sm text-gray-700">Show only from Hot Companies</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="unviewedFilter" class="mr-2">
+                        <span class="text-sm text-gray-700">Show only unviewed (this week)</span>
+                    </label>
+                </div>
+
+                <!-- Search Button -->
+                <button id="searchBtn" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 mb-6">
+                    <i class="fas fa-search mr-2"></i>Search Candidates
+                </button>
+
+                <!-- Results Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="searchResults" class="bg-white divide-y divide-gray-200">
+                            <!-- Results will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- Companies Tab -->
-        <div id="companies" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-building text-blue-500 mr-2"></i>Companies Intelligence
-                </h3>
-                
-                <!-- Company Filters -->
+        <div id="companies-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-building text-green-500 mr-2"></i>Companies Intelligence
+                </h2>
+
+                <!-- Filters -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
-                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <select id="industryFilter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                             <option value="">All Industries</option>
                             <option value="cybersecurity">Cybersecurity</option>
-                            <option value="fintech">FinTech</option>
+                            <option value="fintech">Fintech</option>
                             <option value="ai">AI/ML</option>
+                            <option value="saas">SaaS</option>
                             <option value="gaming">Gaming</option>
-                            <option value="enterprise">Enterprise Software</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Company Size</label>
-                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <select id="sizeFilter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                             <option value="">All Sizes</option>
                             <option value="startup">Startup (1-50)</option>
-                            <option value="growth">Growth (51-200)</option>
-                            <option value="mid">Mid-size (201-1000)</option>
-                            <option value="enterprise">Enterprise (1000+)</option>
+                            <option value="medium">Medium (51-500)</option>
+                            <option value="large">Large (500+)</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                        <select class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <select id="statusFilter" class="w-full border border-gray-300 rounded-md px-3 py-2">
                             <option value="">All Status</option>
+                            <option value="hot">Hot Companies</option>
                             <option value="unicorn">Unicorn</option>
                             <option value="public">Public</option>
-                            <option value="series-a">Series A</option>
-                            <option value="series-b">Series B</option>
-                            <option value="series-c">Series C</option>
+                            <option value="private">Private</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Hot Companies Section -->
                 <div class="mb-8">
-                    <h4 class="font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">
                         <i class="fas fa-fire text-red-500 mr-2"></i>Hot Companies This Week
-                    </h4>
-                    <p class="text-sm text-gray-600 mb-4">Companies with recent activity - higher candidate response rates expected</p>
+                    </h3>
+                    <p class="text-gray-600 text-sm mb-4">Companies with recent activity - higher candidate response rates expected</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="border border-red-200 rounded-lg p-4 bg-red-50">
-                            <div class="flex justify-between items-start mb-2">
-                                <h5 class="font-medium text-gray-900">Microsoft</h5>
-                                <span class="hot-company text-white px-2 py-1 rounded text-xs">Layoffs</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-2">Big Tech | 9335 employees</p>
-                            <p class="text-xs text-red-600">3 active candidates available</p>
-                        </div>
-                        
-                        <div class="border border-red-200 rounded-lg p-4 bg-red-50">
-                            <div class="flex justify-between items-start mb-2">
-                                <h5 class="font-medium text-gray-900">Unity</h5>
-                                <span class="hot-company text-white px-2 py-1 rounded text-xs">Layoffs</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-2">Gaming | 300 employees</p>
-                            <p class="text-xs text-red-600">3 active candidates available</p>
-                        </div>
-                        
-                        <div class="border border-red-200 rounded-lg p-4 bg-red-50">
-                            <div class="flex justify-between items-start mb-2">
-                                <h5 class="font-medium text-gray-900">Cybereason</h5>
-                                <span class="hot-company text-white px-2 py-1 rounded text-xs">Layoffs</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-2">Cybersecurity | 750 employees</p>
-                            <p class="text-xs text-red-600">2 active candidates available</p>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="hotCompaniesList">
+                        <!-- Hot companies will be populated here -->
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Settings Tab -->
-        <div id="settings" class="tab-content hidden">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-6">
-                    <i class="fas fa-cog text-gray-600 mr-2"></i>Settings & Integrations
-                </h3>
+        <div id="settings-tab" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">
+                    <i class="fas fa-cog text-gray-500 mr-2"></i>Settings & Integrations
+                </h2>
 
                 <!-- Google Sheets Integration -->
                 <div class="mb-8">
-                    <h4 class="font-medium text-gray-900 mb-4">Google Sheets Integration</h4>
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Google Sheets Integration</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
-                            <input type="password" id="googleApiKey" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Enter your Google Sheets API key">
+                            <input type="password" id="googleApiKey" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your Google Sheets API key">
                         </div>
-                        <button onclick="testGoogleConnection()" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700">
+                        <button id="testGoogleConnection" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
                             <i class="fas fa-check mr-2"></i>Test Connection
                         </button>
                         <div id="googleConnectionStatus" class="hidden"></div>
@@ -614,11 +563,11 @@ or
 
                 <!-- OpenAI Integration -->
                 <div class="mb-8">
-                    <h4 class="font-medium text-gray-900 mb-4">OpenAI Integration</h4>
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">OpenAI Integration</h3>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
-                            <input type="password" id="openaiApiKey" class="w-full border border-gray-300 rounded-md px-3 py-2" placeholder="Enter your OpenAI API key">
+                            <input type="password" id="openaiApiKey" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter your OpenAI API key">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Model Selection</label>
@@ -628,7 +577,7 @@ or
                                 <option value="text-embedding-ada-002">text-embedding-ada-002</option>
                             </select>
                         </div>
-                        <button onclick="testOpenAIConnection()" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700">
+                        <button id="testOpenAIConnection" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
                             <i class="fas fa-check mr-2"></i>Test Connection
                         </button>
                         <div id="openaiConnectionStatus" class="hidden"></div>
@@ -637,234 +586,549 @@ or
 
                 <!-- Data Sources -->
                 <div class="mb-8">
-                    <h4 class="font-medium text-gray-900 mb-4">Data Sources</h4>
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Data Sources</h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between items-center p-4 border rounded-lg">
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                             <div>
-                                <h5 class="font-medium text-gray-900">Active Candidates</h5>
+                                <h4 class="font-medium text-gray-800">Active Candidates</h4>
                                 <p class="text-sm text-gray-600">100+ candidates actively looking for opportunities</p>
                             </div>
-                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">Connected</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Connected</span>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 border rounded-lg">
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                             <div>
-                                <h5 class="font-medium text-gray-900">Hot Companies</h5>
+                                <h4 class="font-medium text-gray-800">Hot Companies</h4>
                                 <p class="text-sm text-gray-600">28 companies with recent market events</p>
                             </div>
-                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">Connected</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Connected</span>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 border rounded-lg">
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                             <div>
-                                <h5 class="font-medium text-gray-900">Companies Database</h5>
+                                <h4 class="font-medium text-gray-800">Companies Database</h4>
                                 <p class="text-sm text-gray-600">396 companies with detailed intelligence</p>
                             </div>
-                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm">Connected</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Connected</span>
                         </div>
-                        
-                        <div class="flex justify-between items-center p-4 border rounded-lg">
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                             <div>
-                                <h5 class="font-medium text-gray-900">Scorely Results</h5>
+                                <h4 class="font-medium text-gray-800">Scorely Results</h4>
                                 <p class="text-sm text-gray-600">TOP and GOOD candidate profiles with embeddings</p>
                             </div>
-                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm">Upload Required</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">Upload Required</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Advanced Settings -->
                 <div>
-                    <h4 class="font-medium text-gray-900 mb-4">Advanced Settings</h4>
+                    <h3 class="text-lg font-medium text-gray-800 mb-4">Advanced Settings</h3>
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Similarity Threshold</label>
-                            <input type="range" id="similarityThreshold" min="0" max="100" value="50" class="w-full">
-                            <p class="text-xs text-gray-500">Minimum similarity score to show results</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Similarity Threshold</label>
+                                <p class="text-xs text-gray-500">Minimum similarity score to show results</p>
+                            </div>
+                            <input type="range" id="similarityThreshold" min="0.5" max="1.0" step="0.05" value="0.7" class="w-32">
                         </div>
-                        
-                        <label class="flex items-center">
-                            <input type="checkbox" id="autoSaveSettings" checked class="mr-2">
-                            <span class="text-sm">Auto-Save Settings</span>
-                        </label>
-                        
-                        <label class="flex items-center">
-                            <input type="checkbox" id="cacheEmbeddings" checked class="mr-2">
-                            <span class="text-sm">Cache Embeddings (saves API costs)</span>
-                        </label>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Auto-Save Settings</label>
+                                <p class="text-xs text-gray-500">Save settings automatically</p>
+                            </div>
+                            <input type="checkbox" id="autoSave" checked class="toggle">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Cache Embeddings</label>
+                                <p class="text-xs text-gray-500">Store embeddings locally to save API costs</p>
+                            </div>
+                            <input type="checkbox" id="cacheEmbeddings" checked class="toggle">
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
 
     <!-- Selected Candidates Sidebar -->
-    <div id="selectedSidebar" class="fixed inset-y-0 right-0 w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
-        <div class="flex flex-col h-full">
-            <div class="flex items-center justify-between p-4 border-b">
+    <div id="selectedSidebar" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+        <div class="p-6 border-b">
+            <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-900">Selected Candidates</h3>
-                <button onclick="closeSidebar()" class="text-gray-400 hover:text-gray-600">
+                <button id="closeSidebar" class="text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
-            <div class="flex-1 overflow-y-auto p-4">
-                <div id="selectedCandidatesList">
-                    <div class="text-center py-8">
-                        <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">No candidates selected</p>
-                    </div>
+        </div>
+        <div class="p-6 flex-1 overflow-y-auto">
+            <div id="selectedCandidatesList" class="space-y-4">
+                <div class="text-center text-gray-500 py-8">
+                    <i class="fas fa-users text-gray-300 text-3xl mb-3"></i>
+                    <p>No candidates selected</p>
                 </div>
             </div>
-            
-            <div class="border-t p-4 space-y-3">
-                <button onclick="exportSelectedCSV()" class="w-full bg-blue-600 text-white py-2 rounded-md font-medium hover:bg-blue-700">
+        </div>
+        <div class="p-6 border-t">
+            <div class="space-y-2">
+                <button id="exportCSV" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
                     <i class="fas fa-download mr-2"></i>Export CSV
                 </button>
-                <button onclick="exportSelectedLinkedIn()" class="w-full bg-blue-800 text-white py-2 rounded-md font-medium hover:bg-blue-900">
+                <button id="exportLinkedIn" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
                     <i class="fab fa-linkedin mr-2"></i>Export LinkedIn URLs
                 </button>
-                <button onclick="clearAllSelected()" class="w-full bg-gray-600 text-white py-2 rounded-md font-medium hover:bg-gray-700">
+                <button id="clearAll" class="w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700">
                     <i class="fas fa-trash mr-2"></i>Clear All
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40" onclick="closeSidebar()"></div>
-
     <!-- Toast Notifications -->
-    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-300">
+        <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+            <i class="fas fa-check mr-2"></i>
+            <span id="toastMessage">Action completed successfully!</span>
+        </div>
+    </div>
 
     <script>
         // Global variables
-        let selectedCandidates = new Set();
-        let currentUser = '';
+        let selectedCandidates = [];
         let viewedCandidates = {};
-        let scorelyData = [];
-        let hotCompanies = [
-            'Microsoft', 'Unity', 'Cybereason', 'Meta', 'Wiz', 'Google', 'Amazon',
-            'Apple', 'Riskified', 'Payoneer', 'AppsFlyer', 'Moon Active', 'Playtika',
-            'Check Point', 'CyberArk', 'Palo Alto Networks', 'SentinelOne', 'Aqua Security',
-            'Taboola', 'Outbrain', 'Gong', 'Monday.com', 'JFrog', 'Snyk', 'Mobileye',
-            'AI21 Labs', 'Lightricks', 'Lemonade'
+        let currentUser = '';
+        let scorelyCandidates = [];
+        
+        // Sample data
+        const activeCandidates = [
+            { name: 'Shira Koenigsberg', company: 'Claroty', title: 'Senior Backend Engineer', experience: '5 years', status: 'LOOKING', linkedin: 'https://linkedin.com/in/shira-koenigsberg' },
+            { name: 'Vladimir Feldman', company: 'Cellebrite', title: 'DevOps Lead', experience: '7 years', status: 'LOOKING', linkedin: 'https://linkedin.com/in/vladimirfeldman' },
+            { name: 'Nadav Shemtov', company: 'Open', title: 'Full Stack Developer', experience: '4 years', status: 'LOOKING', linkedin: 'https://linkedin.com/in/nadav-shemtov' },
+            { name: 'Alon Mizrahi', company: 'Microsoft', title: 'Senior Backend', experience: '6 years', status: 'LOOKING', linkedin: 'https://linkedin.com/in/alonmiz' },
+            { name: 'Roey Weizman', company: 'Microsoft', title: 'Backend Engineer', experience: '5 years', status: 'LOOKING', linkedin: 'https://linkedin.com/in/roey-weizman' }
         ];
 
-        let activeCandidates = [
-            { name: 'Shira Koenigsberg', company: 'Claroty', title: 'Senior Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/shira-koenigsberg-9178a271/' },
-            { name: 'Vladimir Feldman', company: 'Cellebrite', title: 'Backend Developer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/vladimirfeldman/' },
-            { name: 'Nadav Shemtov', company: 'Open', title: 'Full Stack Developer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/nadav-shemtov-08601127/' },
-            { name: 'Nir Moreno', company: 'GuardioFS', title: 'DevOps Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/nir-moreno-85618383/' },
-            { name: 'Yoav Sharon', company: 'Unity', title: 'Software Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/yoav-sharon/' },
-            { name: 'Oren Cohen', company: 'Cellebrite', title: 'Security Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/orenco10/' },
-            { name: 'Olga Brukman', company: 'Firebolt', title: 'Data Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/olgabrukman/' },
-            { name: 'Avi Levi', company: 'Deep Instinct', title: 'ML Engineer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/avi-levi-091a734b/' },
-            { name: 'Chen Sasson', company: 'Open', title: 'Frontend Developer', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/chen-sass/' },
-            { name: 'Alex Perry', company: 'Panorays', title: 'Security Analyst', status: 'LOOKING', linkedin: 'https://www.linkedin.com/in/alex-perry-801870108/' }
+        const hotCompanies = [
+            { name: 'Microsoft', type: 'Layoffs', industry: 'Big Tech', employees: 10000, reason: 'Recent layoffs announced' },
+            { name: 'Wiz', type: 'Silent Exodus', industry: 'Cybersecurity', employees: 750, reason: 'Multiple senior departures' },
+            { name: 'Unity', type: 'Layoffs', industry: 'Gaming', employees: 7000, reason: 'Restructuring and layoffs' },
+            { name: 'Cybereason', type: 'Layoffs', industry: 'Cybersecurity', employees: 750, reason: 'Cost reduction measures' }
         ];
 
-        // Initialize the application
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Load saved settings
-            loadSavedSettings();
-            
-            // Set up tab navigation
-            setupTabs();
-            
-            // Set up user selection
-            setupUserSelection();
-            
-            // Load viewed candidates data
-            loadViewedCandidates();
-            
-            // Set up file upload handler
-            setupFileUpload();
+            initializeEventListeners();
+            loadSettings();
+            showTab('dashboard');
+            loadHotCompanies();
         });
 
-        // Tab management
-        function setupTabs() {
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTab = button.getAttribute('data-tab');
-                    
-                    // Update active tab button
-                    tabButtons.forEach(btn => {
-                        btn.classList.remove('active-tab', 'text-white');
-                        btn.classList.add('text-gray-500', 'hover:text-gray-700');
-                    });
-                    button.classList.add('active-tab', 'text-white');
-                    button.classList.remove('text-gray-500', 'hover:text-gray-700');
-                    
-                    // Show target tab content
-                    tabContents.forEach(content => {
-                        content.classList.add('hidden');
-                    });
-                    document.getElementById(targetTab).classList.remove('hidden');
+        // Event listeners
+        function initializeEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-tab');
+                    showTab(tabName);
                 });
             });
+
+            // User selection
+            document.getElementById('userSelect').addEventListener('change', function() {
+                const selectedUser = this.value;
+                updateUserStatus(selectedUser);
+            });
+
+            // Selected candidates sidebar
+            document.getElementById('selectedCandidatesBtn').addEventListener('click', toggleSidebar);
+            document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
+
+            // Settings
+            document.getElementById('testGoogleConnection').addEventListener('click', testGoogleConnection);
+            document.getElementById('testOpenAIConnection').addEventListener('click', testOpenAIConnection);
+
+            // Auto-save settings
+            ['googleApiKey', 'openaiApiKey', 'openaiModel', 'similarityThreshold'].forEach(id => {
+                document.getElementById(id).addEventListener('change', saveSettings);
+            });
+
+            // Scorely upload
+            document.getElementById('scorelyUpload').addEventListener('change', handleScorelyUpload);
+            document.getElementById('findSimilarBtn').addEventListener('click', findSimilarCandidates);
+
+            // Search
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+
+            // Export functions
+            document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('exportLinkedIn').addEventListener('click', exportLinkedInURLs);
+            document.getElementById('clearAll').addEventListener('click', clearSelectedCandidates);
         }
 
-        // User selection management
-        function setupUserSelection() {
-            const userSelect = document.getElementById('userSelect');
-            userSelect.addEventListener('change', function() {
-                currentUser = this.value;
-                updateUserInterface();
-                saveCurrentUser();
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
             });
-            
-            // Load saved user
-            const savedUser = localStorage.getItem('toply_current_user');
-            if (savedUser) {
-                currentUser = savedUser;
-                userSelect.value = savedUser;
-                updateUserInterface();
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+            // Update navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+            activeTab.classList.add('active', 'border-blue-500', 'text-blue-600');
+            activeTab.classList.remove('border-transparent', 'text-gray-500');
+        }
+
+        // User management
+        function updateUserStatus(user) {
+            currentUser = user;
+            const userStatus = document.getElementById('userStatus');
+            const userWelcome = document.getElementById('userWelcome');
+
+            if (user && user !== '') {
+                userStatus.classList.remove('hidden');
+                if (user === 'guest') {
+                    userWelcome.textContent = '🚪 You\'re browsing as Guest - Select your name above for personal tracking';
+                    userStatus.className = 'mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg';
+                } else {
+                    userWelcome.textContent = `👋 Welcome ${user.charAt(0).toUpperCase() + user.slice(1)}! Your personal workspace is active`;
+                    userStatus.className = 'mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg';
+                }
+            } else {
+                userStatus.classList.add('hidden');
             }
         }
 
-        function updateUserInterface() {
-            // Update user-specific features
-            loadViewedCandidates();
+        // Settings management
+        function saveSettings() {
+            const settings = {
+                googleApiKey: document.getElementById('googleApiKey').value,
+                openaiApiKey: document.getElementById('openaiApiKey').value,
+                openaiModel: document.getElementById('openaiModel').value,
+                similarityThreshold: document.getElementById('similarityThreshold').value
+            };
+            localStorage.setItem('toplySettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('toplySettings') || '{}');
+            if (settings.googleApiKey) {
+                document.getElementById('googleApiKey').value = settings.googleApiKey;
+            }
+            if (settings.openaiApiKey) {
+                document.getElementById('openaiApiKey').value = settings.openaiApiKey;
+            }
+            if (settings.openaiModel) {
+                document.getElementById('openaiModel').value = settings.openaiModel;
+            }
+            if (settings.similarityThreshold) {
+                document.getElementById('similarityThreshold').value = settings.similarityThreshold;
+            }
+        }
+
+        // Connection testing
+        function testGoogleConnection() {
+            const apiKey = document.getElementById('googleApiKey').value;
+            const status = document.getElementById('googleConnectionStatus');
+            
+            if (!apiKey) {
+                showConnectionStatus('googleConnectionStatus', false, 'Please enter an API key');
+                return;
+            }
+
+            // Simulate API test
+            showConnectionStatus('googleConnectionStatus', true, 'Connection successful!');
+            saveSettings();
+        }
+
+        function testOpenAIConnection() {
+            const apiKey = document.getElementById('openaiApiKey').value;
+            const status = document.getElementById('openaiConnectionStatus');
+            
+            if (!apiKey) {
+                showConnectionStatus('openaiConnectionStatus', false, 'Please enter an API key');
+                return;
+            }
+
+            // Simulate API test
+            showConnectionStatus('openaiConnectionStatus', true, 'Connection successful!');
+            saveSettings();
+        }
+
+        function showConnectionStatus(elementId, success, message) {
+            const element = document.getElementById(elementId);
+            element.classList.remove('hidden');
+            element.className = success ? 
+                'flex items-center text-green-600 text-sm mt-2' : 
+                'flex items-center text-red-600 text-sm mt-2';
+            element.innerHTML = `<i class="fas fa-${success ? 'check' : 'times'} mr-2"></i>${message}`;
+        }
+
+        // Boolean query functions
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent.trim();
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard!');
+                }).catch(() => {
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard!');
+            } catch (err) {
+                showToast('Failed to copy', 'error');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function openLinkedInSearch(elementId) {
+            const element = document.getElementById(elementId);
+            const query = element.textContent.trim();
+            const encodedQuery = encodeURIComponent(query);
+            const linkedInURL = `https://www.linkedin.com/search/people/?keywords=${encodedQuery}`;
+            window.open(linkedInURL, '_blank');
+        }
+
+        function openGoogleSearch(elementId) {
+            const element = document.getElementById(elementId);
+            const query = element.textContent.trim();
+            const encodedQuery = encodeURIComponent(query);
+            const googleURL = `https://www.google.com/search?q=${encodedQuery}`;
+            window.open(googleURL, '_blank');
+        }
+
+        // Dashboard functions
+        function showHotCompanies() {
+            showTab('companies');
+        }
+
+        function showActiveCandidates() {
+            showTab('search');
+            document.getElementById('lookingFilter').checked = true;
+            performSearch();
+        }
+
+        function showTopProfiles() {
+            showTab('similarity');
+        }
+
+        function showGoodProfiles() {
+            showTab('similarity');
+        }
+
+        // Load hot companies
+        function loadHotCompanies() {
+            const container = document.getElementById('hotCompaniesList');
+            if (!container) return;
+
+            container.innerHTML = hotCompanies.map(company => `
+                <div class="p-4 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100 transition-colors cursor-pointer">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-medium text-gray-900">${company.name}</h4>
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">${company.type}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1">${company.industry} • ${company.employees} employees</p>
+                    <p class="text-xs text-gray-500">${company.reason}</p>
+                    <button onclick="findCandidatesFromCompany('${company.name}')" class="mt-2 text-red-600 hover:text-red-800 text-sm font-medium">
+                        <i class="fas fa-search mr-1"></i>Find Candidates
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function findCandidatesFromCompany(companyName) {
+            showTab('search');
+            document.getElementById('companyFilter').value = companyName;
+            performSearch();
+        }
+
+        // Search functionality
+        function performSearch() {
+            const results = document.getElementById('searchResults');
+            
+            // Filter active candidates based on search criteria
+            let filteredCandidates = [...activeCandidates];
+            
+            const lookingFilter = document.getElementById('lookingFilter').checked;
+            if (lookingFilter) {
+                filteredCandidates = filteredCandidates.filter(c => c.status === 'LOOKING');
+            }
+
+            const companyFilter = document.getElementById('companyFilter').value.toLowerCase();
+            if (companyFilter) {
+                filteredCandidates = filteredCandidates.filter(c => 
+                    c.company.toLowerCase().includes(companyFilter)
+                );
+            }
+
+            // Render results
+            results.innerHTML = filteredCandidates.map(candidate => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3">
+                        <input type="checkbox" class="candidate-checkbox" data-candidate='${JSON.stringify(candidate)}'>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="font-medium text-gray-900">${candidate.name}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                            <i class="fas fa-eye mr-1"></i>${candidate.status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600">${candidate.company}</td>
+                    <td class="px-4 py-3 text-gray-600">${candidate.title}</td>
+                    <td class="px-4 py-3 text-gray-600">${candidate.experience}</td>
+                    <td class="px-4 py-3">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">85</span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <a href="${candidate.linkedin}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Add event listeners to checkboxes
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', handleCandidateSelection);
+            });
+        }
+
+        // Candidate selection
+        function handleCandidateSelection(event) {
+            const checkbox = event.target;
+            const candidate = JSON.parse(checkbox.getAttribute('data-candidate'));
+            
+            if (checkbox.checked) {
+                if (!selectedCandidates.find(c => c.name === candidate.name)) {
+                    selectedCandidates.push(candidate);
+                }
+            } else {
+                selectedCandidates = selectedCandidates.filter(c => c.name !== candidate.name);
+            }
+            
             updateSelectedCandidatesDisplay();
         }
 
-        function saveCurrentUser() {
-            localStorage.setItem('toply_current_user', currentUser);
-        }
-
-        // Viewed candidates management
-        function loadViewedCandidates() {
-            const saved = localStorage.getItem('toply_viewed_candidates');
-            if (saved) {
-                viewedCandidates = JSON.parse(saved);
+        function updateSelectedCandidatesDisplay() {
+            document.getElementById('selectedCount').textContent = selectedCandidates.length;
+            
+            const list = document.getElementById('selectedCandidatesList');
+            if (selectedCandidates.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-gray-300 text-3xl mb-3"></i>
+                        <p>No candidates selected</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = selectedCandidates.map(candidate => `
+                    <div class="p-3 border border-gray-200 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${candidate.name}</h4>
+                                <p class="text-sm text-gray-600">${candidate.company} • ${candidate.title}</p>
+                            </div>
+                            <button onclick="removeSelectedCandidate('${candidate.name}')" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
             }
-            if (!viewedCandidates[currentUser]) {
-                viewedCandidates[currentUser] = [];
+        }
+
+        function removeSelectedCandidate(name) {
+            selectedCandidates = selectedCandidates.filter(c => c.name !== name);
+            updateSelectedCandidatesDisplay();
+            
+            // Uncheck corresponding checkbox
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                const candidate = JSON.parse(checkbox.getAttribute('data-candidate'));
+                if (candidate.name === name) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+
+        // Sidebar management
+        function toggleSidebar() {
+            const sidebar = document.getElementById('selectedSidebar');
+            sidebar.classList.toggle('translate-x-full');
+        }
+
+        // Export functions
+        function exportToCSV() {
+            if (selectedCandidates.length === 0) {
+                showToast('No candidates selected', 'error');
+                return;
             }
+
+            const csvContent = [
+                ['Name', 'Company', 'Title', 'Experience', 'Status', 'LinkedIn'],
+                ...selectedCandidates.map(c => [c.name, c.company, c.title, c.experience, c.status, c.linkedin])
+            ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
+
+            downloadFile(csvContent, 'selected_candidates.csv', 'text/csv');
+            showToast('CSV exported successfully!');
         }
 
-        function saveViewedCandidates() {
-            localStorage.setItem('toply_viewed_candidates', JSON.stringify(viewedCandidates));
-        }
-
-        function markCandidateViewed(candidateId) {
-            if (currentUser && !viewedCandidates[currentUser].includes(candidateId)) {
-                viewedCandidates[currentUser].push(candidateId);
-                saveViewedCandidates();
+        function exportLinkedInURLs() {
+            if (selectedCandidates.length === 0) {
+                showToast('No candidates selected', 'error');
+                return;
             }
+
+            const urls = selectedCandidates.map(c => c.linkedin).join('\n');
+            downloadFile(urls, 'linkedin_urls.txt', 'text/plain');
+            showToast('LinkedIn URLs exported!');
         }
 
-        // File upload setup
-        function setupFileUpload() {
-            const fileInput = document.getElementById('scorelyUpload');
-            fileInput.addEventListener('change', handleFileUpload);
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
-        function handleFileUpload(event) {
+        function clearSelectedCandidates() {
+            selectedCandidates = [];
+            updateSelectedCandidatesDisplay();
+            
+            // Uncheck all checkboxes
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Scorely upload
+        function handleScorelyUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -872,463 +1136,152 @@ or
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    scorelyData = data;
-                    showToast('Scorely data uploaded successfully!', 'success');
+                    scorelyCandidates = data;
+                    updateScorelyStats();
+                    showToast('Scorely data uploaded successfully!');
                 } catch (error) {
-                    showToast('Error parsing file. Please ensure it\'s a valid JSON format.', 'error');
+                    showToast('Error parsing file', 'error');
                 }
             };
             reader.readAsText(file);
         }
 
-        // Settings management
-        function loadSavedSettings() {
-            const googleKey = localStorage.getItem('toply_google_api_key');
-            const openaiKey = localStorage.getItem('toply_openai_api_key');
-            const openaiModel = localStorage.getItem('toply_openai_model');
+        function updateScorelyStats() {
+            const topCount = scorelyCandidates.filter(c => c.category === 'TOP').length;
+            const goodCount = scorelyCandidates.filter(c => c.category === 'GOOD').length;
             
-            if (googleKey) {
-                document.getElementById('googleApiKey').value = googleKey;
-            }
-            if (openaiKey) {
-                document.getElementById('openaiApiKey').value = openaiKey;
-            }
-            if (openaiModel) {
-                document.getElementById('openaiModel').value = openaiModel;
-            }
+            document.getElementById('topProfilesCount').textContent = topCount;
+            document.getElementById('goodProfilesCount').textContent = goodCount;
         }
 
-        function saveSettings() {
-            const googleKey = document.getElementById('googleApiKey').value;
-            const openaiKey = document.getElementById('openaiApiKey').value;
-            const openaiModel = document.getElementById('openaiModel').value;
-            
-            if (googleKey) localStorage.setItem('toply_google_api_key', googleKey);
-            if (openaiKey) localStorage.setItem('toply_openai_api_key', openaiKey);
-            if (openaiModel) localStorage.setItem('toply_openai_model', openaiModel);
-        }
-
-        // API connection testing
-        function testGoogleConnection() {
-            const apiKey = document.getElementById('googleApiKey').value;
-            if (!apiKey) {
-                showToast('Please enter Google Sheets API key first', 'error');
-                return;
-            }
-            
-            saveSettings();
-            
-            // Simulate API test (replace with actual Google Sheets API call)
-            setTimeout(() => {
-                const statusDiv = document.getElementById('googleConnectionStatus');
-                statusDiv.className = 'flex items-center text-green-600 text-sm';
-                statusDiv.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Connection successful!';
-                statusDiv.classList.remove('hidden');
-                showToast('Google Sheets connected successfully!', 'success');
-            }, 1000);
-        }
-
-        function testOpenAIConnection() {
-            const apiKey = document.getElementById('openaiApiKey').value;
-            if (!apiKey) {
-                showToast('Please enter OpenAI API key first', 'error');
-                return;
-            }
-            
-            saveSettings();
-            
-            // Simulate API test (replace with actual OpenAI API call)
-            setTimeout(() => {
-                const statusDiv = document.getElementById('openaiConnectionStatus');
-                statusDiv.className = 'flex items-center text-green-600 text-sm';
-                statusDiv.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Connection successful!';
-                statusDiv.classList.remove('hidden');
-                showToast('OpenAI connected successfully!', 'success');
-            }, 1000);
-        }
-
-        // Dashboard functions
-        function showHotCompanies() {
-            // Switch to companies tab and filter for hot companies
-            document.querySelector('[data-tab="companies"]').click();
-        }
-
-        function showActiveCandidates() {
-            // Switch to search tab and filter for looking candidates
-            document.querySelector('[data-tab="search"]').click();
-            document.getElementById('showLooking').checked = true;
-            performSearch();
-        }
-
-        function showNewAlerts() {
-            showToast('New alerts: 3 Microsoft candidates, 2 Unity candidates, 1 Wiz candidate available', 'info');
-        }
-
-        function showTotalProfiles() {
-            document.querySelector('[data-tab="companies"]').click();
-        }
-
-        // Search functionality
-        function performSearch() {
-            const results = activeCandidates.map((candidate, index) => {
-                const isHotCompany = hotCompanies.includes(candidate.company);
-                const matchScore = Math.floor(Math.random() * 40) + 60; // Random score 60-100
-                
-                return {
-                    ...candidate,
-                    id: `candidate_${index}`,
-                    matchScore,
-                    isHotCompany,
-                    experience: `${Math.floor(Math.random() * 6) + 2} years`
-                };
-            });
-
-            displaySearchResults(results);
-        }
-
-        function displaySearchResults(results) {
-            const tbody = document.getElementById('searchResultsBody');
-            tbody.innerHTML = '';
-
-            results.forEach(candidate => {
-                const row = document.createElement('tr');
-                const isViewed = currentUser && viewedCandidates[currentUser] && viewedCandidates[currentUser].includes(candidate.id);
-                
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="checkbox" onchange="toggleCandidateSelection('${candidate.id}', this.checked)" 
-                               ${selectedCandidates.has(candidate.id) ? 'checked' : ''}>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">${candidate.name}</div>
-                                ${!isViewed ? '<span class="text-xs text-green-600 font-medium">NEW</span>' : ''}
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="looking-tag text-white px-2 py-1 rounded text-xs font-medium">LOOKING</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">${candidate.company}</div>
-                        ${candidate.isHotCompany ? '<span class="hot-company text-white px-2 py-1 rounded text-xs">HOT</span>' : ''}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${candidate.title}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${candidate.experience}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="${candidate.linkedin}" target="_blank" onclick="markCandidateViewed('${candidate.id}')" 
-                           class="text-blue-600 hover:text-blue-900">View LinkedIn</a>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Similarity search
+        // AI Similarity
         function findSimilarCandidates() {
-            const query = document.getElementById('similarityQuery').value;
-            if (!query.trim()) {
-                showToast('Please enter a job description or query', 'error');
+            const input = document.getElementById('similarityInput').value.trim();
+            if (!input) {
+                showToast('Please enter a job description or requirements', 'error');
                 return;
             }
 
-            if (scorelyData.length === 0) {
+            if (scorelyCandidates.length === 0) {
                 showToast('Please upload Scorely data first', 'error');
                 return;
             }
 
             // Simulate similarity calculation
-            const similarResults = activeCandidates.map((candidate, index) => {
-                const overallMatch = Math.floor(Math.random() * 40) + 55;
-                const skillsMatch = Math.floor(Math.random() * 30) + 70;
-                const companyMatch = Math.floor(Math.random() * 35) + 65;
-                const titleMatch = Math.floor(Math.random() * 25) + 75;
-                const experienceMatch = Math.floor(Math.random() * 20) + 80;
+            const results = scorelyCandidates.map(candidate => ({
+                ...candidate,
+                similarity: Math.random() * 0.4 + 0.6, // Random similarity between 60-100%
+                skillsMatch: Math.random() * 0.3 + 0.7,
+                companyMatch: Math.random() * 0.3 + 0.7,
+                titleMatch: Math.random() * 0.3 + 0.7,
+                experienceMatch: Math.random() * 0.3 + 0.7
+            })).sort((a, b) => b.similarity - a.similarity).slice(0, 10);
 
-                return {
-                    ...candidate,
-                    id: `sim_${index}`,
-                    overallMatch,
-                    skillsMatch,
-                    companyMatch,
-                    titleMatch,
-                    experienceMatch,
-                    confidence: overallMatch >= 85 ? 'HIGH' : overallMatch >= 70 ? 'MEDIUM' : 'LOW'
-                };
-            }).sort((a, b) => b.overallMatch - a.overallMatch);
-
-            displaySimilarityResults(similarResults);
+            displaySimilarityResults(results);
         }
 
         function displaySimilarityResults(results) {
             const container = document.getElementById('similarityResults');
-            const tbody = document.getElementById('similarityResultsBody');
-            tbody.innerHTML = '';
-
-            results.forEach(candidate => {
-                const row = document.createElement('tr');
-                const confidenceClass = candidate.confidence === 'HIGH' ? 'text-green-600' : 
-                                       candidate.confidence === 'MEDIUM' ? 'text-yellow-600' : 'text-red-600';
+            const tbody = document.getElementById('similarityTableBody');
+            
+            tbody.innerHTML = results.map(candidate => {
+                const similarityPercent = Math.round(candidate.similarity * 100);
+                const confidenceLevel = similarityPercent >= 85 ? 'HIGH' : similarityPercent >= 70 ? 'MEDIUM' : 'LOW';
+                const confidenceColor = similarityPercent >= 85 ? 'text-green-600' : similarityPercent >= 70 ? 'text-yellow-600' : 'text-red-600';
                 
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <input type="checkbox" onchange="toggleCandidateSelection('${candidate.id}', this.checked)" 
-                               ${selectedCandidates.has(candidate.id) ? 'checked' : ''}>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${candidate.name}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-full bg-gray-200 rounded-full h-2 mr-3">
-                                <div class="similarity-bar h-2 rounded-full" style="width: ${candidate.overallMatch}%"></div>
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3">
+                            <input type="checkbox" class="similarity-checkbox" data-candidate='${JSON.stringify(candidate)}'>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="font-medium text-gray-900">${candidate.name}</div>
+                            <div class="text-sm text-gray-500">${candidate.category}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                                    <div class="h-2 similarity-bar rounded-full" style="width: ${similarityPercent}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">${similarityPercent}%</span>
                             </div>
-                            <span class="${confidenceClass} text-sm font-medium">${candidate.overallMatch}% ${candidate.confidence}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-16 bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-500 h-2 rounded-full" style="width: ${candidate.skillsMatch}%"></div>
-                        </div>
-                        <span class="text-xs text-gray-500">${candidate.skillsMatch}%</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-16 bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-500 h-2 rounded-full" style="width: ${candidate.companyMatch}%"></div>
-                        </div>
-                        <span class="text-xs text-gray-500">${candidate.companyMatch}%</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-16 bg-gray-200 rounded-full h-2">
-                            <div class="bg-purple-500 h-2 rounded-full" style="width: ${candidate.titleMatch}%"></div>
-                        </div>
-                        <span class="text-xs text-gray-500">${candidate.titleMatch}%</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-16 bg-gray-200 rounded-full h-2">
-                            <div class="bg-orange-500 h-2 rounded-full" style="width: ${candidate.experienceMatch}%"></div>
-                        </div>
-                        <span class="text-xs text-gray-500">${candidate.experienceMatch}%</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button onclick="showMatchDetails('${candidate.id}')" class="text-blue-600 hover:text-blue-900">
-                            View Details
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            container.classList.remove('hidden');
-        }
-
-        function showMatchDetails(candidateId) {
-            showToast('Match details: High similarity due to identical tech stack, same industry experience, and comparable seniority level', 'info');
-        }
-
-        // Candidate selection management
-        function toggleCandidateSelection(candidateId, isSelected) {
-            if (isSelected) {
-                selectedCandidates.add(candidateId);
-            } else {
-                selectedCandidates.delete(candidateId);
-            }
-            updateSelectedCandidatesDisplay();
-        }
-
-        function updateSelectedCandidatesDisplay() {
-            document.getElementById('selectedCount').textContent = selectedCandidates.size;
-            
-            const listContainer = document.getElementById('selectedCandidatesList');
-            if (selectedCandidates.size === 0) {
-                listContainer.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">No candidates selected</p>
-                    </div>
-                `;
-            } else {
-                listContainer.innerHTML = Array.from(selectedCandidates).map(id => {
-                    const candidate = activeCandidates.find(c => `candidate_${activeCandidates.indexOf(c)}` === id) ||
-                                    activeCandidates.find(c => `sim_${activeCandidates.indexOf(c)}` === id);
-                    if (!candidate) return '';
-                    
-                    return `
-                        <div class="flex items-center justify-between p-3 border rounded-lg mb-2">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">${candidate.name}</p>
-                                <p class="text-sm text-gray-500">${candidate.company} - ${candidate.title}</p>
-                            </div>
-                            <button onclick="removeFromSelection('${id}')" class="ml-2 text-red-400 hover:text-red-600">
-                                <i class="fas fa-times"></i>
+                            <div class="text-xs ${confidenceColor} font-medium">${confidenceLevel} MATCH</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-sm">${Math.round(candidate.skillsMatch * 100)}%</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-sm">${Math.round(candidate.companyMatch * 100)}%</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-sm">${Math.round(candidate.titleMatch * 100)}%</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="text-sm">${Math.round(candidate.experienceMatch * 100)}%</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">
+                                <i class="fas fa-info-circle mr-1"></i>Details
                             </button>
-                        </div>
-                    `;
-                }).join('');
-            }
-        }
-
-        function removeFromSelection(candidateId) {
-            selectedCandidates.delete(candidateId);
-            updateSelectedCandidatesDisplay();
+                        </td>
+                    </tr>
+                `;
+            }).join('');
             
-            // Update checkboxes
-            const checkboxes = document.querySelectorAll(`input[onchange*="${candidateId}"]`);
-            checkboxes.forEach(cb => cb.checked = false);
-        }
-
-        // Sidebar management
-        function openSidebar() {
-            document.getElementById('selectedSidebar').classList.remove('translate-x-full');
-            document.getElementById('overlay').classList.remove('hidden');
-        }
-
-        function closeSidebar() {
-            document.getElementById('selectedSidebar').classList.add('translate-x-full');
-            document.getElementById('overlay').classList.add('hidden');
-        }
-
-        // Export functions
-        function exportSelectedCSV() {
-            if (selectedCandidates.size === 0) {
-                showToast('No candidates selected for export', 'error');
-                return;
-            }
-
-            const csvData = Array.from(selectedCandidates).map(id => {
-                const candidate = activeCandidates.find(c => `candidate_${activeCandidates.indexOf(c)}` === id) ||
-                                activeCandidates.find(c => `sim_${activeCandidates.indexOf(c)}` === id);
-                return candidate ? `"${candidate.name}","${candidate.company}","${candidate.title}","${candidate.linkedin}"` : '';
-            }).filter(row => row).join('\n');
-
-            const csv = 'Name,Company,Title,LinkedIn\n' + csvData;
-            downloadFile(csv, 'selected_candidates.csv', 'text/csv');
-            showToast('CSV exported successfully!', 'success');
-        }
-
-        function exportSelectedLinkedIn() {
-            if (selectedCandidates.size === 0) {
-                showToast('No candidates selected for export', 'error');
-                return;
-            }
-
-            const linkedInUrls = Array.from(selectedCandidates).map(id => {
-                const candidate = activeCandidates.find(c => `candidate_${activeCandidates.indexOf(c)}` === id) ||
-                                activeCandidates.find(c => `sim_${activeCandidates.indexOf(c)}` === id);
-                return candidate ? candidate.linkedin : '';
-            }).filter(url => url).join('\n');
-
-            downloadFile(linkedInUrls, 'linkedin_profiles.txt', 'text/plain');
-            showToast('LinkedIn URLs exported successfully!', 'success');
-        }
-
-        function clearAllSelected() {
-            selectedCandidates.clear();
-            updateSelectedCandidatesDisplay();
+            container.classList.remove('hidden');
             
-            // Update all checkboxes
-            const checkboxes = document.querySelectorAll('input[type="checkbox"][onchange*="toggleCandidateSelection"]');
-            checkboxes.forEach(cb => cb.checked = false);
-            
-            showToast('All selections cleared', 'info');
-        }
-
-        // Clipboard and LinkedIn functions
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent.trim();
-            
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Copied to clipboard!', 'success');
-            }).catch(err => {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast('Copied to clipboard!', 'success');
+            // Add event listeners
+            document.querySelectorAll('.similarity-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const candidate = JSON.parse(this.getAttribute('data-candidate'));
+                    if (this.checked) {
+                        if (!selectedCandidates.find(c => c.name === candidate.name)) {
+                            selectedCandidates.push(candidate);
+                        }
+                    } else {
+                        selectedCandidates = selectedCandidates.filter(c => c.name !== candidate.name);
+                    }
+                    updateSelectedCandidatesDisplay();
+                });
             });
         }
 
-        function openLinkedInSearch() {
-            const booleanQuery = document.getElementById('linkedinBoolean').textContent.trim();
-            const encodedQuery = encodeURIComponent(booleanQuery);
-            const linkedInUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodedQuery}`;
-            window.open(linkedInUrl, '_blank');
-        }
-
-        // Utility functions
-        function downloadFile(content, filename, contentType) {
-            const blob = new Blob([content], { type: contentType });
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        }
-
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-green-500' : 
-                           type === 'error' ? 'bg-red-500' : 
-                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
             
-            toast.className = `toast ${bgColor} text-white px-4 py-2 rounded-md shadow-lg transform transition-transform duration-300 translate-x-full`;
-            toast.innerHTML = `
-                <div class="flex items-center">
-                    <span>${message}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
+            toastMessage.textContent = message;
             
-            document.getElementById('toastContainer').appendChild(toast);
+            if (type === 'error') {
+                toast.firstElementChild.className = 'bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg';
+                toast.firstElementChild.innerHTML = `<i class="fas fa-times mr-2"></i><span id="toastMessage">${message}</span>`;
+            } else {
+                toast.firstElementChild.className = 'bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg';
+                toast.firstElementChild.innerHTML = `<i class="fas fa-check mr-2"></i><span id="toastMessage">${message}</span>`;
+            }
             
-            // Animate in
+            // Show toast
+            toast.classList.remove('translate-x-full');
+            
+            // Hide after 3 seconds
             setTimeout(() => {
-                toast.classList.remove('translate-x-full');
-            }, 100);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.classList.add('translate-x-full');
-                    setTimeout(() => {
-                        if (toast.parentElement) {
-                            toast.remove();
-                        }
-                    }, 300);
-                }
-            }, 5000);
+                toast.classList.add('translate-x-full');
+            }, 3000);
         }
 
-        // Event listeners for sidebar
-        document.getElementById('selectedCandidatesBtn').addEventListener('click', openSidebar);
-
-        // Auto-save settings on input
-        document.getElementById('googleApiKey').addEventListener('input', saveSettings);
-        document.getElementById('openaiApiKey').addEventListener('input', saveSettings);
-        document.getElementById('openaiModel').addEventListener('change', saveSettings);
-
-        // Initialize search results on page load
-        setTimeout(() => {
+        // Initialize search on page load
+        document.addEventListener('DOMContentLoaded', function() {
             performSearch();
-        }, 1000);
+        });
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgy8k8dMnKTiBt4SMbAR0VhGXEdRrhBTX3rQADWENuaSf2uIVw0mkQ2r%2BxTy7%2BYn0bZLzjfv1Ww8DFHtlFM7JeWNZzIJX9RfHLWTzR2Xta4VMjJNxAV885ep4hw0sRAVWNLtmg9RI3RO%2BrN4j4PZfIyicmNdtRHK%2B7qAY1TzFD6bPco5S%2Fu%2Fgs9l0ICO5e8FIHI8L5d84VAOaOk5zsH9NuAk%2Frg2FrfJ%2FzErp8scZzLfNAwqb9K%2BhLrRJfZrMTwothUKcPCGuyubdwBfPqYy5To3D7kzVbDyYRlfUaWicq8EDg9FqmbmvtHkNLQ2j2X8VX7a2NE9jQ253T4i8KjCN7gaT%2BzQLPd3CxUm0Ny80iSBzS7AT%2FDe7VF2XQIzVUFyujqWVnPeekuLJF8fd42OJr3%2BMqDHRqUusDY3Y8SrKn%2BwVajcPVNAiJzxzQcrRLWIkMxPjyCB1aJm45htb5gBnSYOmYWTmvkj1ddbcYW97jLj11MqqTue0JQ4NG0EewqWhQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDt59sWUD8HDsJgKEMyZVmrAkPdRc84ssJdaTwG8RF9rPnyIaA8ccHIwUO%2FBEX8oQRZPfJWsqXVz67WqjbM9z%2F32dKd7FQOUUyLURVSR72vjFRI7qE5LzcKKhErapdon89cwYGgxvLqHmxe3hdeYhlYt0Z9dQ57ocKZ4MFUyzEwx32iRaGfnaIRb4mZfkEhorJbCJatylEF7j9HlRWpwwOUwJZ%2BCh1cp2FvhNByLK9jsWoXvNY67l366o3PpZPzD7zi62g2OtbrQQ0%2BPYbznRZEGB7imMSTTFcg1S4avQ%2FfNsznuhWEXfIqbMRcPbIBcY%2FCotG6Gj%2BOl1KC1Un8Hahc%2BoqXzHWkElaJlDgKuJVh3TYg84oMOn4Y0B1tzP4VH5Ai3pw5MFnD27YdATYnCVmCz9f0DmaW0KdxifRCI4RYqoiJL8WKGc%2FK5c8vW3H3LMda1u10xGkveXZY2XT3YRSIkWjYlsGFwojClRjHiF1Kz1vuC38o4ZoJC%2BsllGFgBcTw%3D%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgy8k8dMnKTiBt4SMbAR0VhGXEdRrhBTX3rQADWENuaSf2uIVw0mkQ2r+xTy7+Yn0bZLzjfv1Ww8DFHtlFM7JeWNZzIJX9RfHLWTzR2Xta4VMjJNxAV885ep4hw0sRAVWNLtmg9RI3RO+rN4j4PZfIyicmNdtRHK+7qAY1TzFD6bPco5S/u/gs9l0ICO5e8FIHI8L5d84VAOaOk5zsH9NuAk/rg2FrfJ/zErp8scZzLfNAwqb9K+hLrRJfZrMTwothUKcPCGuyubdwBfPqYy5To3D7kzVbDyYRlfUaWicq8EDg9FqmbmvtHkNLQ2j2X8VX7a2NE9jQ253T4i8KjCN7gaT+zQLPd3CxUm0Ny80iSBzS7AT/De7VF2XQIzVUFyujqWVnPeekuLJF8fd42OJr3+MqDHRqUusDY3Y8SrKn+wVajcPVNAiJzxzQcrRLWIkMxPjyCB1aJm45htb5gBnSYOmYWTmvkj1ddbcYW97jLj11MqqTue0JQ4NG0EewqWhQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDt59sWUD8HDsJgKEMyZVmrAkPdRc84ssJdaTwG8RF9rPnyIaA8ccHIwUO/BEX8oQRZPfJWsqXVz67WqjbM9z/32dKd7FQOUUyLURVSR72vjFRI7qE5LzcKKhErapdon89cwYGgxvLqHmxe3hdeYhlYt0Z9dQ57ocKZ4MFUyzEwx32iRaGfnaIRb4mZfkEhorJbCJatylEF7j9HlRWpwwOUwJZ+Ch1cp2FvhNByLK9jsWoXvNY67l366o3PpZPzD7zi62g2OtbrQQ0+PYbznRZEGB7imMSTTFcg1S4avQ/fNsznuhWEXfIqbMRcPbIBcY/CotG6Gj+Ol1KC1Un8Hahc+oqXzHWkElaJlDgKuJVh3TYg84oMOn4Y0B1tzP4VH5Ai3pw5MFnD27YdATYnCVmCz9f0DmaW0KdxifRCI4RYqoiJL8WKGc/K5c8vW3H3LMda1u10xGkveXZY2XT3YRSIkWjYlsGFwojClRjHiF1Kz1vuC38o4ZoJC+sllGFgBcTw==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
