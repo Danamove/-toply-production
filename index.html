@@ -1,86 +1,120 @@
-
-
-Download
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toply - Smart Sourcing Intelligence Platform</title>
+    <title>Toply Intelligence Hub - Smart CSV Auto-Detection</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .smart-insights-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .card-shadow {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .admin-badge {
-            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
-        }
-        .nav-tab {
+        
+        .card-hover {
             transition: all 0.3s ease;
         }
-        .nav-tab:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        .nav-tab.active {
-            background-color: rgba(255, 255, 255, 0.2);
+        
+        .hot-tag {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .csv-preview {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .column-mapping {
+            border: 2px dashed #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        .mapping-confirmed {
+            border-color: #48bb78;
+            background-color: #f0fff4;
+        }
+        
+        .mapping-uncertain {
+            border-color: #ed8936;
+            background-color: #fffaf0;
+        }
+        
+        .similarity-score {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 font-sans">
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <!-- Logo and Title -->
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                    </div>
+                    <i class="fas fa-brain text-2xl"></i>
                     <div>
-                        <h1 class="text-xl font-bold">Toply</h1>
-                        <p class="text-sm opacity-90">Smart Sourcing Intelligence Platform</p>
+                        <h1 class="text-2xl font-bold">Toply Intelligence Hub</h1>
+                        <p class="text-sm opacity-90">Advanced Recruitment Intelligence Platform</p>
                     </div>
                 </div>
-
-                <!-- User Controls -->
-                <div class="flex items-center space-x-3">
-                    <!-- Sync Button -->
-                    <button class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                        <i class="fas fa-sync-alt mr-2"></i>Sync Now
-                    </button>
-
-                    <!-- User Selection -->
-                    <div class="relative">
-                        <select id="userSelect" class="bg-white bg-opacity-20 text-white border border-white border-opacity-30 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 appearance-none pr-8">
-                            <option value="" class="text-gray-700">Select User</option>
-                            <option value="Dana" class="text-gray-700">Dana (Admin)</option>
-                            <option value="Alexey" class="text-gray-700">Alexey (Admin)</option>
-                            <option value="Andrea" class="text-gray-700">Andrea</option>
-                            <option value="Katinka" class="text-gray-700">Katinka</option>
-                            <option value="Shiri" class="text-gray-700">Shiri</option>
-                            <option value="Mika" class="text-gray-700">Mika</option>
-                            <option value="Chen" class="text-gray-700">Chen</option>
-                            <option value="Danana" class="text-gray-700">Danana</option>
-                            <option value="Eszter" class="text-gray-700">Eszter</option>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm">Search Mode:</label>
+                        <select id="searchMode" class="px-3 py-1 rounded bg-white text-gray-800 text-sm">
+                            <option value="regular">Regular</option>
+                            <option value="active">Active</option>
                         </select>
-                        <i class="fas fa-chevron-down absolute right-2 top-1/2 transform -translate-y-1/2 text-white opacity-70 pointer-events-none"></i>
                     </div>
-
-                    <!-- Admin Button -->
-                    <button id="adminBtn" class="admin-badge px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity">
-                        <i class="fas fa-crown mr-2"></i>Admin
-                    </button>
-
-                    <!-- Selected Count -->
-                    <div class="bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium">
-                        <i class="fas fa-check mr-2"></i>Selected (0)
+                    <div class="flex items-center space-x-2">
+                        <select id="userSelect" class="px-3 py-1 rounded bg-white text-gray-800">
+                            <option value="">Select User</option>
+                            <option value="Dana">Dana</option>
+                            <option value="Alexey">Alexey</option>
+                            <option value="Shiri">Shiri</option>
+                            <option value="Chen">Chen</option>
+                            <option value="Mika">Mika</option>
+                            <option value="Katinka">Katinka</option>
+                            <option value="Andrea">Andrea</option>
+                            <option value="Danana">Danana</option>
+                            <option value="Eszter">Eszter</option>
+                        </select>
+                        <span id="userStatus" class="text-sm opacity-75">Not Selected</span>
                     </div>
                 </div>
             </div>
@@ -90,401 +124,1288 @@ Download
     <!-- Navigation -->
     <nav class="bg-white shadow-sm border-b">
         <div class="container mx-auto px-4">
-            <div class="flex space-x-1">
-                <button class="nav-tab active px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600" data-tab="dashboard">
-                    <i class="fas fa-chart-pie mr-2"></i>Dashboard
+            <div class="flex space-x-8">
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-red-500 text-red-600" data-tab="dashboard">
+                    <i class="fas fa-chart-line mr-2"></i>Market Signals Dashboard
                 </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="search">
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="search">
                     <i class="fas fa-search mr-2"></i>Smart Search
                 </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="similarity">
-                    <i class="fas fa-brain mr-2"></i>AI Similarity
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="ai">
+                    <i class="fas fa-robot mr-2"></i>AI Matching
                 </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="sourcing">
-                    <i class="fas fa-magic mr-2"></i>Auto-Sourcing
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="companies">
+                    <i class="fas fa-building mr-2"></i>Company Intelligence
                 </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="companies">
-                    <i class="fas fa-building mr-2"></i>Companies
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="tracking">
+                    <i class="fas fa-users mr-2"></i>Open Profiles Tracking
                 </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="analytics">
-                    <i class="fas fa-chart-bar mr-2"></i>Analytics
-                </button>
-                <button class="nav-tab px-6 py-3 text-sm font-medium text-gray-600 hover:text-blue-600" data-tab="settings">
-                    <i class="fas fa-cog mr-2"></i>Settings
+                <button class="nav-tab px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="companies-data">
+                    <i class="fas fa-database mr-2"></i>Companies Data
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
-        <!-- Guest Notice -->
-        <div id="guestNotice" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <div class="flex items-center">
-                <i class="fas fa-info-circle text-blue-500 mr-3"></i>
-                <span class="text-blue-700">You're browsing as Guest 💡 Select your name above for personal tracking</span>
-            </div>
-        </div>
-
-        <!-- Smart Insights -->
-        <div class="smart-insights-bg rounded-xl p-6 mb-8 text-white">
-            <div class="flex items-center mb-6">
-                <i class="fas fa-lightbulb text-yellow-300 mr-3 text-xl"></i>
-                <h2 class="text-xl font-bold">Smart Insights</h2>
+    <!-- Market Signals Dashboard -->
+    <div id="dashboard" class="tab-content">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-orange-50 p-6 rounded-lg text-center">
+                    <div class="text-orange-600 text-sm font-medium">Market Signals</div>
+                    <div class="text-3xl font-bold text-orange-800" id="marketSignalsCount">6</div>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg text-center">
+                    <div class="text-green-600 text-sm font-medium">Open Profiles</div>
+                    <div class="text-3xl font-bold text-green-800" id="openProfilesCount">3</div>
+                </div>
+                <div class="bg-red-50 p-6 rounded-lg text-center">
+                    <div class="text-red-600 text-sm font-medium">New Alerts</div>
+                    <div class="text-3xl font-bold text-red-800" id="newAlertsCount">3</div>
+                </div>
+                <div class="bg-purple-50 p-6 rounded-lg text-center">
+                    <div class="text-purple-600 text-sm font-medium">Total Profiles</div>
+                    <div class="text-3xl font-bold text-purple-800" id="totalProfilesCount">4</div>
+                </div>
             </div>
             
-            <div class="grid grid-cols-4 gap-4">
-                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold mb-1">0</div>
-                    <div class="text-sm opacity-90">Profiles Analyzed</div>
-                    <div class="text-xs opacity-70 mt-1">+0 today</div>
-                </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold mb-1 text-green-300">0</div>
-                    <div class="text-sm opacity-90">Similar Profiles Found</div>
-                    <div class="text-xs opacity-70 mt-1">0% accuracy</div>
-                </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold mb-1 text-yellow-300">0</div>
-                    <div class="text-sm opacity-90">Company Insights</div>
-                    <div class="text-xs opacity-70 mt-1">0 new patterns</div>
-                </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-                    <div class="text-2xl font-bold mb-1 text-red-300">0</div>
-                    <div class="text-sm opacity-90">Hot Companies Detected</div>
-                    <div class="text-xs opacity-70 mt-1">0 new this week</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dashboard Cards -->
-        <div class="grid grid-cols-4 gap-6 mb-8">
-            <!-- Hot Companies -->
-            <div class="bg-red-500 text-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">Hot Companies</h3>
-                    <i class="fas fa-fire text-2xl opacity-80"></i>
-                </div>
-                <div class="text-3xl font-bold mb-2">0</div>
-                <p class="text-sm opacity-90">Companies with recent activity</p>
-            </div>
-
-            <!-- Active Candidates -->
-            <div class="bg-green-500 text-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">Active Candidates</h3>
-                    <i class="fas fa-users text-2xl opacity-80"></i>
-                </div>
-                <div class="text-3xl font-bold mb-2">0</div>
-                <p class="text-sm opacity-90">Ready for immediate contact</p>
-            </div>
-
-            <!-- TOP Profiles -->
-            <div class="bg-purple-500 text-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">TOP Profiles</h3>
-                    <i class="fas fa-star text-2xl opacity-80"></i>
-                </div>
-                <div class="text-3xl font-bold mb-2">0</div>
-                <p class="text-sm opacity-90">High-quality talent pool</p>
-            </div>
-
-            <!-- GOOD Profiles -->
-            <div class="bg-blue-500 text-white rounded-xl p-6 card-shadow">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">GOOD Profiles</h3>
-                    <i class="fas fa-thumbs-up text-2xl opacity-80"></i>
-                </div>
-                <div class="text-3xl font-bold mb-2">0</div>
-                <p class="text-sm opacity-90">Quality talent pool</p>
-            </div>
-        </div>
-
-        <!-- Content Sections -->
-        <div id="dashboardContent" class="tab-content">
-            <!-- Today's Priority Recommendations -->
-            <div class="bg-white rounded-xl p-6 card-shadow mb-6">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-star text-yellow-500 mr-3 text-xl"></i>
-                    <h2 class="text-xl font-bold text-gray-800">Today's Priority Recommendations</h2>
-                </div>
-                <div class="text-gray-600 text-center py-8">
-                    <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
-                    <p>No recommendations available. Upload candidate data to get started.</p>
-                </div>
-            </div>
-
-            <!-- Market Intelligence -->
-            <div class="grid grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl p-6 card-shadow">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-chart-line text-green-500 mr-3 text-xl"></i>
-                        <h3 class="text-lg font-bold text-gray-800">This Week's Intelligence</h3>
-                    </div>
-                    <div class="space-y-3 text-gray-600">
-                        <div class="flex justify-between">
-                            <span>Security sector:</span>
-                            <span class="font-medium text-green-600">No data</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Backend roles:</span>
-                            <span class="font-medium text-blue-600">No data</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Market activity:</span>
-                            <span class="font-medium text-red-600">No data</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl p-6 card-shadow">
-                    <div class="flex items-center mb-4">
-                        <i class="fas fa-clock text-purple-500 mr-3 text-xl"></i>
-                        <h3 class="text-lg font-bold text-gray-800">Best Timing Recommendations</h3>
-                    </div>
-                    <div class="space-y-3 text-gray-600">
-                        <div class="flex justify-between">
-                            <span>Optimal contact time:</span>
-                            <span class="font-medium text-green-600">No data</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Market window:</span>
-                            <span class="font-medium text-blue-600">No data</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Hiring surge:</span>
-                            <span class="font-medium text-purple-600">No data</span>
-                        </div>
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
+                <div class="flex">
+                    <i class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-1"></i>
+                    <div>
+                        <p class="text-sm text-yellow-800">
+                            <strong>Latest Alert:</strong> 2 open profiles from Wiz this week - possible exodus detected
+                        </p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Other Tab Contents (hidden by default) -->
-        <div id="searchContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Smart Search</h2>
-                <p class="text-gray-600 mb-4">Advanced search functionality coming soon...</p>
-            </div>
-        </div>
-
-        <div id="similarityContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">AI Similarity</h2>
-                <p class="text-gray-600 mb-4">AI similarity matching functionality...</p>
-            </div>
-        </div>
-
-        <div id="sourcingContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Auto-Sourcing</h2>
-                <p class="text-gray-600 mb-4">Automated sourcing tools...</p>
-            </div>
-        </div>
-
-        <div id="companiesContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Companies</h2>
-                <p class="text-gray-600 mb-4">Company intelligence data...</p>
-            </div>
-        </div>
-
-        <div id="analyticsContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Analytics</h2>
-                <p class="text-gray-600 mb-4">Advanced analytics dashboard...</p>
-            </div>
-        </div>
-
-        <div id="settingsContent" class="tab-content hidden">
-            <div class="bg-white rounded-xl p-6 card-shadow">
-                <h2 class="text-xl font-bold text-gray-800 mb-6">Settings</h2>
-                
-                <!-- Regular User Settings -->
-                <div id="regularSettings">
-                    <div class="space-y-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i class="fas fa-chart-line text-orange-500 mr-2"></i>Market Signals This Week
+                </h3>
+                <div class="space-y-4" id="marketSignalsList">
+                    <div class="flex justify-between items-center p-3 bg-red-50 rounded border-l-4 border-red-500">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Display Preferences</label>
-                            <select class="w-full p-2 border border-gray-300 rounded-lg">
-                                <option>Light Theme</option>
-                                <option>Dark Theme</option>
-                            </select>
+                            <span class="font-medium">Cybereason</span>
+                            <span class="ml-2 text-sm text-gray-600">Layoffs | Security</span>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Notifications</label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="mr-2">
-                                <span class="text-sm text-gray-600">Email notifications</span>
-                            </label>
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">🔥 LAYOFFS</span>
+                            <button class="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">View Matches</button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Admin Settings (hidden by default) -->
-                <div id="adminSettings" class="hidden">
-                    <div class="border-t pt-6 mt-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Admin Panel</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                                <i class="fas fa-upload mr-2"></i>Upload Open Candidates
-                            </button>
-                            <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                                <i class="fas fa-fire mr-2"></i>Upload Hot Signals
-                            </button>
+                    <div class="flex justify-between items-center p-3 bg-orange-50 rounded border-l-4 border-orange-500">
+                        <div>
+                            <span class="font-medium">Wiz</span>
+                            <span class="ml-2 text-sm text-gray-600">Silent Exodus | Security</span>
                         </div>
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">OpenAI API Key</label>
-                            <input type="password" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter API key">
-                        </div>
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Google Sheets API Key</label>
-                            <input type="password" class="w-full p-2 border border-gray-300 rounded-lg" placeholder="Enter API key">
+                        <div class="flex space-x-2">
+                            <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">⚠️ EXODUS</span>
+                            <button class="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Track</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Admin Login Modal -->
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 w-96 max-w-90vw">
-            <div class="text-center mb-6">
-                <i class="fas fa-shield-alt text-red-500 text-3xl mb-3"></i>
-                <h3 class="text-xl font-bold text-gray-800">Admin Access</h3>
-                <p class="text-gray-600 text-sm">Enter admin credentials to access advanced features</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin User</label>
-                    <select id="adminUserSelect" class="w-full p-3 border border-gray-300 rounded-lg">
-                        <option value="">Select Admin User</option>
-                        <option value="Dana">Dana</option>
-                        <option value="Alexey">Alexey</option>
-                    </select>
-                </div>
+    <!-- Smart Search -->
+    <div id="search" class="tab-content hidden">
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-search text-blue-500 mr-2"></i>Smart Candidate Search
+                </h2>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Admin Code</label>
-                    <input type="password" id="adminCode" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter admin code">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Job Description</label>
+                        <input type="text" id="jobDescription" placeholder="Senior Frontend Developer" 
+                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Skills</label>
+                        <input type="text" id="skills" placeholder="React, Node.js OR Python OR Java" 
+                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <div class="text-xs text-gray-500 mt-1">Use "," for AND, "OR" for either</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Experience</label>
+                        <input type="text" id="experience" placeholder="3-7 years" 
+                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Location</label>
+                        <input type="text" id="location" placeholder="Tel Aviv, Remote" 
+                               class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Score Range</label>
+                        <select id="scoreRange" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Scores</option>
+                            <option value="80-100">80-100 (Excellent)</option>
+                            <option value="60-79">60-79 (Good)</option>
+                            <option value="40-59">40-59 (Average)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Company Filter</label>
+                        <select id="companyFilter" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Companies</option>
+                            <option value="signals">Market Signals Only</option>
+                            <option value="tier1">Tier 1 Companies</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <button id="searchBtn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
+                        <i class="fas fa-search mr-2"></i>Search Candidates
+                    </button>
+                    <button id="aiSimilarBtn" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center">
+                        <i class="fas fa-robot mr-2"></i>AI Similar Profiles
+                    </button>
+                    <button id="uploadCsvBtn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center">
+                        <i class="fas fa-upload mr-2"></i>Smart CSV Upload
+                    </button>
+                </div>
+
+                <div class="flex space-x-4 mb-4">
+                    <button id="allProfilesBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">All Profiles</button>
+                    <button id="hideViewedBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Hide Viewed</button>
+                    <button id="showViewedBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Show Only Viewed</button>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-sm text-gray-600" id="selectedCount">Selected: 0</span>
+                    <button id="exportSelectedBtn" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-400" disabled>
+                        <i class="fas fa-download mr-2"></i>Export Selected
+                    </button>
                 </div>
             </div>
-            
-            <div class="flex space-x-3 mt-6">
-                <button id="adminLogin" class="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Login
-                </button>
-                <button id="adminCancel" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-colors">
-                    Cancel
-                </button>
+
+            <!-- CSV Upload Modal -->
+            <div id="csvUploadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-full overflow-y-auto">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold flex items-center">
+                                    <i class="fas fa-magic mr-2 text-purple-500"></i>
+                                    Smart CSV Upload
+                                    <span class="ai-badge ml-2">AI-Powered</span>
+                                </h3>
+                                <button id="closeCsvModal" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <!-- File Upload -->
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                                    <div class="text-lg font-medium text-gray-700 mb-2">Upload CSV File</div>
+                                    <div class="text-sm text-gray-500 mb-4">AI will automatically detect column meanings</div>
+                                    <button onclick="document.getElementById('csvFileInput').click()" 
+                                            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        Choose File
+                                    </button>
+                                </div>
+
+                                <!-- AI Processing Status -->
+                                <div id="aiProcessingStatus" class="hidden">
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="loading-spinner mr-3"></div>
+                                            <div>
+                                                <div class="font-medium text-blue-800">AI Column Detection in Progress</div>
+                                                <div class="text-sm text-blue-600" id="processingSteps">Analyzing column headers...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CSV Preview -->
+                                <div id="csvPreviewSection" class="hidden">
+                                    <h4 class="font-medium mb-3">File Preview:</h4>
+                                    <div id="csvPreview" class="csv-preview border rounded-lg"></div>
+                                </div>
+
+                                <!-- Column Mapping -->
+                                <div id="columnMappingSection" class="hidden">
+                                    <h4 class="font-medium mb-3">
+                                        AI Column Detection Results:
+                                        <span class="text-sm text-gray-500">(Review and confirm mappings)</span>
+                                    </h4>
+                                    <div id="columnMappings" class="space-y-3"></div>
+                                    
+                                    <div class="flex justify-end space-x-3 mt-6">
+                                        <button id="rejectMappingBtn" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                                            Reject & Manual Map
+                                        </button>
+                                        <button id="confirmMappingBtn" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                            Confirm & Import
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Manual Mapping (fallback) -->
+                                <div id="manualMappingSection" class="hidden">
+                                    <h4 class="font-medium mb-3">Manual Column Mapping:</h4>
+                                    <div class="grid grid-cols-2 gap-4" id="manualMappings"></div>
+                                    
+                                    <div class="flex justify-end mt-6">
+                                        <button id="confirmManualBtn" class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                            Import Data
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Import Results -->
+                                <div id="importResults" class="hidden">
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                            <div>
+                                                <div class="font-medium text-green-800">Import Successful!</div>
+                                                <div class="text-sm text-green-600" id="importSummary"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="space-y-4" id="resultsContainer">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Matching -->
+    <div id="ai" class="tab-content hidden">
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-robot text-purple-500 mr-2"></i>AI Similar Profiles
+                </h2>
+                
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <h3 class="font-medium mb-3">Find Similar Candidates</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Paste candidate profile or job description:</label>
+                            <textarea id="profileInput" rows="6" 
+                                    placeholder="Paste LinkedIn profile, resume, or job description here..."
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
+                        </div>
+                        <button id="findSimilarBtn" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                            <i class="fas fa-search mr-2"></i>Find Similar Profiles
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-medium mb-3">Similar Companies</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Company name:</label>
+                            <input type="text" id="companyInput" placeholder="e.g., Google, Wiz, Meta"
+                                   class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button id="findSimilarCompaniesBtn" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-building mr-2"></i>Find Similar Companies
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Intelligence -->
+    <div id="companies" class="tab-content hidden">
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-building text-green-500 mr-2"></i>Company Intelligence
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-medium text-green-800 mb-2">Top Tier Companies</h3>
+                        <div class="text-2xl font-bold text-green-600">45</div>
+                        <div class="text-sm text-green-600">FAANG + Unicorns</div>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg">
+                        <h3 class="font-medium text-orange-800 mb-2">Market Signals This Week</h3>
+                        <div class="text-2xl font-bold text-orange-600">6</div>
+                        <div class="text-sm text-orange-600">Active Signals</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-medium text-purple-800 mb-2">Total Database</h3>
+                        <div class="text-2xl font-bold text-purple-600">250+</div>
+                        <div class="text-sm text-purple-600">Companies Tracked</div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="border rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium">Wiz</h3>
+                                <div class="text-sm text-gray-600">Cloud Security • Tel Aviv • Unicorn $10B</div>
+                                <div class="text-xs text-gray-500 mt-1">750 employees • Fast-growth culture</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs hot-tag">⚠️ EXODUS</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Tier 1</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium">Cybereason</h3>
+                                <div class="text-sm text-gray-600">Endpoint Security • Tel Aviv • Unicorn</div>
+                                <div class="text-xs text-gray-500 mt-1">750 employees • 24/7 operations culture</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs hot-tag">🔥 LAYOFFS</span>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Tier 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Profiles Tracking -->
+    <div id="tracking" class="tab-content hidden">
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-users text-teal-500 mr-2"></i>Open Profiles Tracking
+                </h2>
+                
+                <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-teal-800">Track Open Job Seekers</h3>
+                            <p class="text-sm text-teal-600">Monitor candidates with open profiles actively looking for new opportunities</p>
+                        </div>
+                        <button class="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700">
+                            <i class="fas fa-plus mr-2"></i>Add Open Profile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-4" id="openProfilesList">
+                    <div class="border rounded-lg p-4 bg-green-50 border-green-200">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-green-800">John Doe</h3>
+                                <div class="text-sm text-green-600">Senior Backend Developer • Wiz</div>
+                                <div class="text-xs text-green-500 mt-1">Added: June 10 • Source: LinkedIn • Status: Open</div>
+                                <div class="text-xs text-gray-600 mt-1">Note: Reached out after company layoffs</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">⚠️ PROBABLY LOOKING</span>
+                                <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">View</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium">Sarah Miller</h3>
+                                <div class="text-sm text-gray-600">DevOps Engineer • Cybereason</div>
+                                <div class="text-xs text-gray-500 mt-1">Added: June 9 • Source: Direct Contact • Status: Open</div>
+                                <div class="text-xs text-gray-600 mt-1">Note: Department restructuring</div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">🔥 HOT</span>
+                                <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Track</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Companies Data -->
+    <div id="companies-data" class="tab-content hidden">
+        <div class="container mx-auto px-4 py-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-database text-indigo-500 mr-2"></i>Companies Data Management
+                </h2>
+                
+                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-medium text-indigo-800">Company Database</h3>
+                            <p class="text-sm text-indigo-600">General market intelligence for similar company matching and industry-based searches</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="uploadCompanyDataBtn" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                <i class="fas fa-upload mr-2"></i>Upload Company List
+                            </button>
+                            <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                <i class="fas fa-plus mr-2"></i>Add Company
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Upload Section -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <h3 class="font-medium text-yellow-800 mb-3">
+                        <i class="fas fa-user-shield mr-2"></i>Admin Functions
+                    </h3>
+                    <p class="text-sm text-yellow-700 mb-4">Upload comprehensive company data files for market intelligence</p>
+                    <div class="flex items-center space-x-4">
+                        <input type="file" id="companyDataFile" accept=".csv,.xlsx" class="hidden">
+                        <button onclick="document.getElementById('companyDataFile').click()" 
+                                class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700">
+                            <i class="fas fa-file-upload mr-2"></i>Choose Company Data File
+                        </button>
+                        <span class="text-sm text-yellow-600">Supports CSV and Excel formats</span>
+                    </div>
+                </div>
+
+                <!-- Company Data Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Industry</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Size</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-4 py-2 border text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="companiesDataTable">
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border font-medium">Google</td>
+                                <td class="px-4 py-2 border">Technology</td>
+                                <td class="px-4 py-2 border">Large (100k+)</td>
+                                <td class="px-4 py-2 border">Mountain View, CA</td>
+                                <td class="px-4 py-2 border">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">FAANG</span>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Active</span>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Edit</button>
+                                </td>
+                            </tr>
+                            <tr class="border-t">
+                                <td class="px-4 py-2 border font-medium">Wiz</td>
+                                <td class="px-4 py-2 border">Cybersecurity</td>
+                                <td class="px-4 py-2 border">Medium (500-1k)</td>
+                                <td class="px-4 py-2 border">Tel Aviv, Israel</td>
+                                <td class="px-4 py-2 border">
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Unicorn</span>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">Market Signal</span>
+                                </td>
+                                <td class="px-4 py-2 border">
+                                    <button class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="text-sm text-gray-600">
+                        Showing 2 of 250+ companies
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">Previous</button>
+                        <button class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Next</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // User management
-        const users = [
-            { name: "Dana", isAdmin: true },
-            { name: "Alexey", isAdmin: true },
-            { name: "Andrea", isAdmin: false },
-            { name: "Katinka", isAdmin: false },
-            { name: "Shiri", isAdmin: false },
-            { name: "Mika", isAdmin: false },
-            { name: "Chen", isAdmin: false },
-            { name: "Danana", isAdmin: false },
-            { name: "Eszter", isAdmin: false }
-        ];
-
-        let currentUser = null;
-        let isAdminLoggedIn = false;
-
-        // Tab switching
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600'));
-                
-                // Add active class to clicked tab
-                this.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
-                
-                // Hide all content
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-                
-                // Show selected content
-                const tabName = this.getAttribute('data-tab');
-                const content = document.getElementById(tabName + 'Content');
-                if (content) {
-                    content.classList.remove('hidden');
-                }
-            });
-        });
-
-        // User selection
-        document.getElementById('userSelect').addEventListener('change', function() {
-            const selectedUser = this.value;
-            if (selectedUser) {
-                currentUser = users.find(u => u.name === selectedUser);
-                updateUserInterface();
-            }
-        });
-
-        // Admin modal
-        document.getElementById('adminBtn').addEventListener('click', function() {
-            document.getElementById('adminModal').classList.remove('hidden');
-            document.getElementById('adminModal').classList.add('flex');
-        });
-
-        document.getElementById('adminCancel').addEventListener('click', function() {
-            document.getElementById('adminModal').classList.add('hidden');
-            document.getElementById('adminModal').classList.remove('flex');
-        });
-
-        document.getElementById('adminLogin').addEventListener('click', function() {
-            const adminUser = document.getElementById('adminUserSelect').value;
-            const adminCode = document.getElementById('adminCode').value;
+        // Configuration - Environment variables for security
+        const CONFIG = {
+            // Replace with environment variable: process.env.OPENAI_API_KEY
+            apiKey: process.env.OPENAI_API_KEY || '', // Use environment variable
             
-            if (adminUser && adminCode === 'toply2025') {
-                isAdminLoggedIn = true;
-                currentUser = users.find(u => u.name === adminUser);
-                document.getElementById('userSelect').value = adminUser;
-                updateUserInterface();
-                document.getElementById('adminModal').classList.add('hidden');
-                document.getElementById('adminModal').classList.remove('flex');
-                
-                // Show admin settings
-                document.getElementById('adminSettings').classList.remove('hidden');
-            } else {
-                alert('Invalid admin credentials');
-            }
+            // Replace with environment variables for Google Sheets
+            candidatesSheetId: process.env.CANDIDATES_SHEET_ID || '1It9bHPbIRXX3Ezf_-phAZvyE3SYMbd1zt7PlkrLX-HU',
+            marketSignalsSheetId: process.env.MARKET_SIGNALS_SHEET_ID || '1OhMJZsJgc-9-JYN02_5vqg801_vxdnc5KnkWYiRoWys',
+            openProfilesSheetRange: process.env.OPEN_PROFILES_RANGE || 'Open_Profiles!A:J'
+        };
+
+        // Standard field mappings for AI detection
+        const STANDARD_FIELDS = {
+            'name': ['name', 'full name', 'candidate name', 'full_name', 'candidate_name', 'first name', 'last name'],
+            'company': ['company', 'current company', 'employer', 'organization', 'current_company', 'current employer'],
+            'title': ['title', 'job title', 'position', 'role', 'current title', 'current position', 'current_role'],
+            'contact': ['email', 'contact', 'email address', 'phone', 'contact info', 'contact_info'],
+            'experience': ['experience', 'years experience', 'years of experience', 'years_experience', 'exp'],
+            'skills': ['skills', 'technologies', 'tech stack', 'technical skills', 'tech_stack'],
+            'location': ['location', 'city', 'country', 'address', 'based in', 'located in'],
+            'linkedin': ['linkedin', 'linkedin url', 'linkedin profile', 'profile url', 'linkedin_url'],
+            'summary': ['summary', 'description', 'bio', 'about', 'profile summary', 'overview'],
+            'source': ['source', 'lead source', 'referral source', 'how found', 'channel'],
+            'status': ['status', 'candidate status', 'stage', 'current status'],
+            'score': ['score', 'rating', 'grade', 'assessment', 'evaluation']
+        };
+
+        // Global state
+        let currentUser = '';
+        let candidatesData = [];
+        let marketSignalsData = [];
+        let openProfilesData = [];
+        let companiesData = [];
+        let viewedCandidates = new Set();
+        let selectedCandidates = new Set();
+        let csvData = null;
+        let detectedMapping = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeEventListeners();
+            loadData();
+            showTab('dashboard');
         });
 
-        function updateUserInterface() {
-            if (currentUser) {
-                document.getElementById('guestNotice').style.display = 'none';
-                
-                if (isAdminLoggedIn && currentUser.isAdmin) {
-                    document.getElementById('adminBtn').innerHTML = '<i class="fas fa-crown mr-2"></i>' + currentUser.name + ' (Admin)';
-                    document.getElementById('adminSettings').classList.remove('hidden');
-                } else {
-                    document.getElementById('adminBtn').innerHTML = '<i class="fas fa-user mr-2"></i>' + currentUser.name;
-                    document.getElementById('adminSettings').classList.add('hidden');
-                }
+        function initializeEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    showTab(this.dataset.tab);
+                });
+            });
+
+            // User selection
+            document.getElementById('userSelect').addEventListener('change', function() {
+                currentUser = this.value;
+                updateUserStatus();
+                loadViewedCandidates();
+            });
+
+            // Search functionality
+            document.getElementById('searchBtn').addEventListener('click', performSearch);
+            document.getElementById('aiSimilarBtn').addEventListener('click', showAISimilarModal);
+            document.getElementById('uploadCsvBtn').addEventListener('click', openCsvUploadModal);
+
+            // CSV Upload Modal
+            document.getElementById('closeCsvModal').addEventListener('click', closeCsvUploadModal);
+            document.getElementById('csvFileInput').addEventListener('change', handleCsvFileUpload);
+            document.getElementById('confirmMappingBtn').addEventListener('click', confirmMapping);
+            document.getElementById('rejectMappingBtn').addEventListener('click', showManualMapping);
+            document.getElementById('confirmManualBtn').addEventListener('click', importWithManualMapping);
+
+            // Filter buttons
+            document.getElementById('allProfilesBtn').addEventListener('click', () => filterResults('all'));
+            document.getElementById('hideViewedBtn').addEventListener('click', () => filterResults('hideViewed'));
+            document.getElementById('showViewedBtn').addEventListener('click', () => filterResults('showViewed'));
+
+            // Export
+            document.getElementById('exportSelectedBtn').addEventListener('click', exportSelected);
+
+            // AI functionality
+            document.getElementById('findSimilarBtn').addEventListener('click', findSimilarProfiles);
+            document.getElementById('findSimilarCompaniesBtn').addEventListener('click', findSimilarCompanies);
+
+            // Companies Data functionality
+            document.getElementById('uploadCompanyDataBtn').addEventListener('click', openCompanyDataUpload);
+            document.getElementById('companyDataFile').addEventListener('change', handleCompanyDataUpload);
+        }
+
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('border-red-500', 'text-red-600');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            document.querySelector(`[data-tab="${tabId}"]`).classList.remove('border-transparent', 'text-gray-500');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('border-red-500', 'text-red-600');
+        }
+
+        async function loadData() {
+            try {
+                // Load sample data for demo
+                candidatesData = [
+                    {
+                        name: "Sarah Chen",
+                        score: 85,
+                        category: "TOP",
+                        experience: "5 years",
+                        location: "Tel Aviv, Israel",
+                        linkedin: "https://linkedin.com/in/sarahchen",
+                        summary: "Senior Frontend Developer with strong React and TypeScript skills. Progressive career growth from junior to senior roles shows excellent learning curve.",
+                        company: "TechCorp"
+                    },
+                    {
+                        name: "David Rodriguez", 
+                        score: 72,
+                        category: "GOOD",
+                        experience: "3 years",
+                        location: "Barcelona, Spain",
+                        linkedin: "https://linkedin.com/in/davidrodriguez",
+                        summary: "DevOps Engineer with AWS and Docker expertise. Strong background in CI/CD pipelines and infrastructure automation.",
+                        company: "StartupX"
+                    }
+                ];
+
+                // Load sample companies data
+                companiesData = [
+                    {
+                        name: "Google",
+                        industry: "Technology",
+                        size: "Large (100k+)",
+                        location: "Mountain View, CA",
+                        type: "FAANG",
+                        status: "Active"
+                    },
+                    {
+                        name: "Wiz",
+                        industry: "Cybersecurity", 
+                        size: "Medium (500-1k)",
+                        location: "Tel Aviv, Israel",
+                        type: "Unicorn",
+                        status: "Market Signal"
+                    }
+                ];
+
+                updateDashboard();
+                displayCandidates();
+            } catch (error) {
+                console.error('Error loading data:', error);
             }
         }
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Toply system initialized with users:', users.map(u => u.name));
-        });
+        function updateUserStatus() {
+            const statusElement = document.getElementById('userStatus');
+            if (currentUser) {
+                statusElement.textContent = currentUser;
+                statusElement.classList.remove('opacity-75');
+                statusElement.classList.add('text-green-600', 'font-medium');
+            } else {
+                statusElement.textContent = 'Not Selected';
+                statusElement.classList.add('opacity-75');
+                statusElement.classList.remove('text-green-600', 'font-medium');
+            }
+        }
+
+        function loadViewedCandidates() {
+            const key = `viewed_${currentUser}`;
+            const stored = localStorage.getItem(key);
+            viewedCandidates = stored ? new Set(JSON.parse(stored)) : new Set();
+        }
+
+        function saveViewedCandidates() {
+            if (currentUser) {
+                const key = `viewed_${currentUser}`;
+                localStorage.setItem(key, JSON.stringify([...viewedCandidates]));
+            }
+        }
+
+        function updateDashboard() {
+            document.getElementById('marketSignalsCount').textContent = '6';
+            document.getElementById('openProfilesCount').textContent = '3';
+            document.getElementById('newAlertsCount').textContent = '3';
+            document.getElementById('totalProfilesCount').textContent = candidatesData.length;
+        }
+
+        // Companies Data Functions
+        function openCompanyDataUpload() {
+            document.getElementById('companyDataFile').click();
+        }
+
+        function handleCompanyDataUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            alert(`Processing company data file: ${file.name}`);
+            // In real implementation, this would parse and import the company data
+        }
+
+        // CSV Upload Functions
+        function openCsvUploadModal() {
+            document.getElementById('csvUploadModal').classList.remove('hidden');
+        }
+
+        function closeCsvUploadModal() {
+            document.getElementById('csvUploadModal').classList.add('hidden');
+            resetCsvUpload();
+        }
+
+        function resetCsvUpload() {
+            document.getElementById('csvFileInput').value = '';
+            document.getElementById('aiProcessingStatus').classList.add('hidden');
+            document.getElementById('csvPreviewSection').classList.add('hidden');
+            document.getElementById('columnMappingSection').classList.add('hidden');
+            document.getElementById('manualMappingSection').classList.add('hidden');
+            document.getElementById('importResults').classList.add('hidden');
+            csvData = null;
+            detectedMapping = {};
+        }
+
+        async function handleCsvFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                showAiProcessingStatus();
+                
+                // Parse CSV
+                const text = await file.text();
+                csvData = parseCSV(text);
+                
+                if (csvData.length === 0) {
+                    throw new Error('Empty CSV file');
+                }
+
+                // Show preview
+                showCsvPreview(csvData);
+                
+                // Detect columns with AI
+                await detectColumnsWithAI(csvData[0]); // Use headers
+                
+                hideAiProcessingStatus();
+                showColumnMapping();
+
+            } catch (error) {
+                console.error('Error processing CSV:', error);
+                alert('Error processing CSV file: ' + error.message);
+                hideAiProcessingStatus();
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            return lines.map(line => {
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                return values;
+            });
+        }
+
+        function showAiProcessingStatus() {
+            document.getElementById('aiProcessingStatus').classList.remove('hidden');
+            
+            const steps = [
+                'Analyzing column headers...',
+                'Computing embeddings...',
+                'Matching with standard fields...',
+                'Calculating similarity scores...',
+                'Finalizing mappings...'
+            ];
+            
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    document.getElementById('processingSteps').textContent = steps[currentStep];
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 800);
+        }
+
+        function hideAiProcessingStatus() {
+            document.getElementById('aiProcessingStatus').classList.add('hidden');
+        }
+
+        function showCsvPreview(data) {
+            const previewSection = document.getElementById('csvPreviewSection');
+            const previewDiv = document.getElementById('csvPreview');
+            
+            if (data.length === 0) return;
+            
+            let html = '<table class="min-w-full border border-gray-200"><thead class="bg-gray-50">';
+            
+            // Headers
+            html += '<tr>';
+            data[0].forEach(header => {
+                html += `<th class="px-3 py-2 border text-left text-xs font-medium text-gray-500 uppercase">${header}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            // First few rows
+            const rowsToShow = Math.min(data.length - 1, 3);
+            for (let i = 1; i <= rowsToShow; i++) {
+                html += '<tr class="border-t">';
+                data[i].forEach(cell => {
+                    html += `<td class="px-3 py-2 border text-sm text-gray-900">${cell}</td>`;
+                });
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table>';
+            previewDiv.innerHTML = html;
+            previewSection.classList.remove('hidden');
+        }
+
+        async function detectColumnsWithAI(headers) {
+            try {
+                detectedMapping = {};
+                
+                // Mock AI detection for demo - in real implementation, this would use OpenAI embeddings
+                const mockDetection = {
+                    'Name': { field: 'name', confidence: 0.95 },
+                    'Full Name': { field: 'name', confidence: 0.98 },
+                    'Company': { field: 'company', confidence: 0.92 },
+                    'Current Company': { field: 'company', confidence: 0.94 },
+                    'Title': { field: 'title', confidence: 0.89 },
+                    'Job Title': { field: 'title', confidence: 0.91 },
+                    'Position': { field: 'title', confidence: 0.87 },
+                    'Email': { field: 'contact', confidence: 0.96 },
+                    'Contact': { field: 'contact', confidence: 0.85 },
+                    'Experience': { field: 'experience', confidence: 0.88 },
+                    'Years Experience': { field: 'experience', confidence: 0.93 },
+                    'Skills': { field: 'skills', confidence: 0.90 },
+                    'Location': { field: 'location', confidence: 0.92 },
+                    'LinkedIn': { field: 'linkedin', confidence: 0.95 },
+                    'Summary': { field: 'summary', confidence: 0.87 },
+                    'Source': { field: 'source', confidence: 0.84 },
+                    'Status': { field: 'status', confidence: 0.82 },
+                    'Score': { field: 'score', confidence: 0.91 }
+                };
+
+                headers.forEach((header, index) => {
+                    const cleanHeader = header.trim();
+                    const detection = mockDetection[cleanHeader] || 
+                                    Object.entries(mockDetection).find(([key]) => 
+                                        key.toLowerCase().includes(cleanHeader.toLowerCase()) ||
+                                        cleanHeader.toLowerCase().includes(key.toLowerCase())
+                                    )?.[1];
+                    
+                    if (detection) {
+                        detectedMapping[index] = {
+                            originalHeader: cleanHeader,
+                            detectedField: detection.field,
+                            confidence: detection.confidence
+                        };
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error in AI column detection:', error);
+                // Fallback to basic string matching
+                headers.forEach((header, index) => {
+                    const lowerHeader = header.toLowerCase().trim();
+                    for (const [field, variations] of Object.entries(STANDARD_FIELDS)) {
+                        if (variations.some(v => lowerHeader.includes(v))) {
+                            detectedMapping[index] = {
+                                originalHeader: header,
+                                detectedField: field,
+                                confidence: 0.7
+                            };
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+
+        function showColumnMapping() {
+            const mappingSection = document.getElementById('columnMappingSection');
+            const mappingsDiv = document.getElementById('columnMappings');
+            
+            let html = '';
+            
+            if (csvData && csvData.length > 0) {
+                csvData[0].forEach((header, index) => {
+                    const mapping = detectedMapping[index];
+                    const isConfident = mapping && mapping.confidence > 0.8;
+                    const cssClass = isConfident ? 'mapping-confirmed' : (mapping ? 'mapping-uncertain' : 'column-mapping');
+                    
+                    html += `<div class="${cssClass}">`;
+                    html += `<div class="flex justify-between items-center">`;
+                    html += `<div>`;
+                    html += `<div class="font-medium">Column: "${header}"</div>`;
+                    
+                    if (mapping) {
+                        html += `<div class="text-sm text-gray-600 mt-1">`;
+                        html += `Detected as: <span class="font-medium">${mapping.detectedField}</span>`;
+                        html += `<span class="similarity-score bg-${isConfident ? 'green' : 'yellow'}-100 text-${isConfident ? 'green' : 'yellow'}-800 ml-2">`;
+                        html += `${Math.round(mapping.confidence * 100)}% confidence</span>`;
+                        html += `</div>`;
+                    } else {
+                        html += `<div class="text-sm text-gray-500 mt-1">No match detected - will be ignored</div>`;
+                    }
+                    
+                    html += `</div>`;
+                    html += `<div>`;
+                    
+                    if (mapping) {
+                        html += `<select class="px-2 py-1 border rounded text-sm" data-column="${index}">`;
+                        for (const field of Object.keys(STANDARD_FIELDS)) {
+                            const selected = field === mapping.detectedField ? 'selected' : '';
+                            html += `<option value="${field}" ${selected}>${field}</option>`;
+                        }
+                        html += `<option value="">Ignore</option>`;
+                        html += `</select>`;
+                    } else {
+                        html += `<select class="px-2 py-1 border rounded text-sm" data-column="${index}">`;
+                        html += `<option value="">Ignore</option>`;
+                        for (const field of Object.keys(STANDARD_FIELDS)) {
+                            html += `<option value="${field}">${field}</option>`;
+                        }
+                        html += `</select>`;
+                    }
+                    
+                    html += `</div>`;
+                    html += `</div>`;
+                    html += `</div>`;
+                });
+            }
+            
+            mappingsDiv.innerHTML = html;
+            mappingSection.classList.remove('hidden');
+        }
+
+        function confirmMapping() {
+            const selects = document.querySelectorAll('[data-column]');
+            const finalMapping = {};
+            
+            selects.forEach(select => {
+                const columnIndex = parseInt(select.dataset.column);
+                const selectedField = select.value;
+                if (selectedField) {
+                    finalMapping[columnIndex] = selectedField;
+                }
+            });
+            
+            importCsvData(finalMapping);
+        }
+
+        function showManualMapping() {
+            document.getElementById('columnMappingSection').classList.add('hidden');
+            document.getElementById('manualMappingSection').classList.remove('hidden');
+            
+            const mappingsDiv = document.getElementById('manualMappings');
+            let html = '';
+            
+            if (csvData && csvData.length > 0) {
+                csvData[0].forEach((header, index) => {
+                    html += `<div>`;
+                    html += `<label class="block text-sm font-medium mb-1">${header}</label>`;
+                    html += `<select class="w-full px-2 py-1 border rounded" data-column="${index}">`;
+                    html += `<option value="">Ignore this column</option>`;
+                    for (const field of Object.keys(STANDARD_FIELDS)) {
+                        html += `<option value="${field}">${field}</option>`;
+                    }
+                    html += `</select>`;
+                    html += `</div>`;
+                });
+            }
+            
+            mappingsDiv.innerHTML = html;
+        }
+
+        function importWithManualMapping() {
+            const selects = document.querySelectorAll('#manualMappings [data-column]');
+            const finalMapping = {};
+            
+            selects.forEach(select => {
+                const columnIndex = parseInt(select.dataset.column);
+                const selectedField = select.value;
+                if (selectedField) {
+                    finalMapping[columnIndex] = selectedField;
+                }
+            });
+            
+            importCsvData(finalMapping);
+        }
+
+        function importCsvData(mapping) {
+            try {
+                let importedCount = 0;
+                const errors = [];
+                
+                // Process data rows (skip header)
+                for (let i = 1; i < csvData.length; i++) {
+                    const row = csvData[i];
+                    const candidate = {};
+                    
+                    // Map columns to fields
+                    Object.entries(mapping).forEach(([columnIndex, fieldName]) => {
+                        if (row[columnIndex]) {
+                            candidate[fieldName] = row[columnIndex].trim();
+                        }
+                    });
+                    
+                    // Validate required fields
+                    if (candidate.name) {
+                        candidatesData.push(candidate);
+                        importedCount++;
+                    } else {
+                        errors.push(`Row ${i + 1}: Missing required name field`);
+                    }
+                }
+                
+                // Show results
+                document.getElementById('columnMappingSection').classList.add('hidden');
+                document.getElementById('manualMappingSection').classList.add('hidden');
+                
+                const resultsDiv = document.getElementById('importResults');
+                const summaryDiv = document.getElementById('importSummary');
+                
+                let summary = `Successfully imported ${importedCount} candidates`;
+                if (errors.length > 0) {
+                    summary += `. ${errors.length} rows had errors.`;
+                }
+                
+                summaryDiv.textContent = summary;
+                resultsDiv.classList.remove('hidden');
+                
+                // Update displays
+                updateDashboard();
+                displayCandidates();
+                
+                // Auto close after 3 seconds
+                setTimeout(() => {
+                    closeCsvUploadModal();
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error importing CSV data:', error);
+                alert('Error importing data: ' + error.message);
+            }
+        }
+
+        function performSearch() {
+            const searchMode = document.getElementById('searchMode').value;
+            // Implement search logic based on mode
+            displayCandidates();
+        }
+
+        function displayCandidates() {
+            const container = document.getElementById('resultsContainer');
+            let html = '';
+
+            candidatesData.forEach((candidate, index) => {
+                const isViewed = viewedCandidates.has(candidate.name);
+                const isSelected = selectedCandidates.has(candidate.name);
+                const marketSignalTag = getMarketSignalTag(candidate.company);
+
+                html += `
+                    <div class="bg-white rounded-lg shadow p-6 card-hover">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <h3 class="text-lg font-semibold">${candidate.name}</h3>
+                                    ${marketSignalTag}
+                                </div>
+                                <p class="text-gray-600">${candidate.experience} • ${candidate.location}</p>
+                                <p class="text-sm text-gray-500 mt-1">${candidate.company || ''}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="px-3 py-1 rounded-full text-sm font-medium ${getScoreColor(candidate.score)}">
+                                        ${candidate.score}
+                                    </span>
+                                    <span class="px-2 py-1 rounded text-xs ${getCategoryColor(candidate.category)}">
+                                        ${candidate.category}
+                                    </span>
+                                </div>
+                                <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                                       onchange="toggleCandidateSelection('${candidate.name}')"
+                                       class="mr-2">
+                                <label class="text-sm text-gray-500">Select</label>
+                            </div>
+                        </div>
+                        
+                        ${candidate.summary ? `<p class="text-gray-700 text-sm mb-4">${candidate.summary}</p>` : ''}
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <button onclick="markAsViewed('${candidate.name}')" 
+                                        class="px-3 py-1 rounded text-sm ${isViewed ? 'bg-gray-300 text-gray-600' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    ${isViewed ? 'Viewed' : 'Mark as Viewed'}
+                                </button>
+                                ${candidate.linkedin ? `
+                                    <a href="${candidate.linkedin}" target="_blank" 
+                                       class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                                        <i class="fab fa-linkedin mr-1"></i>LinkedIn
+                                    </a>
+                                ` : ''}
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-green-100 text-green-600 rounded text-sm hover:bg-green-200">
+                                    <i class="fas fa-eye mr-1"></i>View
+                                </button>
+                                <button class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded text-sm hover:bg-yellow-200">
+                                    <i class="fas fa-bookmark mr-1"></i>Track
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<div class="text-center text-gray-500 py-8">No candidates found</div>';
+            updateSelectedCount();
+        }
+
+        function getMarketSignalTag(company) {
+            const marketSignalCompanies = {
+                'Wiz': '⚠️ EXODUS',
+                'Cybereason': '🔥 LAYOFFS',
+                'Meta': '🔥 LAYOFFS',
+                'Microsoft': '🔥 LAYOFFS'
+            };
+            
+            if (marketSignalCompanies[company]) {
+                return `<span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs hot-tag">${marketSignalCompanies[company]}</span>`;
+            }
+            return '';
+        }
+
+        function getScoreColor(score) {
+            if (score >= 80) return 'bg-green-100 text-green-800';
+            if (score >= 60) return 'bg-blue-100 text-blue-800';
+            return 'bg-yellow-100 text-yellow-800';
+        }
+
+        function getCategoryColor(category) {
+            switch(category) {
+                case 'TOP': return 'bg-green-100 text-green-800';
+                case 'GOOD': return 'bg-blue-100 text-blue-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function markAsViewed(candidateName) {
+            if (!currentUser) {
+                alert('Please select your user first');
+                return;
+            }
+            
+            viewedCandidates.add(candidateName);
+            saveViewedCandidates();
+            displayCandidates();
+        }
+
+        function toggleCandidateSelection(candidateName) {
+            if (selectedCandidates.has(candidateName)) {
+                selectedCandidates.delete(candidateName);
+            } else {
+                selectedCandidates.add(candidateName);
+            }
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedCandidates.size;
+            document.getElementById('selectedCount').textContent = `Selected: ${count}`;
+            document.getElementById('exportSelectedBtn').disabled = count === 0;
+        }
+
+        function filterResults(type) {
+            // Implement filtering logic
+            displayCandidates();
+        }
+
+        function exportSelected() {
+            if (selectedCandidates.size === 0) return;
+            
+            const selectedData = candidatesData.filter(c => selectedCandidates.has(c.name));
+            const csv = convertToCSV(selectedData);
+            downloadCSV(csv, 'toply_selected_candidates.csv');
+        }
+
+        function convertToCSV(data) {
+            if (data.length === 0) return '';
+            
+            const headers = Object.keys(data[0]);
+            const rows = data.map(item => 
+                headers.map(header => `"${(item[header] || '').toString().replace(/"/g, '""')}"`).join(',')
+            );
+            
+            return [headers.join(','), ...rows].join('\n');
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // AI Functions (placeholder implementations)
+        function showAISimilarModal() {
+            alert('AI Similar Profiles feature will analyze the provided profile and find similar candidates using embeddings.');
+        }
+
+        function findSimilarProfiles() {
+            const profile = document.getElementById('profileInput').value;
+            if (!profile.trim()) {
+                alert('Please enter a candidate profile or job description');
+                return;
+            }
+            alert('Finding similar profiles using AI embeddings...');
+        }
+
+        function findSimilarCompanies() {
+            const company = document.getElementById('companyInput').value;
+            if (!company.trim()) {
+                alert('Please enter a company name');
+                return;
+            }
+            alert(`Finding companies similar to ${company}...`);
+        }
     </script>
 </body>
 </html>
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgmuNuKFhSH6QbFypa3sidcAlx9ZOaMO6SAGZU9FjmNFG%2FZG%2FpUK%2FhT2pQ4omxtjfpvIoGnDOsmbv38Dl21O7YrMEOBG1ooftVOIQzBg%2FMcAGun4rIt9j0QiYZjWwCLcmLf0GzlRf51bD%2FtEh4EyVn58LFRP7CWmimMD%2FrP6J4vBIyBDGC3w7Qb2DKnGGTDNC4DntGOn5ARUZ27fwH1c5mNbO5kQ8d6vejAy58Aq4viskLz0pDfMHG3ysm9rZPU5N3F3a4tFqeWtJmvY5xAOD6yoKlwNC1I%2FsmvU4JCqJ3F84RmGdIfzeZcxVcOKk4VnkC9Pm5sKEMhNxYavo2A%2BgMtE1fN6vUDixw55k5019jwOFD2timsDoA3uOI3HsUbV9fnpBLEINvOnQfEVRjlMuwmkjDiEhxyfUJmXOi0wwHfqOiDQU0pWHLxP%2Bk%2FffRcrjkIk7qKJVhIrDGAEj0zrJVG%2BBPzsMpty2a6jFmw0M4ZFuwPsKzaEHCKQX3hynhHI7A%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDlwWZSAZGfbhjsit%2BhYStsNi2CTyKi0p%2FKf%2Fc8QqZDmRioQNsBIhcm9xSvA%2FrkZEXTn%2FUQRAShLyZj78msgVkuQ68InvQOr0tfV2Wj%2F7f5OED6UcDQa2mnJvxde6RO6%2Ba%2BYdHqgjGAe1wlQ%2FZ00GhoF8JrCdCN%2BSIinmYnqIlj%2FRlj4bBF8xXKPix8ahH5r2WwLCrCrklIuW1aKeMhCwOTni3dOlHJGOIAyKVM1VxRItNw3DvZNosyJuPsKVCpq1inQv8b90Fk7w%2BiYlv9Yp%2FNW1Fr%2BMPJbmVMJiaENwWTXgnkpsTF7R9y%2BfKEvqzTtPoQtT378HBl28ZrC%2FJcUsMskqhrH0GvDrCfoZlxVwBGCf0IU5tjmW9MXb1fpaf%2FqcyFaEvEU1fj1dDJBcdmuNG%2FwjqMi9bqvGWhXORgiluTKIjNnM8FmWsteEoFgQxD6YACfIS8SS83AVPoyg81%2B2K3HcqjcRq61xN2z5szr7iNOi8LwaQ9G5MnMfkcpCw%2B5fnQ%3D%3D";
         window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgmuNuKFhSH6QbFypa3sidcAlx9ZOaMO6SAGZU9FjmNFG/ZG/pUK/hT2pQ4omxtjfpvIoGnDOsmbv38Dl21O7YrMEOBG1ooftVOIQzBg/McAGun4rIt9j0QiYZjWwCLcmLf0GzlRf51bD/tEh4EyVn58LFRP7CWmimMD/rP6J4vBIyBDGC3w7Qb2DKnGGTDNC4DntGOn5ARUZ27fwH1c5mNbO5kQ8d6vejAy58Aq4viskLz0pDfMHG3ysm9rZPU5N3F3a4tFqeWtJmvY5xAOD6yoKlwNC1I/smvU4JCqJ3F84RmGdIfzeZcxVcOKk4VnkC9Pm5sKEMhNxYavo2A+gMtE1fN6vUDixw55k5019jwOFD2timsDoA3uOI3HsUbV9fnpBLEINvOnQfEVRjlMuwmkjDiEhxyfUJmXOi0wwHfqOiDQU0pWHLxP+k/ffRcrjkIk7qKJVhIrDGAEj0zrJVG+BPzsMpty2a6jFmw0M4ZFuwPsKzaEHCKQX3hynhHI7A==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDlwWZSAZGfbhjsit+hYStsNi2CTyKi0p/Kf/c8QqZDmRioQNsBIhcm9xSvA/rkZEXTn/UQRAShLyZj78msgVkuQ68InvQOr0tfV2Wj/7f5OED6UcDQa2mnJvxde6RO6+a+YdHqgjGAe1wlQ/Z00GhoF8JrCdCN+SIinmYnqIlj/Rlj4bBF8xXKPix8ahH5r2WwLCrCrklIuW1aKeMhCwOTni3dOlHJGOIAyKVM1VxRItNw3DvZNosyJuPsKVCpq1inQv8b90Fk7w+iYlv9Yp/NW1Fr+MPJbmVMJiaENwWTXgnkpsTF7R9y+fKEvqzTtPoQtT378HBl28ZrC/JcUsMskqhrH0GvDrCfoZlxVwBGCf0IU5tjmW9MXb1fpaf/qcyFaEvEU1fj1dDJBcdmuNG/wjqMi9bqvGWhXORgiluTKIjNnM8FmWsteEoFgQxD6YACfIS8SS83AVPoyg81+2K3HcqjcRq61xN2z5szr7iNOi8LwaQ9G5MnMfkcpCw+5fnQ==";
     </script>
     
     <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
